@@ -68,58 +68,58 @@ public class Dao {
 		return bikes;
 	}
 
-	// TODO: addKeyLock(KeyLock keyLock)
-	public void addKeyLock(KeyLock keyLock) {
-
-		// Open connection, use in every method that accesses DB
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		KeyLock k = new KeyLock(keyLock.getNotes(), keyLock.getSignOutDate());
-
-		// Add to DB
-		session.save(k);
-
-		// Close connection, use in end of every method
-		session.getTransaction().commit();
-		session.close();
-
-	}
-
-	// TODO: KeyLock getKeyLock(int id)
-	public KeyLock getKeyLock(int id) {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		Query query = session.getNamedQuery("KeyLock.byID");
-		query.setParameter("id", id);
-
-		List<KeyLock> keyLocks = (List<KeyLock>) query.getResultList();
-
-		session.getTransaction().commit();
-		session.close();
-
-		if (!keyLocks.isEmpty()) {
-			return keyLocks.get(0);
-		}
-
-		return null;
-	}
-
-	// TODO: List<KeyLock> getAllKeyLocks()
-	public List<KeyLock> getAllKeyLocks() {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		Query query = session.getNamedQuery("KeyLock.all");
-
-		List<KeyLock> keyLocks = (List<KeyLock>) query.getResultList();
-
-		session.getTransaction().commit();
-		session.close();
-
-		return keyLocks;
-	}
+//	// TODO: addKeyLock(KeyLock keyLock)
+//	public void addKeyLock(KeyLock keyLock) {
+//
+//		// Open connection, use in every method that accesses DB
+//		Session session = sessionFactory.openSession();
+//		session.beginTransaction();
+//
+//		KeyLock k = new KeyLock(keyLock.getNotes(), keyLock.getSignOutDate());
+//
+//		// Add to DB
+//		session.save(k);
+//
+//		// Close connection, use in end of every method
+//		session.getTransaction().commit();
+//		session.close();
+//
+//	}
+//
+//	// TODO: KeyLock getKeyLock(int id)
+//	public KeyLock getKeyLock(int id) {
+//		Session session = sessionFactory.openSession();
+//		session.beginTransaction();
+//
+//		Query query = session.getNamedQuery("KeyLock.byID");
+//		query.setParameter("id", id);
+//
+//		List<KeyLock> keyLocks = (List<KeyLock>) query.getResultList();
+//
+//		session.getTransaction().commit();
+//		session.close();
+//
+//		if (!keyLocks.isEmpty()) {
+//			return keyLocks.get(0);
+//		}
+//
+//		return null;
+//	}
+//
+//	// TODO: List<KeyLock> getAllKeyLocks()
+//	public List<KeyLock> getAllKeyLocks() {
+//		Session session = sessionFactory.openSession();
+//		session.beginTransaction();
+//
+//		Query query = session.getNamedQuery("KeyLock.all");
+//
+//		List<KeyLock> keyLocks = (List<KeyLock>) query.getResultList();
+//
+//		session.getTransaction().commit();
+//		session.close();
+//
+//		return keyLocks;
+//	}
 
 	// TODO: addRentalRecord
 	public void addRental(Rental rental) {
@@ -221,7 +221,7 @@ public class Dao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("KeyLock.all");
+		Query query = session.getNamedQuery("Customer.all");
 
 		List<Customer> custs = (List<Customer>) query.getResultList();
 
@@ -232,6 +232,18 @@ public class Dao {
 	}
 
 	// TODO: addSysUser
+	public void addSysUser(Customer customer) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(), customer.getEmail(), 
+				customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(), customer.getWillRecvEmail(), customer.getNotes());
+		
+		session.save(c);
+
+		session.getTransaction().commit();
+		session.close();
+	}
 
 	// TODO: getSysUser
 
