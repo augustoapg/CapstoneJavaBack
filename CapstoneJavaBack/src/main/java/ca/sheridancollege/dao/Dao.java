@@ -17,7 +17,7 @@ public class Dao {
 
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 
-	// TODO: addBike(Bike bike)
+	// ------------------------------ BIKE -----------------------------------
 
 	public void addVoter(Bike bike) {
 
@@ -33,7 +33,6 @@ public class Dao {
 
 	}
 
-	// TODO: Bike getBike(int id)
 	public Bike getBikeById(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -53,7 +52,6 @@ public class Dao {
 		return null;
 	}
 
-	// TODO: List<Bike> getAllBikes()
 	public List<Bike> getAllVoters() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -67,6 +65,8 @@ public class Dao {
 
 		return bikes;
 	}
+
+	// ------------------------------ KeyLock -----------------------------------
 
 //	// TODO: addKeyLock(KeyLock keyLock)
 //	public void addKeyLock(KeyLock keyLock) {
@@ -121,12 +121,20 @@ public class Dao {
 //		return keyLocks;
 //	}
 
-	// TODO: addRentalRecord
+	// ------------------------------ Rental -----------------------------------
+
 	public void addRental(Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
 		Rental r = new Rental(rental.getDueDate(), rental.getRenter(), rental.getState(), rental.getRentalItem());
+
+		// http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
+		// When adding Customer to Rental:
+
+		//		Rental r = new Rental();
+		//		Customer customer = new Customer();
+		//		customer.setRental(r);
 
 		session.save(r);
 
@@ -168,7 +176,7 @@ public class Dao {
 	}
 
 	// TODO: getAllRentalRecords
-	
+
 	public List<Rental> getAllRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -183,14 +191,16 @@ public class Dao {
 		return rentals;
 	}
 
-	// TODO: addCustomer
+	// ------------------------------ Customer -----------------------------------
+
 	public void addCustomer(Customer customer) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(), customer.getEmail(), 
-				customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(), customer.getWillRecvEmail(), customer.getNotes());
-		
+		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(),
+				customer.getEmail(), customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(),
+				customer.getWillRecvEmail(), customer.getNotes());
+
 		session.save(c);
 
 		session.getTransaction().commit();
@@ -216,7 +226,7 @@ public class Dao {
 
 		return null;
 	}
-	
+
 	public List<Customer> getAllCustomer(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -231,14 +241,16 @@ public class Dao {
 		return custs;
 	}
 
-	// TODO: addSysUser
+	// ------------------------------ SystemUser -----------------------------------
+
 	public void addSysUser(Customer customer) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(), customer.getEmail(), 
-				customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(), customer.getWillRecvEmail(), customer.getNotes());
-		
+		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(),
+				customer.getEmail(), customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(),
+				customer.getWillRecvEmail(), customer.getNotes());
+
 		session.save(c);
 
 		session.getTransaction().commit();
@@ -246,6 +258,8 @@ public class Dao {
 	}
 
 	// TODO: getSysUser
+
+	// ------------------------------ Visitor -----------------------------------
 
 	// TODO: addVisitor
 
