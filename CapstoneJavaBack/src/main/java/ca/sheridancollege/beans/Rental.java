@@ -1,6 +1,7 @@
 package ca.sheridancollege.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Rental implements Serializable {
 	private Date dueDate;
 	private Customer renter;
 	private RentalState state;
-	private List<RentalComponent> rentalItem;
+	private ArrayList<RentalComponent> rentalItem;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Bike bike;
@@ -43,7 +44,7 @@ public class Rental implements Serializable {
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
 	
-	public Rental(Date dueDate, Customer renter, RentalState state, List<RentalComponent> rentalItem) {
+	public Rental(Date dueDate, Customer renter, RentalState state, ArrayList<RentalComponent> rentalItem) {
 		this.dueDate = dueDate;
 		this.renter = renter;
 		this.state = state;

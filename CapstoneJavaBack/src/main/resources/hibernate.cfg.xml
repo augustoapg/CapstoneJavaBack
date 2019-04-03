@@ -27,6 +27,10 @@
 
 		<!-- Name the annotated Entity classes -->
 		<mapping class="ca.sheridancollege.beans.Bike" />
+		<mapping class="ca.sheridancollege.beans.Customer" />
+		<mapping class="ca.sheridancollege.beans.KeyLock" />
+		<mapping class="ca.sheridancollege.beans.Rental" />
+		<mapping class="ca.sheridancollege.beans.RentalComponent" />
 
 	</session-factory>
 </hibernate-configuration>

@@ -19,12 +19,12 @@ public class Dao {
 
 	// ------------------------------ BIKE -----------------------------------
 
-	public void addVoter(Bike bike) {
+	public void addBike(Bike bike) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Bike b = new Bike(bike.getNotes(), bike.isRepairNeeded(), bike.getSignOutDate());
+		Bike b = new Bike(bike.getNotes(), bike.getSignOutDate(), bike.isRepairNeeded());
 
 		session.save(b);
 
@@ -52,7 +52,7 @@ public class Dao {
 		return null;
 	}
 
-	public List<Bike> getAllVoters() {
+	public List<Bike> getAllBikes() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 

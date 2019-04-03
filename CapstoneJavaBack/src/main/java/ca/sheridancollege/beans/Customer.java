@@ -9,7 +9,9 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Data
 @Entity
 

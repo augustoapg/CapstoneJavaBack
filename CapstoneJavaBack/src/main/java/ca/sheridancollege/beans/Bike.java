@@ -1,5 +1,6 @@
 package ca.sheridancollege.beans;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -9,8 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
+import ca.sheridancollege.enums.RentalState;
 import lombok.*;
 
+
+@NoArgsConstructor
 @Data
 @Entity
 
@@ -24,13 +28,10 @@ public class Bike extends RentalComponent {
 	@OneToOne(cascade=CascadeType.ALL)
 	private Rental rental;
 
-	public Bike(String notes, boolean isRepairNeeded, Date signOutDate) {
+	public Bike(String notes, Date signOutDate, boolean isRepairNeeded) {
 		super(notes);
 		this.isRepairNeeded = isRepairNeeded;
 		this.signOutDate = signOutDate;
 	}
 
-	public String getNotes() {
-		return super.getNotes();
-	}
 }
