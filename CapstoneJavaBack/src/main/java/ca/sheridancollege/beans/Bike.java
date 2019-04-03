@@ -20,8 +20,12 @@ import lombok.*;
 
 @NamedQuery(name="Bike.byID", query="from Bike where id=:id")
 @NamedQuery(name="Bike.all", query="from Bike")
-public class Bike extends RentalComponent {
+public class Bike {
 	
+	@Id
+	@GeneratedValue
+	private int id;
+	private String notes;
 	private boolean isRepairNeeded;
 	
 	@OneToOne(cascade=CascadeType.ALL)
@@ -30,7 +34,7 @@ public class Bike extends RentalComponent {
 	private String imgPath;
 
 	public Bike(String notes, boolean isRepairNeeded, boolean available, String imgPath) {
-		super(notes);
+		this.notes = notes;
 		this.isRepairNeeded = isRepairNeeded;
 		this.available = available;
 		this.imgPath = imgPath;

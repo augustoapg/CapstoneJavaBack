@@ -54,9 +54,7 @@ public class HomeController {
 					999999990 + i, "647999999" + i, true, true, "Some notes");
 			custDAO.addCustomer(cust);
 		}
-		ArrayList<RentalComponent> rentalItem = new ArrayList<RentalComponent>();
 		Customer cust = custDAO.getCustomer(2);
-		rentalItem.add(bikeDAO.getBikeById(2));
 		
 		Rental rent = new Rental(null, null, null, RentalState.ACTIVE, bikeDAO.getAllBikes().get(0));
 		rent.setCustomer(cust);
