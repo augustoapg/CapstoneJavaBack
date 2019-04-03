@@ -25,32 +25,25 @@ public class Customer implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String address;
-	private String email;
-	private int oneCardNum;
-	private int phone;
+	private String sheridanEmail;
+	private int sheridanId;
+	private String phone;
 	private boolean isBlackListed;
 	private boolean willRecvEmail;
 	private String notes;
 	
-	public Customer(String firstName, String lastName, String address, String email, int oneCardNum, int phone,
+	public Customer(String firstName, String lastName, String address, String sheridanEmail, int sheridanId, String phone,
 			boolean isBlackListed, boolean willRecvEmail, String notes) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.address = address;
-		this.email = email;
-		this.oneCardNum = oneCardNum;
+		this.sheridanEmail = sheridanEmail;
+		this.sheridanId = sheridanId;
 		this.phone = phone;
 		this.isBlackListed = isBlackListed;
 		this.willRecvEmail = willRecvEmail;
 		this.notes = notes;
 	}
-	
-	public boolean getIsBlackListed() {
-		return this.isBlackListed;
-	}
-	
-	public boolean getWillRecvEmail() {
-		return this.willRecvEmail;
-	}
+
 	
 }

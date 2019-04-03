@@ -198,8 +198,8 @@ public class Dao {
 		session.beginTransaction();
 
 		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(),
-				customer.getEmail(), customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(),
-				customer.getWillRecvEmail(), customer.getNotes());
+				customer.getSheridanEmail(), customer.getSheridanId(), customer.getPhone(), customer.isBlackListed(),
+				customer.isWillRecvEmail(), customer.getNotes());
 
 		session.save(c);
 
@@ -227,7 +227,7 @@ public class Dao {
 		return null;
 	}
 
-	public List<Customer> getAllCustomer(int id) {
+	public List<Customer> getAllCustomer() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
@@ -243,19 +243,16 @@ public class Dao {
 
 	// ------------------------------ SystemUser -----------------------------------
 
-	public void addSysUser(Customer customer) {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(),
-				customer.getEmail(), customer.getOneCardNum(), customer.getPhone(), customer.getIsBlackListed(),
-				customer.getWillRecvEmail(), customer.getNotes());
-
-		session.save(c);
-
-		session.getTransaction().commit();
-		session.close();
-	}
+//	public void addSysUser(Customer customer) {
+//		Session session = sessionFactory.openSession();
+//		session.beginTransaction();
+//
+//		SystemUser
+//		session.save(c);
+//
+//		session.getTransaction().commit();
+//		session.close();
+//	}
 
 	// TODO: getSysUser
 
