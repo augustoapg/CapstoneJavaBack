@@ -19,8 +19,7 @@ public class RentalDAO {
 		session.beginTransaction();
 
 		Rental r = new Rental(rental.getSignOutDate(), rental.getDueDate(),
-				rental.getCustomer(), rental.getState(), 
-				rental.getRentalItem());
+				rental.getCustomer(), rental.getState(), rental.getBike());
 
 		// http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
 		// When adding Customer to Rental:

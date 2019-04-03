@@ -35,7 +35,6 @@ public class Rental implements Serializable {
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
 	private RentalState state;
-	private ArrayList<RentalComponent> rentalItem;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Bike bike;
@@ -45,13 +44,12 @@ public class Rental implements Serializable {
 	// https://en.wikibooks.org/wiki/Java_Persistence/ManyToOne
 	
 	
-	public Rental(Date signOutDate, Date dueDate, Customer customer, RentalState state, 
-			ArrayList<RentalComponent> rentalItem) {
+	public Rental(Date signOutDate, Date dueDate, Customer customer, RentalState state, Bike bike) {
 		this.signOutDate = signOutDate;
 		this.dueDate = dueDate;
 		this.customer = customer;
 		this.state = state;
-		this.rentalItem = rentalItem;
+		this.bike = bike;
 	}
 	
 	
