@@ -22,18 +22,17 @@ import lombok.*;
 @NamedQuery(name="Bike.all", query="from Bike")
 public class Bike extends RentalComponent {
 	
-	private Date signOutDate;
 	private boolean isRepairNeeded;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Rental rental;
-	
+	private boolean available;
 	private String imgPath;
 
-	public Bike(String notes, Date signOutDate, boolean isRepairNeeded, String imgPath) {
+	public Bike(String notes, boolean isRepairNeeded, boolean available, String imgPath) {
 		super(notes);
 		this.isRepairNeeded = isRepairNeeded;
-		this.signOutDate = signOutDate;
+		this.available = available;
 		this.imgPath = imgPath;
 	}
 

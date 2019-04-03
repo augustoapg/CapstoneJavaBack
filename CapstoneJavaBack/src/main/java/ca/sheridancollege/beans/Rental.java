@@ -29,8 +29,11 @@ public class Rental implements Serializable {
 	@Id
 	@GeneratedValue
 	private int id;
+	private Date signOutDate;
 	private Date dueDate;
-	private Customer renter;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="CUSTOMER_ID")
+	private Customer customer;
 	private RentalState state;
 	private ArrayList<RentalComponent> rentalItem;
 	
@@ -40,13 +43,13 @@ public class Rental implements Serializable {
 	
 	// @ManyToOne Refer back to
 	// https://en.wikibooks.org/wiki/Java_Persistence/ManyToOne
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="CUSTOMER_ID")
-	private Customer customer;
 	
-	public Rental(Date dueDate, Customer renter, RentalState state, ArrayList<RentalComponent> rentalItem) {
+	
+	public Rental(Date signOutDate, Date dueDate, Customer customer, RentalState state, 
+			ArrayList<RentalComponent> rentalItem) {
+		this.signOutDate = signOutDate;
 		this.dueDate = dueDate;
-		this.renter = renter;
+		this.customer = customer;
 		this.state = state;
 		this.rentalItem = rentalItem;
 	}
