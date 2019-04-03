@@ -24,7 +24,7 @@ public class Dao {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Bike b = new Bike(bike.getNotes(), bike.getSignOutDate(), bike.isRepairNeeded());
+		Bike b = new Bike(bike.getNotes(), bike.getSignOutDate(), bike.isRepairNeeded(), bike.getImgPath());
 
 		session.save(b);
 

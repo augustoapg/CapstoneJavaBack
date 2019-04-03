@@ -54,7 +54,9 @@ public class HomeController {
 	@RequestMapping("/")
 	public String home(Model model) {
 		for (int i = 0; i < 10; i ++) {
-			Bike bike = new Bike("Scratched on body", new Date(2019, 1, i), false);
+			Bike bike = new Bike("Scratched on body", new Date(2019, 1, i), false, null);
+			if (i % 2 == 0) bike.setImgPath("1.jpg");
+			else bike.setImgPath("2.jpg");
 			dao.addBike(bike);
 		}
 		return "Home";

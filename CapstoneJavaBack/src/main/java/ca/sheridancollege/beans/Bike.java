@@ -27,11 +27,14 @@ public class Bike extends RentalComponent {
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Rental rental;
+	
+	private String imgPath;
 
-	public Bike(String notes, Date signOutDate, boolean isRepairNeeded) {
+	public Bike(String notes, Date signOutDate, boolean isRepairNeeded, String imgPath) {
 		super(notes);
 		this.isRepairNeeded = isRepairNeeded;
 		this.signOutDate = signOutDate;
+		this.imgPath = imgPath;
 	}
 
 }
