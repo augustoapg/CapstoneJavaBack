@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.byID", query="from Rental where id=:id")
 @NamedQuery(name="Rental.all", query="from Rental")
 public class Rental implements Serializable {
+	
 	@Id
 	@GeneratedValue
 	private int id;
