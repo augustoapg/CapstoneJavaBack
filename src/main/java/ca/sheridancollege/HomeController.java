@@ -56,10 +56,14 @@ public class HomeController {
 		}
 		Customer cust = custDAO.getCustomer(2);
 		
-		Rental rent = new Rental(null, null, null, RentalState.ACTIVE, bikeDAO.getAllBikes().get(0));
-		rent.setCustomer(cust);
+		RentalState[] states = {RentalState.ACTIVE, RentalState.LATE, RentalState.RETURNED};
 		
-		rentalDAO.addRental(rent);
+		for (RentalState state : states) {
+			Rental rent = new Rental(null, null, null, state, bikeDAO.getAllBikes().get(0));
+			rent.setCustomer(cust);
+			
+			rentalDAO.addRental(rent);
+		}
 		
 		return "Home";
 	}
@@ -123,6 +127,69 @@ public class HomeController {
 		}
 		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
 	}
+	
+	// See records of a certain bikes -> bike ID
+	
+
+	
+	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getActiveRentals() {
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode arrayNode = mapper.createArrayNode();
+
+		List<Rental> rentals = rentalDAO.getAllRentals();
+
+		for (Rental r : rentals) {
+			
+			if (r.getState() == RentalState.ACTIVE || r.getState() == RentalState.LATE) {
+				ObjectNode objNode = mapper.createObjectNode();
+				objNode.put("id", r.getId());
+				if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
+				else objNode.put("signOutDate", "null");
+				
+				if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
+				else objNode.put("dueDate", "null");
+				objNode.put("customerID", r.getCustomer().getId());
+				objNode.put("state", r.getState().toString());
+				objNode.put("bikeID", r.getBike().getId());
+
+				arrayNode.add(objNode);
+			}
+			
+		}
+		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getArchiveRentals", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchiveRentals() {
+		ObjectMapper mapper = new ObjectMapper();
+		ArrayNode arrayNode = mapper.createArrayNode();
+
+		List<Rental> rentals = rentalDAO.getAllRentals();
+
+		for (Rental r : rentals) {
+			
+			if (r.getState() == RentalState.RETURNED) {
+				ObjectNode objNode = mapper.createObjectNode();
+				objNode.put("id", r.getId());
+				if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
+				else objNode.put("signOutDate", "null");
+				
+				if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
+				else objNode.put("dueDate", "null");
+				objNode.put("customerID", r.getCustomer().getId());
+				objNode.put("state", r.getState().toString());
+				objNode.put("bikeID", r.getBike().getId());
+
+				arrayNode.add(objNode);
+			}
+			
+		}
+		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+	}
+	
+	
+	
 
 	@PutMapping("/bike/{id}")
 	public ResponseEntity<Object> updateBike(@RequestBody Bike bike, @PathVariable int id) {
