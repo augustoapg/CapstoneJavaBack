@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.RentalState;
 import ca.sheridancollege.beans.*;
+import ca.sheridancollege.beans.SystemUser;
 
 /**
  * 
@@ -29,12 +30,13 @@ import ca.sheridancollege.beans.*;
  * "isRepairNeeded": false, "available": false } ]
  * 
  */
-
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class HomeController {
 	BikeDAO bikeDAO = new BikeDAO();
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
+	SystemUserDAO sysUserDAO = new SystemUserDAO();
 
 	@RequestMapping("/")
 	public String home(Model model) {
@@ -64,6 +66,9 @@ public class HomeController {
 			
 			rentalDAO.addRental(rent);
 		}
+		
+		SystemUser sysUser = new SystemUser("test@test.com", "password", "Admin");
+		sysUserDAO.addSysUser(sysUser);
 		
 		return "Home";
 	}
@@ -206,5 +211,23 @@ public class HomeController {
 		return ResponseEntity.noContent().build();
 	}
 	
-	
+	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
+	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
+		System.out.println(loginUser);
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
+		
+		// check if user exists and if password matches
+		if(sysUser != null && loginUser.getPassword().equals(sysUser.getPassword())) {
+			objNode.put("valid", true);
+			objNode.put("role", "Admin");
+			objNode.put("token", "fakeToken"); // TODO: review this
+		} else {
+			objNode.put("valid", false);
+		}
+		
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
 }
