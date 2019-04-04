@@ -63,7 +63,7 @@ public class HomeController {
 		
 		rentalDAO.addRental(rent);
 		
-		SystemUser sysUser = new SystemUser("test@test.com", "password");
+		SystemUser sysUser = new SystemUser("test@test.com", "password", "Admin");
 		sysUserDAO.addSysUser(sysUser);
 		
 		return "Home";
@@ -155,6 +155,8 @@ public class HomeController {
 		// check if user exists and if password matches
 		if(sysUser != null && loginUser.getPassword().equals(sysUser.getPassword())) {
 			objNode.put("valid", true);
+			objNode.put("role", "Admin");
+			objNode.put("token", "fakeToken"); // TODO: review this
 		} else {
 			objNode.put("valid", false);
 		}
