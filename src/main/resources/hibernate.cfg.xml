@@ -28,7 +28,7 @@
 
 		<!-- Database connection settings -->
 	    <property name="connection.driver_class">org.postgresql.Driver</property>
-	    <property name="connection.url">jdbc:postgresql://ec2-54-225-113-7.compute-1.amazonaws.com: 5432/d877nl344uqv3q</property>
+	    <property name="connection.url">jdbc:postgresql://ec2-54-225-113-7.compute-1.amazonaws.com:5432/d877nl344uqv3q</property>
 	    <property name="connection.username">ygbkgofrqxhbjj</property>
 	    <property name="connection.password">3cae7d589e56cd88b9cfd657596107f737a020278c4d9082447dfc06ff526bd1</property>
 	
