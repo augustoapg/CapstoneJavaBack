@@ -92,6 +92,7 @@ public class HomeController {
 			objNode.put("notes", b.getNotes());
 			objNode.put("available", b.isAvailable());
 			objNode.put("isRepairNeeded", b.isRepairNeeded());
+			objNode.put("imgPath", b.getImgPath());
 
 			arrayNode.add(objNode);
 		}
