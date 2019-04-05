@@ -2,12 +2,7 @@ package ca.sheridancollege;
 
 import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
@@ -217,44 +212,23 @@ public class HomeController {
 		return ResponseEntity.noContent().build();
 	}
 	
-//	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
-//	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
-//		System.out.println(loginUser);
-//		ObjectMapper mapper = new ObjectMapper();
-//		ObjectNode objNode = mapper.createObjectNode();
-//		
-//		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
-//		
-//		// check if user exists and if password matches
-//		if(sysUser != null && loginUser.getPassword().equals(sysUser.getPassword())) {
-//			objNode.put("valid", true);
-//			objNode.put("role", "Admin");
-//			objNode.put("token", "fakeToken"); // TODO: review this
-//		} else {
-//			objNode.put("valid", false);
-//		}
-//		
-//		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-//	}
-	
-	
-	// -------------- TEST ---------------------
-	
-	@RequestMapping("/login")
-    public boolean login(@RequestBody LoginUser user) {
-        return
-          user.getEmail().equals("email") && user.getPassword().equals("password");
-    }
-     
-    @RequestMapping("/user")
-    public Principal user(HttpServletRequest request) {
-        String authToken = request.getHeader("Authorization")
-          .substring("Basic".length()).trim();
-        return () ->  new String(Base64.getDecoder()
-          .decode(authToken)).split(":")[0];
-    }
-	
-	
-	
-	
+	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
+	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
+		System.out.println(loginUser);
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
+		
+		// check if user exists and if password matches
+		if(sysUser != null && loginUser.getPassword().equals(sysUser.getPassword())) {
+			objNode.put("valid", true);
+			objNode.put("role", "Admin");
+			objNode.put("token", "fakeToken"); // TODO: review this
+		} else {
+			objNode.put("valid", false);
+		}
+		
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
 }
