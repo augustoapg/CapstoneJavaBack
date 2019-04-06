@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 
 @NamedQuery(name="Rental.byID", query="from Rental where id=:id")
 @NamedQuery(name="Rental.all", query="from Rental")
+@NamedQuery(name="Rental.active", query="from Rental where returnedDate is null")
+@NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null")
 public class Rental implements Serializable {
 	
 	@Id
@@ -32,26 +34,38 @@ public class Rental implements Serializable {
 	private int id;
 	private Date signOutDate;
 	private Date dueDate;
-	@ManyToOne(fetch=FetchType.LAZY)
+	private Date returnedDate;
+	@ManyToOne
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
-	private RentalState state;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	private Bike bike;
+	private String comment;
 	
 	
 	// @ManyToOne Refer back to
 	// https://en.wikibooks.org/wiki/Java_Persistence/ManyToOne
 	
 	
-	public Rental(Date signOutDate, Date dueDate, Customer customer, RentalState state, Bike bike) {
+	public Rental(Date signOutDate, Date dueDate, Date returnedDate, Customer customer, Bike bike, String comment) {
 		this.signOutDate = signOutDate;
 		this.dueDate = dueDate;
+		this.returnedDate = returnedDate;
 		this.customer = customer;
-		this.state = state;
 		this.bike = bike;
+		this.comment = comment;
 	}
 	
-	
+	public String getRentalState() {
+		// all rentals should have signOutDate and dueDate
+		if(this.signOutDate != null && this.dueDate != null) {
+			if(this.returnedDate == null) {
+				return (this.dueDate.after(new Date())) ? "Active" : "Late";
+			} else {
+				return (this.returnedDate.before(this.dueDate)) ? "Returned" : "Returned Late";
+			}
+		}
+		return "Invalid";
+	}
 }

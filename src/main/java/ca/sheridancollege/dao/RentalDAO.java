@@ -17,10 +17,7 @@ public class RentalDAO {
 	public void addRental(Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-
-		Rental r = new Rental(rental.getSignOutDate(), rental.getDueDate(),
-				rental.getCustomer(), rental.getState(), rental.getBike());
-
+		
 		// http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
 		// When adding Customer to Rental:
 
@@ -28,7 +25,7 @@ public class RentalDAO {
 		//		Customer customer = new Customer();
 		//		customer.setRental(r);
 
-		session.save(r);
+		session.save(rental);
 
 		session.getTransaction().commit();
 		session.close();
@@ -89,6 +86,32 @@ public class RentalDAO {
 
 		Query query = session.getNamedQuery("Rental.all");
 
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return rentals;
+	}
+
+	public List<Rental> getActiveRentals() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.active");
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return rentals;
+	}
+
+	public List<Rental> getArchiveRentals() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.archive");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();

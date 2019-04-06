@@ -17,23 +17,19 @@ public class CustomerDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Customer c = new Customer(customer.getFirstName(), customer.getLastName(), customer.getAddress(),
-				customer.getSheridanEmail(), customer.getSheridanId(), customer.getPhone(), customer.isBlackListed(),
-				customer.isWillRecvEmail(), customer.getNotes());
-
-		session.save(c);
+		session.save(customer);
 
 		session.getTransaction().commit();
 		session.close();
 	}
 
 	// TODO: getCustomer
-	public Customer getCustomer(int id) {
+	public Customer getCustomer(int sheridanId) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Customer.byID");
-		query.setParameter("id", id);
+		query.setParameter("sheridanId", sheridanId);
 
 		List<Customer> custs = (List<Customer>) query.getResultList();
 
