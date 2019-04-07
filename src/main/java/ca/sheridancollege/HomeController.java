@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -71,8 +72,10 @@ public class HomeController {
 	}
 
 	private void generateRandomSystemUsers() {
-		SystemUser sysUser = new SystemUser("test@test.com", "password", "Admin");
+		SystemUser sysUser = new SystemUser("test@test.com", BCrypt.hashpw("password", BCrypt.gensalt()), "Admin");
 		sysUserDAO.addSysUser(sysUser);
+		SystemUser sysUser2 = new SystemUser("admin", BCrypt.hashpw("admin", BCrypt.gensalt()), "Admin");
+		sysUserDAO.addSysUser(sysUser2);
 	}
 
 	private void generateRandomRentals() {
@@ -314,14 +317,13 @@ public class HomeController {
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
-		System.out.println(loginUser);
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
 		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
 		
-		// check if user exists and if password matches
-		if(sysUser != null && loginUser.getPassword().equals(sysUser.getPassword())) {
+		// check if user exists and password is valid
+		if(sysUser != null && BCrypt.checkpw(loginUser.getPassword(), sysUser.getPassword())) {
 			objNode.put("valid", true);
 			objNode.put("role", "Admin");
 			objNode.put("token", "fakeToken"); // TODO: review this
