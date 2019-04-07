@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.enums.RentalState;
+import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
 
@@ -42,82 +43,18 @@ public class HomeController {
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
+	
 
 	@RequestMapping("/")
 	public String home(Model model) {
-		Faker faker = new Faker(new Locale("en-CA"));
+		DummyDataGenerator dummyData = new DummyDataGenerator();
 		
-		for (int i = 0; i < 10; i++) {
-			generateRandomBikes();
-			generateRandomCustomer(i, faker);
-		}
-		
-		generateRandomRentals();
-		generateRandomSystemUsers();
+		dummyData.generateRandomBikes(10);
+		dummyData.generateRandomCustomer(30);
+		dummyData.generateRandomRentals(30);
+		dummyData.generateRandomSystemUsers();
 		
 		return "Home";
-	}
-
-	private void generateRandomBikes() {
-		Bike bike = new Bike("Scratched on body", true, true, null);
-
-		if (Math.random() <= 0.5) {
-			bike.setImgPath("1.jpg");
-			bike.setAvailable(true);
-		} else {
-			bike.setImgPath("2.jpg");
-			bike.setAvailable(false);
-		}
-		bikeDAO.addBike(bike);
-	}
-
-	private void generateRandomSystemUsers() {
-		SystemUser sysUser = new SystemUser("test@test.com", BCrypt.hashpw("password", BCrypt.gensalt()), "Admin");
-		sysUserDAO.addSysUser(sysUser);
-		SystemUser sysUser2 = new SystemUser("admin", BCrypt.hashpw("admin", BCrypt.gensalt()), "Admin");
-		sysUserDAO.addSysUser(sysUser2);
-	}
-
-	private void generateRandomRentals() {
-		Customer cust = custDAO.getCustomer(999999900);
-		
-		Calendar calActiveDue = Calendar.getInstance();
-		Calendar calLateDue = Calendar.getInstance();
-		Calendar calReturnedSignOut = Calendar.getInstance();
-		Calendar calReturnedDue = Calendar.getInstance();
-		Calendar calReturnedReturn = Calendar.getInstance();
-		Calendar calReturnedLateSignOut = Calendar.getInstance();
-		Calendar calReturnedLateDue = Calendar.getInstance();
-		Calendar calReturnedLateReturn = Calendar.getInstance();
-		
-		calActiveDue.set(2019, 3, 16);
-		calLateDue.set(2019, 3, 5);
-		calReturnedSignOut.set(2019, 3, 1);
-		calReturnedDue.set(2019, 3, 16);
-		calReturnedReturn.set(2019, 3, 6);
-		calReturnedLateSignOut.set(2019, 2, 25);
-		calReturnedLateDue.set(2019, 3, 3);
-		calReturnedLateReturn.set(2019, 3, 6);
-		
-		Rental rentalActive = new Rental(new Date(), calActiveDue.getTime(), null, cust, bikeDAO.getAllBikes().get(0), "");
-		Rental rentalLate = new Rental(new Date(), calLateDue.getTime(), null, cust, bikeDAO.getAllBikes().get(0), "");
-		Rental rentalReturned = new Rental(calReturnedSignOut.getTime(), calReturnedDue.getTime(), calReturnedReturn.getTime(), cust, bikeDAO.getAllBikes().get(0), "");
-		Rental rentalReturnedLate = new Rental(calReturnedLateSignOut.getTime(), calReturnedLateDue.getTime(), calReturnedLateReturn.getTime(), cust, bikeDAO.getAllBikes().get(0), "");
-		
-		rentalDAO.addRental(rentalActive);
-		rentalDAO.addRental(rentalLate);
-		rentalDAO.addRental(rentalReturned);
-		rentalDAO.addRental(rentalReturnedLate);
-	}
-	
-	private void generateRandomCustomer(int index, Faker faker) {
-		String fName = faker.name().firstName();
-		String lName = faker.name().lastName();
-		
-		Customer customer = new Customer(999999900 + index, fName, lName,
-				faker.address().streetAddress(), fName + lName + "@sheridan.ca", fName + lName + "@gmail.com", faker.phoneNumber().cellPhone(), 
-				CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "");
-		custDAO.addCustomer(customer);
 	}
 
 	@RequestMapping(value = "/getBikes", method = RequestMethod.GET, produces = { "application/json" })
@@ -332,16 +269,5 @@ public class HomeController {
 		}
 		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-	}
-	
-	/**
-	 * returns a random number between and including a min and a max
-	 * 
-	 * @param min minimum number in range 
-	 * @param max maximum number in range
-	 * @return random integer number between range
-	 */
-	private int randomBetween(int min, int max) {
-		return min + (int) (Math.random() * ((max - min) + 1));
 	}
 }
