@@ -190,19 +190,26 @@ public class HomeController {
 		List<Rental> rentals = rentalDAO.getActiveRentals();
 
 		for (Rental r : rentals) {
-
 			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("id", r.getId());
+			objNode.put("rentalId", r.getId());
 			if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
 			else objNode.put("signOutDate", "null");
 			
 			if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
 			else objNode.put("dueDate", "null");
-//			objNode.put("customerID", r.getCustomer().getId());
 			
-			// if past due date, it is Late. Otherwise it is just Active
+			objNode.put("comment", r.getComment());
 			objNode.put("status", r.getRentalState());
-			objNode.put("bikeID", r.getBike().getId());
+			
+			Customer customer = r.getCustomer();
+			
+			objNode.put("customerName", customer.getFirstName() + " " + r.getCustomer().getLastName());
+			objNode.put("sheridanId", customer.getSheridanId());
+			objNode.put("sheridanEmail", customer.getSheridanEmail());
+			objNode.put("personalEmail", customer.getPersonalEmail());
+			objNode.put("phone", customer.getPhone());
+			objNode.put("type", customer.getType().getCustomerType());
+			objNode.put("bikeId", r.getBike().getId());
 
 			arrayNode.add(objNode);
 		}
