@@ -29,7 +29,7 @@ public class DummyDataGenerator {
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
-			Bike bike = new Bike(null, false, false, randomBetween(1, 2) + ".jpg");
+			Bike bike = new Bike(null, false, true, randomBetween(1, 2) + ".jpg");
 
 			if (Math.random() <= 0.5) {
 				bike.setRepairNeeded(true);
