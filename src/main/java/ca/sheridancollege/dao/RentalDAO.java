@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.beans.Rental;
 
 public class RentalDAO {
@@ -18,35 +17,12 @@ public class RentalDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		// http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
-		// When adding Customer to Rental:
-
-		//		Rental r = new Rental();
-		//		Customer customer = new Customer();
-		//		customer.setRental(r);
-
+		rental.getBike().setAvailable(false);
 		session.save(rental);
 
 		session.getTransaction().commit();
 		session.close();
 	}
-	
-//	public void addCustToRental(Rental rental, Customer cust) {
-//		
-//		Session session = sessionFactory.openSession();
-//		session.beginTransaction();
-//
-//		
-//		// http://www.java2s.com/Tutorials/Java/JPA/0920__JPA_ManyToOne_Join_Column.htm
-//		// When adding Customer to Rental:
-//	
-//		
-//
-//		session.getTransaction().commit();
-//		session.close();
-//		
-//	}
-
 
 	public void deleteRental(int id) {
 		Session session = sessionFactory.openSession();

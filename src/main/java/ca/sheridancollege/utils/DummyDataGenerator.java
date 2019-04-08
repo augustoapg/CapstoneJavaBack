@@ -29,15 +29,13 @@ public class DummyDataGenerator {
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
-			Bike bike = new Bike("Scratched on body", true, true, null);
+			Bike bike = new Bike(null, false, false, randomBetween(1, 2) + ".jpg");
 
 			if (Math.random() <= 0.5) {
-				bike.setImgPath("1.jpg");
-				bike.setAvailable(true);
-			} else {
-				bike.setImgPath("2.jpg");
-				bike.setAvailable(false);
+				bike.setRepairNeeded(true);
+				bike.setNotes("Scratched on body");
 			}
+			
 			bikeDAO.addBike(bike);
 		}
 	}
@@ -49,79 +47,70 @@ public class DummyDataGenerator {
 		sysUserDAO.addSysUser(sysUser2);
 	}
 
-	public void generateRandomRentals(int numOfRentals) {
+	public void generateRandomRentals() {
 		List<Customer> customers = custDAO.getAllCustomer();
 		List<Bike> bikes = bikeDAO.getAllBikes();
 		
-		for(int i = 0; i < numOfRentals; i++) {
-			Rental rentalActive = generateRandomActiveRental(customers.get(randomBetween(0, customers.size() - 1)));
-			
-			Calendar calActiveDue = Calendar.getInstance();
-			Calendar calLateDue = Calendar.getInstance();
-			Calendar calReturnedSignOut = Calendar.getInstance();
-			Calendar calReturnedDue = Calendar.getInstance();
-			Calendar calReturnedReturn = Calendar.getInstance();
-			Calendar calReturnedLateSignOut = Calendar.getInstance();
-			Calendar calReturnedLateDue = Calendar.getInstance();
-			Calendar calReturnedLateReturn = Calendar.getInstance();
-			
-			calActiveDue.set(2019, 3, 16);
-			calLateDue.set(2019, 3, 5);
-			calReturnedSignOut.set(2019, 3, 1);
-			calReturnedDue.set(2019, 3, 16);
-			calReturnedReturn.set(2019, 3, 6);
-			calReturnedLateSignOut.set(2019, 2, 25);
-			calReturnedLateDue.set(2019, 3, 3);
-			calReturnedLateReturn.set(2019, 3, 6);
-			
-			Rental rentalActive = new Rental(new Date(), calActiveDue.getTime(), null, cust, bikeDAO.getAllBikes().get(0), "");
-			Rental rentalLate = new Rental(new Date(), calLateDue.getTime(), null, cust, bikeDAO.getAllBikes().get(0), "");
-			Rental rentalReturned = new Rental(calReturnedSignOut.getTime(), calReturnedDue.getTime(), calReturnedReturn.getTime(), cust, bikeDAO.getAllBikes().get(0), "");
-			Rental rentalReturnedLate = new Rental(calReturnedLateSignOut.getTime(), calReturnedLateDue.getTime(), calReturnedLateReturn.getTime(), cust, bikeDAO.getAllBikes().get(0), "");
-			
-			rentalDAO.addRental(rentalActive);
-			rentalDAO.addRental(rentalLate);
-			rentalDAO.addRental(rentalReturned);
-			rentalDAO.addRental(rentalReturnedLate);
-		}
-	}
-	
-	private Rental generateRandomActiveRental(Customer cust, Bike bike) {
-		Date signedOutDate = setRandomSignedOutDate("active");
-		Date dueDate = setRandomDueDate("active", signedOutDate);
-		Date returnedDate = null;
+		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), bikes.get(0), "");
+		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), bikes.get(1), "");
 		
-		Rental rentalActive = new Rental(signedOutDate, dueDate, null, cust, bike, "");
+		Date returnedSignOut = setRandomSignedOutDate("returned");
+		Date returnedDue = setRandomDueDate("returned", returnedSignOut);
+		Date returnedReturn = setRandomReturnedDate("returned", returnedDue);
+		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), bikes.get(2), "");
 		
-		return null;
+		Date returnedLateSignOut = setRandomSignedOutDate("returned_late");
+		Date returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
+		Date returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
+		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), bikes.get(3), "");
+		
+		rentalDAO.addRental(rentalActive);
+		rentalDAO.addRental(rentalLate);
+		rentalDAO.addRental(rentalReturned);
+		rentalDAO.addRental(rentalReturnedLate);
 	}
 
-	private Date setRandomReturnedDate(String status) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	private Date setRandomSignedOutDate(String status) {
-		Date dueDate = new Date();
+		Calendar signOut = Calendar.getInstance();
 		if(status == "active") {
-			Calendar cal = Calendar.getInstance();
-			cal.roll(Calendar.DAY_OF_YEAR, -randomBetween(0, 6));
-			dueDate = faker.date().between(cal.getTime(), new Date());
+			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(0, 6));
+		} else if(status == "late") {
+			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(6, 10));
+		} else {
+			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(20, 30));
 		}
 		
-		return dueDate;
+		return signOut.getTime();
 	}
 
 	private Date setRandomDueDate(String status, Date signedOutDate) {
-		Date dueDate = new Date();
-		// returns any date from today until 6 days from now
+		Calendar dueDate = Calendar.getInstance();
+
 		if(status == "active") {
-			Calendar cal = Calendar.getInstance();
-			cal.roll(Calendar.DAY_OF_YEAR, randomBetween(1, 6));
-			dueDate = faker.date().between(new Date(), cal.getTime());
+			dueDate.roll(Calendar.DAY_OF_YEAR, randomBetween(1, 6));
+		} else if(status == "late") {
+			dueDate.roll(Calendar.DAY_OF_YEAR, -randomBetween(1, 5));
+		} else {
+			dueDate.setTime(signedOutDate);
+			dueDate.roll(Calendar.DAY_OF_YEAR, randomBetween(4, 6));
 		}
 		
-		return dueDate;
+		return dueDate.getTime();
+	}
+	
+	private Date setRandomReturnedDate(String status, Date dueDate) {
+		Calendar returnedDate = Calendar.getInstance();
+		
+		if(status == "returned") {
+			returnedDate.setTime(dueDate);
+			returnedDate.roll(Calendar.DAY_OF_YEAR, -randomBetween(1, 2));
+		} else if(status == "returned_late") {
+			returnedDate.setTime(dueDate);
+			returnedDate.roll(Calendar.DAY_OF_YEAR, randomBetween(1, 3));
+		}
+		
+		return returnedDate.getTime();
 	}
 
 	public void generateRandomCustomer(int numOfCustomers) {
