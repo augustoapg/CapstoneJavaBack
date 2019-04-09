@@ -89,9 +89,9 @@ public class HomeController {
 
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomers() {
-		List<Customer> c = custDAO.getAllCustomer();
+		List<Customer> customers = custDAO.getAllCustomer();
 
-		return new ResponseEntity<Object>(c, HttpStatus.OK);
+		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
@@ -213,28 +213,10 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/getArchiveRentals", method = RequestMethod.GET, produces = { "application/json" })
+	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getArchiveRentals() {
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayNode arrayNode = mapper.createArrayNode();
-
 		List<Rental> rentals = rentalDAO.getArchiveRentals();
-
-		for (Rental r : rentals) {
-			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("id", r.getId());
-			if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
-			else objNode.put("signOutDate", "null");
-			
-			if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
-			else objNode.put("dueDate", "null");
-			objNode.put("customerID", r.getCustomer().getSheridanId());
-			objNode.put("state", r.getRentalState());
-			objNode.put("bikeID", r.getBike().getId());
-
-			arrayNode.add(objNode);
-		}
-		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
 	@PutMapping("/bike/{id}")
