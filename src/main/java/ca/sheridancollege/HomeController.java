@@ -56,6 +56,11 @@ public class HomeController {
 		
 		return "Home";
 	}
+	
+	// TODO: addCustomer
+	
+	// TODO: addRental
+	//       - Change bike availability to FALSE
 
 	@RequestMapping(value = "/getBikes", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getBikes() {
@@ -234,6 +239,12 @@ public class HomeController {
 		return ResponseEntity.noContent().build();
 	}
 	
+	// TODO: updateCustomer(Customer customer) -> bool success
+	
+	// TODO: updateRental(Rental rental) -> bool success
+	
+	// TODO: returnRental(rentalID, rentalAdditionalComment) -> void
+	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -241,7 +252,7 @@ public class HomeController {
 		
 		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
 		
-		// check if user exists and password is valid
+		// Check if user exists and password is valid
 		if(sysUser != null && BCrypt.checkpw(loginUser.getPassword(), sysUser.getPassword())) {
 			objNode.put("valid", true);
 			objNode.put("role", "Admin");
