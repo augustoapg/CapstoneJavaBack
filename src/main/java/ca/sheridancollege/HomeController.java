@@ -236,7 +236,7 @@ public class HomeController {
 
 	
 	// TODO: PATCH, requestBody: returnBike(JsonNode that has rentalID, rentalComment) -> void
-	@RequestMapping(value="/returnBike", method=RequestMethod.POST)
+	@RequestMapping(value="/returnBike", method=RequestMethod.PATCH)
 	public boolean returnBike(@RequestBody Rental rental) {
 //		{
 //			  "id": "1",
