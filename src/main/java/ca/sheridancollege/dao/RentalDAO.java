@@ -1,6 +1,7 @@
 package ca.sheridancollege.dao;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -101,17 +102,27 @@ public class RentalDAO {
 	public void returnRental(Rental newRental, Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		
-		Date currentDate = new Date(System.currentTimeMillis());
 
 		rental.setComment(newRental.getComment());
-		rental.setReturnedDate(currentDate);
+		rental.setReturnedDate(LocalDate.now());
 		
 		session.update(rental);
 
 		session.getTransaction().commit();
 		session.close();
 		
+	}
+
+	public void editRental(Rental newRental) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		Rental rental = session.get(Rental.class, newRental.getId());
+		rental.setDueDate(newRental.getDueDate());
+		rental.setComment(newRental.getComment());
+		
+		session.getTransaction().commit();
+		session.close();
 	}
 	
 	

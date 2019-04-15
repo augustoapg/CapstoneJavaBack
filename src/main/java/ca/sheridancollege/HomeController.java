@@ -270,7 +270,8 @@ public class HomeController {
 	    rentalDAO.returnRental(newRental, rental);
 	    return ResponseEntity.ok("resource address updated");
 	}
-	
+
+
 	@RequestMapping(value = "/newRentalCustomer", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newRentalCustomer(@RequestBody String json) {
@@ -355,6 +356,20 @@ public class HomeController {
 	
 	
 	
+
+	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {
+		
+		Rental rental = rentalDAO.getRental(newRental.getId());
+		System.out.println(newRental.getDueDate());
+		
+		if (rental == null)
+			return ResponseEntity.notFound().build();
+		
+		rentalDAO.editRental(newRental);
+		
+		return ResponseEntity.ok("rental updated");
+	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {

@@ -1,5 +1,6 @@
 package ca.sheridancollege.utils;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -54,14 +55,14 @@ public class DummyDataGenerator {
 		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), bikes.get(0), "");
 		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), bikes.get(1), "");
 		
-		Date returnedSignOut = setRandomSignedOutDate("returned");
-		Date returnedDue = setRandomDueDate("returned", returnedSignOut);
-		Date returnedReturn = setRandomReturnedDate("returned", returnedDue);
+		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
+		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
+		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
 		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), bikes.get(2), "");
 		
-		Date returnedLateSignOut = setRandomSignedOutDate("returned_late");
-		Date returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
-		Date returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
+		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
+		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
+		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
 		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), bikes.get(3), "");
 		
 		rentalDAO.addRental(rentalActive);
@@ -71,46 +72,47 @@ public class DummyDataGenerator {
 	}
 
 
-	private Date setRandomSignedOutDate(String status) {
-		Calendar signOut = Calendar.getInstance();
+	private LocalDate setRandomSignedOutDate(String status) {
+		LocalDate signOut;
 		if(status == "active") {
-			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(0, 6));
+			signOut = LocalDate.now().plusDays(-randomBetween(0, 6));
 		} else if(status == "late") {
-			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(6, 10));
+			signOut = LocalDate.now().plusDays(-randomBetween(6, 10));
 		} else {
-			signOut.roll(Calendar.DAY_OF_YEAR, -randomBetween(20, 30));
+			signOut = LocalDate.now().plusDays(-randomBetween(20, 30));
 		}
 		
-		return signOut.getTime();
+		return signOut;
 	}
 
-	private Date setRandomDueDate(String status, Date signedOutDate) {
-		Calendar dueDate = Calendar.getInstance();
+	private LocalDate setRandomDueDate(String status, LocalDate signedOutDate) {
+		LocalDate dueDate;
 
 		if(status == "active") {
-			dueDate.roll(Calendar.DAY_OF_YEAR, randomBetween(1, 6));
+			dueDate = LocalDate.now().plusDays(randomBetween(1, 6));
 		} else if(status == "late") {
-			dueDate.roll(Calendar.DAY_OF_YEAR, -randomBetween(1, 5));
+			dueDate = LocalDate.now().plusDays(-randomBetween(1, 5));
 		} else {
-			dueDate.setTime(signedOutDate);
-			dueDate.roll(Calendar.DAY_OF_YEAR, randomBetween(4, 6));
+			
+			dueDate = signedOutDate;
+			dueDate = LocalDate.now().plusDays(randomBetween(4, 6));
 		}
 		
-		return dueDate.getTime();
+		return dueDate;
 	}
 	
-	private Date setRandomReturnedDate(String status, Date dueDate) {
-		Calendar returnedDate = Calendar.getInstance();
+	private LocalDate setRandomReturnedDate(String status, LocalDate dueDate) {
+		LocalDate returnedDate;
 		
 		if(status == "returned") {
-			returnedDate.setTime(dueDate);
-			returnedDate.roll(Calendar.DAY_OF_YEAR, -randomBetween(1, 2));
-		} else if(status == "returned_late") {
-			returnedDate.setTime(dueDate);
-			returnedDate.roll(Calendar.DAY_OF_YEAR, randomBetween(1, 3));
+			returnedDate = dueDate;
+			returnedDate = LocalDate.now().plusDays(-randomBetween(1, 2));
+		} else  {
+			returnedDate = dueDate;
+			returnedDate = LocalDate.now().plusDays(randomBetween(1, 3));
 		}
 		
-		return returnedDate.getTime();
+		return returnedDate;
 	}
 
 	public void generateRandomCustomer(int numOfCustomers) {
