@@ -237,7 +237,7 @@ public class HomeController {
 	
 	// TODO: PATCH, requestBody: returnBike(JsonNode that has rentalID, rentalComment) -> void
 	@RequestMapping(value="/returnBike", method=RequestMethod.PATCH)
-	public boolean returnBike(@RequestBody Rental rental) {
+	public Rental returnBike(@RequestBody Rental rental) {
 //		{
 //			  "id": "1",
 //			  "comment": "Additional Comment"
@@ -249,10 +249,10 @@ public class HomeController {
 		if (r != null) {
 			rentalDAO.returnRental(r);
 			
-			return true;
+			return rental;
 		}
 		
-		return false;
+		return rental;
 	}
 	
 	
