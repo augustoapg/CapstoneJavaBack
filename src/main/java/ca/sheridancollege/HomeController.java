@@ -303,9 +303,9 @@ public class HomeController {
 			}
 			
 			JsonNode rentalNode = jsonNodeRoot.get("rentalcomment");
-			String rentalTxt = rentalNode.toString();
+			String rentalTxt = rentalNode.toString().replace("\"", "");
 			Rental rental = new Rental();
-			//rental.setDueDate(dueDate);
+			// TODO: Set dates
 			rental.setComment(rentalTxt);
 			rental.setBike(bike);
 			rental.setCustomer(customer);
@@ -336,12 +336,13 @@ public class HomeController {
 			}
 			
 			JsonNode bikeNode = jsonNodeRoot.get("bikeID");
-			String bikeTxt = bikeNode.toString();
+			String bikeTxt = bikeNode.toString().replace("\"", "");
 			bikeDAO.getBikeById(Integer.parseInt(bikeTxt));
 			
 			JsonNode rentalNode = jsonNodeRoot.get("rentalcomment");
-			String rentalTxt = rentalNode.toString();
+			String rentalTxt = rentalNode.toString().replace("\"", "");
 			Rental rental = new Rental();
+			// TODO: Set dates
 			rental.setComment(rentalTxt);
 			rental.setCustomer(customer);
 			rentalDAO.addRental(rental);
