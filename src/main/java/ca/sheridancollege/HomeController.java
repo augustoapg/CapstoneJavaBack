@@ -94,6 +94,19 @@ public class HomeController {
 		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
 	
+	
+	// Return Customer Object IF customer is registered in the sysytem. False otherwise.
+	@RequestMapping(value = "/getCustomer/{sheridanId}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getCustomerByID(@PathVariable int sheridanId) {
+		Customer customer = custDAO.getCustomer(sheridanId);
+		
+		if (customer == null) {
+			return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
+		}
+
+		return new ResponseEntity<Object>(customer, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
 		Rental rental = rentalDAO.getRental(id);
@@ -244,9 +257,14 @@ public class HomeController {
 	@RequestMapping(value = "/returnRental", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> returnRental(@RequestBody Rental newRental) {
 	    Rental rental = rentalDAO.getRental(newRental.getId());
-	    if (rental == null)
-			return ResponseEntity.notFound().build();
-	    
+	    if (rental == null) {
+	    	return ResponseEntity.notFound().build();
+	    }
+	    // If bike was returned before
+	    else if ("Returned".equals(rental.getRentalState().toString()) || 
+	    		"Returned Late".equals(rental.getRentalState().toString())) {
+	    	return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+	    }
 	    rentalDAO.returnRental(newRental, rental);
 	    return ResponseEntity.ok("resource address updated");
 	}
