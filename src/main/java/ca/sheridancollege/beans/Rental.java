@@ -27,6 +27,8 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.all", query="from Rental")
 @NamedQuery(name="Rental.active", query="from Rental where returnedDate is null")
 @NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null")
+@NamedQuery(name="Rental.update", query="UPDATE Rental SET comment =: comment, "
+		+ "returnedDate =: returnedDate WHERE id =: id")
 public class Rental implements Serializable {
 	
 	@Id

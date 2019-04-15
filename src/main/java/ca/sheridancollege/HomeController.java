@@ -56,11 +56,6 @@ public class HomeController {
 		
 		return "Home";
 	}
-	
-	// TODO: addCustomer
-	
-	// TODO: addRental
-	//       - Change bike availability to FALSE
 
 	@RequestMapping(value = "/getBikes", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getBikes() {
@@ -238,12 +233,28 @@ public class HomeController {
 
 		return ResponseEntity.noContent().build();
 	}
+
 	
-	// TODO: updateCustomer(Customer customer) -> bool success
+	// TODO: PATCH, requestBody: returnBike(JsonNode that has rentalID, rentalComment) -> void
+	@RequestMapping(value="/returnBike", method=RequestMethod.POST)
+	public boolean returnBike(@RequestBody Rental rental) {
+//		{
+//			  "id": "1",
+//			  "comment": "Additional Comment"
+//
+//			  
+//			}
+		
+		Rental r = rentalDAO.getRental(rental.getId());
+		if (r != null) {
+			rentalDAO.returnRental(r);
+			
+			return true;
+		}
+		
+		return false;
+	}
 	
-	// TODO: updateRental(Rental rental) -> bool success
-	
-	// TODO: returnRental(rentalID, rentalAdditionalComment) -> void
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {

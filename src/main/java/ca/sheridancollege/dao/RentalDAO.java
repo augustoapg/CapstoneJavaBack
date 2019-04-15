@@ -1,5 +1,7 @@
 package ca.sheridancollege.dao;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -96,4 +98,32 @@ public class RentalDAO {
 		return rentals;
 	}
 
+	public void returnRental(Rental r) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Date currentDate = new Date(System.currentTimeMillis());  
+		
+		Query query = session.getNamedQuery("Rental.update");
+		query.setParameter("comment", r.getComment());
+		query.setParameter("id", r.getId());
+		query.setParameter("returnedDate", currentDate);
+
+		session.getTransaction().commit();
+		session.close();
+		
+	}
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
