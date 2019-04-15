@@ -261,7 +261,8 @@ public class HomeController {
 	    	return ResponseEntity.notFound().build();
 	    }
 	    // If bike was returned before
-	    else if ("Returned".equals(rental.getRentalState().toString())) {
+	    else if ("Returned".equals(rental.getRentalState().toString()) || 
+	    		"Returned Late".equals(rental.getRentalState().toString())) {
 	    	return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 	    }
 	    rentalDAO.returnRental(newRental, rental);
