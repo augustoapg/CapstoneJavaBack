@@ -98,16 +98,16 @@ public class RentalDAO {
 		return rentals;
 	}
 
-	public void returnRental(Rental r) {
+	public void returnRental(Rental newRental, Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-
-		Date currentDate = new Date(System.currentTimeMillis());  
 		
-		Query query = session.getNamedQuery("Rental.update");
-		query.setParameter("comment", r.getComment());
-		query.setParameter("id", r.getId());
-		query.setParameter("returnedDate", currentDate);
+		Date currentDate = new Date(System.currentTimeMillis());
+
+		rental.setComment(newRental.getComment());
+		rental.setReturnedDate(currentDate);
+		
+		session.update(rental);
 
 		session.getTransaction().commit();
 		session.close();

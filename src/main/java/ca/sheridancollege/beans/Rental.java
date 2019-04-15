@@ -27,8 +27,6 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.all", query="from Rental")
 @NamedQuery(name="Rental.active", query="from Rental where returnedDate is null")
 @NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null")
-@NamedQuery(name="Rental.update", query="UPDATE Rental SET comment =: comment, "
-		+ "returnedDate =: returnedDate WHERE id =: id")
 public class Rental implements Serializable {
 	
 	@Id
@@ -44,10 +42,6 @@ public class Rental implements Serializable {
 	@OneToOne(cascade=CascadeType.ALL)
 	private Bike bike;
 	private String comment;
-	
-	
-	// @ManyToOne Refer back to
-	// https://en.wikibooks.org/wiki/Java_Persistence/ManyToOne
 	
 	
 	public Rental(Date signOutDate, Date dueDate, Date returnedDate, Customer customer, Bike bike, String comment) {

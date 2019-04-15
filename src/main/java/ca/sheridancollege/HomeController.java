@@ -240,28 +240,16 @@ public class HomeController {
 
 		return ResponseEntity.noContent().build();
 	}
-
 	
-	// TODO: PATCH, requestBody: returnBike(JsonNode that has rentalID, rentalComment) -> void
-	@RequestMapping(value="/returnBike", method=RequestMethod.PATCH)
-	public boolean returnBike(@RequestBody Rental rental) {
-//		{
-//			  "id": "1",
-//			  "comment": "Additional Comment"
-//
-//			  
-//			}
-		
-		Rental r = rentalDAO.getRental(rental.getId());
-		if (r != null) {
-			rentalDAO.returnRental(r);
-			
-			return true;
-		}
-		
-		return false;
+	@RequestMapping(value = "/returnRental", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> returnRental(@RequestBody Rental newRental) {
+	    Rental rental = rentalDAO.getRental(newRental.getId());
+	    if (rental == null)
+			return ResponseEntity.notFound().build();
+	    
+	    rentalDAO.returnRental(newRental, rental);
+	    return ResponseEntity.ok("resource address updated");
 	}
-	
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
