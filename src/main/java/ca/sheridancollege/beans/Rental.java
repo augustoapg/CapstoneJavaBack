@@ -1,6 +1,7 @@
 package ca.sheridancollege.beans;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,9 +33,9 @@ public class Rental implements Serializable {
 	@Id
 	@GeneratedValue
 	private int id;
-	private Date signOutDate;
-	private Date dueDate;
-	private Date returnedDate;
+	private LocalDate signOutDate;
+	private LocalDate dueDate;
+	private LocalDate returnedDate;
 	@ManyToOne
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
@@ -44,7 +45,7 @@ public class Rental implements Serializable {
 	private String comment;
 	
 	
-	public Rental(Date signOutDate, Date dueDate, Date returnedDate, Customer customer, Bike bike, String comment) {
+	public Rental(LocalDate signOutDate, LocalDate dueDate, LocalDate returnedDate, Customer customer, Bike bike, String comment) {
 		this.signOutDate = signOutDate;
 		this.dueDate = dueDate;
 		this.returnedDate = returnedDate;
@@ -57,9 +58,9 @@ public class Rental implements Serializable {
 		// all rentals should have signOutDate and dueDate
 		if(this.signOutDate != null && this.dueDate != null) {
 			if(this.returnedDate == null) {
-				return (this.dueDate.after(new Date())) ? "Active" : "Late";
+				return (this.dueDate.isAfter(LocalDate.now())) ? "Active" : "Late";
 			} else {
-				return (this.returnedDate.before(this.dueDate)) ? "Returned" : "Returned Late";
+				return (this.returnedDate.isBefore(this.dueDate)) ? "Returned" : "Returned Late";
 			}
 		}
 		return "Invalid";
