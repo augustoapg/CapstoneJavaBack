@@ -304,7 +304,7 @@ public class HomeController {
 			JsonNode rentalNode = jsonNodeRoot.get("rentalcomment");
 			String rentalTxt = rentalNode.toString();
 			Rental rental = new Rental();
-			rental.setDueDate(dueDate);
+			//rental.setDueDate(dueDate);
 			rental.setComment(rentalTxt);
 			rental.setBike(bike);
 			rental.setCustomer(customer);
