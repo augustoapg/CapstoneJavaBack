@@ -93,6 +93,13 @@ public class HomeController {
 
 		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
+		Rental rental = rentalDAO.getRental(id);
+
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentals() {
@@ -237,7 +244,7 @@ public class HomeController {
 	
 	// TODO: PATCH, requestBody: returnBike(JsonNode that has rentalID, rentalComment) -> void
 	@RequestMapping(value="/returnBike", method=RequestMethod.PATCH)
-	public Rental returnBike(@RequestBody Rental rental) {
+	public boolean returnBike(@RequestBody Rental rental) {
 //		{
 //			  "id": "1",
 //			  "comment": "Additional Comment"
@@ -249,10 +256,10 @@ public class HomeController {
 		if (r != null) {
 			rentalDAO.returnRental(r);
 			
-			return rental;
+			return true;
 		}
 		
-		return rental;
+		return false;
 	}
 	
 	
