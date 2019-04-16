@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -270,91 +271,41 @@ public class HomeController {
 	    rentalDAO.returnRental(newRental, rental);
 	    return ResponseEntity.ok("resource address updated");
 	}
-
-
-	@RequestMapping(value = "/newRentalCustomer", method = RequestMethod.POST, 
+	
+	@RequestMapping(value = "/newCustomer", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
-	public ResponseEntity<?> newRentalCustomer(@RequestBody String json) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			JsonNode jsonNodeRoot = mapper.readTree(json);
-			
-			JsonNode customerNode = jsonNodeRoot.get("customer");
-			String custTxt = customerNode.toString();
-			Customer customer = mapper.readValue(custTxt, Customer.class);
-			
-			// If customer object exists
-			if (custDAO.getCustomer(customer.getSheridanId()) != null){
-				return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-			}
-			custDAO.addCustomer(customer);
-			
-			JsonNode bikeNode = jsonNodeRoot.get("bikeID");
-			String bikeTxt = bikeNode.toString().replace("\"", "");
-			Bike bike = bikeDAO.getBikeById(Integer.parseInt(bikeTxt));
-			
-			// Wrong bike ID
-			if (bike == null) {
-				return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-			} 
-			// Bike not available
-			else if (!bike.isAvailable()) {
-				return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-			}
-			
-			JsonNode rentalNode = jsonNodeRoot.get("rentalcomment");
-			String rentalTxt = rentalNode.toString().replace("\"", "");
-			Rental rental = new Rental();
-			// TODO: Set dates
-			rental.setComment(rentalTxt);
+	public ResponseEntity<?> newCustomer(@RequestBody Customer customer) {
+		if(custDAO.getCustomer(customer.getSheridanId()) != null) {
+			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+		}
+		customer.setWillRecvEmail(true);
+		customer.setBlackListed(false);
+		custDAO.addCustomer(customer);
+		return ResponseEntity.ok("customer added");
+	}
+	
+	
+	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
+			produces = {"application/json"}, consumes="application/json")
+	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
+		
+		int sheridanId = rental.getCustomer().getSheridanId();
+		Customer customer = custDAO.getCustomer(sheridanId);
+		int bikeId = rental.getBike().getId();
+		Bike bike = bikeDAO.getBikeById(bikeId);
+		
+		if(customer != null && bike != null) {
+			rental.setCustomer(customer);
 			rental.setBike(bike);
-			rental.setCustomer(customer);
+			rental.setSignOutDate(LocalDate.now());
+			rental.setDueDate(LocalDate.now().plusDays(7));
 			rentalDAO.addRental(rental);
-			return ResponseEntity.ok("resource address updated");
-		
-		} catch (IOException e) {
-			// Something happened??
+		} else {
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		}
-	    
-	}
-	
-	@RequestMapping(value = "/newRentalExistCust", method = RequestMethod.POST, 
-			produces = {"application/json"}, consumes="application/json")
-	public ResponseEntity<?> newRentalExistCust(@RequestBody String json) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			JsonNode jsonNodeRoot = mapper.readTree(json);
-			
-			JsonNode customerNode = jsonNodeRoot.get("sheridanId");
-			String custIdTxt = customerNode.toString();
-			Customer customer = custDAO.getCustomer(Integer.parseInt(custIdTxt));
-			
-			// If customer object doesn't exist
-			if (customer == null){
-				return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-			}
-			
-			JsonNode bikeNode = jsonNodeRoot.get("bikeID");
-			String bikeTxt = bikeNode.toString().replace("\"", "");
-			bikeDAO.getBikeById(Integer.parseInt(bikeTxt));
-			
-			JsonNode rentalNode = jsonNodeRoot.get("rentalcomment");
-			String rentalTxt = rentalNode.toString().replace("\"", "");
-			Rental rental = new Rental();
-			// TODO: Set dates
-			rental.setComment(rentalTxt);
-			rental.setCustomer(customer);
-			rentalDAO.addRental(rental);
-			return ResponseEntity.ok("resource address updated");
 		
-		} catch (IOException e) {
-			// Something happened??
-			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-		}
-	    
+		return ResponseEntity.ok("rental added");
 	}
-	
 	
 	
 
