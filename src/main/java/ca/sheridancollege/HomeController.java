@@ -294,11 +294,12 @@ public class HomeController {
 		int bikeId = rental.getBike().getId();
 		Bike bike = bikeDAO.getBikeById(bikeId);
 		
-		if(customer != null && bike != null) {
+		if(customer != null && bike != null && bike.isAvailable()) {
 			rental.setCustomer(customer);
 			rental.setBike(bike);
 			rental.setSignOutDate(LocalDate.now());
 			rental.setDueDate(LocalDate.now().plusDays(7));
+			bike.setAvailable(false);
 			rentalDAO.addRental(rental);
 		} else {
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
