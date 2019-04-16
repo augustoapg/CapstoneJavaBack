@@ -24,7 +24,17 @@ public class BikeDAO {
 
 		session.getTransaction().commit();
 		session.close();
+	}
+	
+	public void editBike(Bike bike) {
 
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		session.update(bike);
+
+		session.getTransaction().commit();
+		session.close();
 	}
 
 	public Bike getBikeById(int id) {

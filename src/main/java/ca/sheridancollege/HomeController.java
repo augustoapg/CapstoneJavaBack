@@ -177,6 +177,26 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
+
+	
+	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editBike(@RequestBody Bike newBike) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		Bike bike = bikeDAO.getBikeById(newBike.getId());
+	    if (bike == null) {
+	    	objNode.put("message", "Bike was not found");
+	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+	    }
+	    newBike.setId(bike.getId());
+	    bikeDAO.editBike(newBike);
+	    
+	    
+		objNode.put("message", "Bike has been updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/returnRental", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> returnRental(@RequestBody Rental newRental) {
 		ObjectMapper mapper = new ObjectMapper();
