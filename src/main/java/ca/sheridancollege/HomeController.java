@@ -59,7 +59,7 @@ public class HomeController {
 		Customer customer = custDAO.getCustomer(sheridanId);
 		
 		if (customer == null) {
-			return new ResponseEntity<Object>(customer, HttpStatus.OK);
+			return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
 		}
 
 		return new ResponseEntity<Object>(customer, HttpStatus.OK);
@@ -68,6 +68,10 @@ public class HomeController {
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
 		Rental rental = rentalDAO.getRental(id);
+		
+		if (rental == null) {
+			return new ResponseEntity<Object>(rental, HttpStatus.NO_CONTENT);
+		}
 
 		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
