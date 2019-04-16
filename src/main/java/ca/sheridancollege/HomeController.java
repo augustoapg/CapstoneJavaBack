@@ -59,7 +59,7 @@ public class HomeController {
 		Customer customer = custDAO.getCustomer(sheridanId);
 		
 		if (customer == null) {
-			return new ResponseEntity<Object>(customer, HttpStatus.CONFLICT);
+			return new ResponseEntity<Object>(customer, HttpStatus.OK);
 		}
 
 		return new ResponseEntity<Object>(customer, HttpStatus.OK);
@@ -74,31 +74,9 @@ public class HomeController {
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentals() {
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayNode arrayNode = mapper.createArrayNode();
-
 		List<Rental> rentals = rentalDAO.getAllRentals();
-
-		for (Rental r : rentals) {
-			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("id", r.getId());
-			if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
-			else objNode.put("signOutDate", "null");
-			
-			if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
-			else objNode.put("dueDate", "null");
-			objNode.put("customerID", r.getCustomer().getSheridanId());
-//			objNode.put("state", r.getState().toString());
-			objNode.put("bikeID", r.getBike().getId());
-
-			arrayNode.add(objNode);
-		}
-		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
-	
-	// See records of a certain bikes -> bike ID
-	
-
 	
 	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getActiveRentals() {
@@ -134,28 +112,6 @@ public class HomeController {
 		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
 	}
 	
-	/*
-	 * If found
-	 * {
-        "rentalId": 11,
-        "signOutDate": "2019-04-06 16:42:24.518",
-        "dueDate": "2019-04-16 16:42:24.518",
-        "comment": "",
-        "status": "Active",
-        "customerName": "Tessie McCullough",
-        "sheridanId": 999999900,
-        "sheridanEmail": "TessieMcCullough@sheridan.ca",
-        "personalEmail": "TessieMcCullough@gmail.com",
-        "phone": "231.829.1717",
-        "type": "Faculty",
-        "bikeId": 1
-     * }
-     * 
-     * if not found
-     * {
-        "errorMessage": "Rental not found"
-     * }
-	 */
 	@RequestMapping(value = "/getActiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getActiveRental(@PathVariable int id) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -185,7 +141,8 @@ public class HomeController {
 			objNode.put("bikeId", rental.getBike().getId());
 
 		} else {
-			objNode.put("errorMessage", "Rental not found");
+			objNode.put("message", "Rental not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 		}
 		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
@@ -199,37 +156,42 @@ public class HomeController {
 	
 	@PutMapping("/bike/{id}")
 	public ResponseEntity<Object> updateBike(@RequestBody Bike bike, @PathVariable int id) {
-
-		Bike existingBike = bikeDAO.getBikeById(id);
-
-		if (existingBike == null)
-			return ResponseEntity.notFound().build();
-
-		bike.setId(id);
-
-		bikeDAO.addBike(bike);
-
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
+		
+		Bike existingBike = bikeDAO.getBikeById(id);
+
+		if (existingBike == null) {
+			objNode.put("message", "Bike was not found");
+			return ResponseEntity.notFound().build();
+		}
+			
+		bike.setId(id);
+		bikeDAO.addBike(bike);
+		
 		objNode.put("message", "Bike was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/returnRental", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> returnRental(@RequestBody Rental newRental) {
-	    Rental rental = rentalDAO.getRental(newRental.getId());
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		Rental rental = rentalDAO.getRental(newRental.getId());
 	    if (rental == null) {
-	    	return ResponseEntity.notFound().build();
+	    	objNode.put("message", "Rental was not found");
+	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 	    }
 	    // If bike was returned before
 	    else if ("Returned".equals(rental.getRentalState().toString()) || 
 	    		"Returned Late".equals(rental.getRentalState().toString())) {
-	    	return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+	    	objNode.put("message", "This rental has already ended");
+	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 	    }
 	    rentalDAO.returnRental(newRental, rental);
 	    
-	    ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
+	    
 		objNode.put("message", "Bike has been returned");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -237,15 +199,18 @@ public class HomeController {
 	@RequestMapping(value = "/newCustomer", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newCustomer(@RequestBody Customer customer) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
 		if(custDAO.getCustomer(customer.getSheridanId()) != null) {
-			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+			objNode.put("message", "Customer already exists");
+	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 		}
 		customer.setWillRecvEmail(true);
 		customer.setBlackListed(false);
 		custDAO.addCustomer(customer);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
+		
 		objNode.put("message", "Customer added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -289,17 +254,18 @@ public class HomeController {
 
 	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
 		
 		Rental rental = rentalDAO.getRental(newRental.getId());
-		System.out.println(newRental.getDueDate());
 		
-		if (rental == null)
-			return ResponseEntity.notFound().build();
+		if (rental == null) {
+			objNode.put("message", "Rental was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
 		
 		rentalDAO.editRental(newRental);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
 		objNode.put("message", "Rental was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
