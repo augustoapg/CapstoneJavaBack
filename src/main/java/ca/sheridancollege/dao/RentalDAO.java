@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Rental;
 
 public class RentalDAO {
@@ -106,6 +107,10 @@ public class RentalDAO {
 		rental.setComment(newRental.getComment());
 		rental.setReturnedDate(LocalDate.now());
 		
+		Bike bike = rental.getBike();
+		bike.setAvailable(true);
+		
+		session.update(bike);
 		session.update(rental);
 
 		session.getTransaction().commit();
