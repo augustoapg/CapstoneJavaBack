@@ -18,16 +18,6 @@ import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
 
-/**
- * 
- * Bike JSON:
- * 
- * [ { "id": 1, "notes": "Scratched on body", "signOutDate": "3919-01-31
- * 00:00:00.0", "isRepairNeeded": false, "available": false }, { "id": 2,
- * "notes": "Scratched on body", "signOutDate": "3919-02-01 00:00:00.0",
- * "isRepairNeeded": false, "available": false } ]
- * 
- */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class HomeController {
@@ -36,9 +26,8 @@ public class HomeController {
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	
-
-	@RequestMapping("/")
-	public String home(Model model) {
+	@RequestMapping(value = "/addDummyData", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> addDummyData(Model model) {
 		DummyDataGenerator dummyData = new DummyDataGenerator();
 		
 		dummyData.generateRandomBikes(10);
@@ -46,54 +35,31 @@ public class HomeController {
 		dummyData.generateRandomRentals();
 		dummyData.generateRandomSystemUsers();
 		
-		return "Home";
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Dummy data added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getBikes", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getBikes() {
-
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayNode arrayNode = mapper.createArrayNode();
-
 		List<Bike> bikes = bikeDAO.getAllBikes();
-
-		for (Bike b : bikes) {
-			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("id", b.getId());
-			objNode.put("notes", b.getNotes());
-			objNode.put("available", b.isAvailable());
-			objNode.put("isRepairNeeded", b.isRepairNeeded());
-			objNode.put("imgPath", b.getImgPath());
-
-			arrayNode.add(objNode);
-		}
-		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+		return new ResponseEntity<Object>(bikes, HttpStatus.OK);
 	}
-
-	/**
-	 * 
-	 * Cust JSON:
-	 * 
-	 * { "name":'testUser', "sheridanId":'991417298',
-	 * "sheridanEmail":'testing@gmail.com', "personalEmail":'personal@gmail.com',
-	 * "phone":'123456789' }
-	 */
 
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomers() {
 		List<Customer> customers = custDAO.getAllCustomer();
-
 		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
 	
 	
-	// Return Customer Object IF customer is registered in the sysytem. False otherwise.
 	@RequestMapping(value = "/getCustomer/{sheridanId}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomerByID(@PathVariable int sheridanId) {
 		Customer customer = custDAO.getCustomer(sheridanId);
 		
 		if (customer == null) {
-			return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
+			return new ResponseEntity<Object>(customer, HttpStatus.CONFLICT);
 		}
 
 		return new ResponseEntity<Object>(customer, HttpStatus.OK);

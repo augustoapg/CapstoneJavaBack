@@ -27,9 +27,6 @@ public class Bike {
 	private int id;
 	private String notes;
 	private boolean isRepairNeeded;
-	
-	@OneToOne(cascade=CascadeType.ALL)
-	private Rental rental;
 	private boolean available;
 	private String imgPath;
 
