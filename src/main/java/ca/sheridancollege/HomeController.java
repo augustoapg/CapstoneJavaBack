@@ -1,30 +1,19 @@
 package ca.sheridancollege;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.javafaker.Faker;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ca.sheridancollege.dao.*;
-import ca.sheridancollege.enums.CustomerType;
-import ca.sheridancollege.enums.RentalState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -254,7 +243,10 @@ public class HomeController {
 
 		bikeDAO.addBike(bike);
 
-		return ResponseEntity.noContent().build();
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Bike was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/returnRental", method = RequestMethod.PATCH, produces = {"application/json"})
@@ -269,7 +261,11 @@ public class HomeController {
 	    	return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 	    }
 	    rentalDAO.returnRental(newRental, rental);
-	    return ResponseEntity.ok("resource address updated");
+	    
+	    ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Bike has been returned");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/newCustomer", method = RequestMethod.POST, 
@@ -281,7 +277,11 @@ public class HomeController {
 		customer.setWillRecvEmail(true);
 		customer.setBlackListed(false);
 		custDAO.addCustomer(customer);
-		return ResponseEntity.ok("customer added");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Customer added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	
@@ -304,7 +304,10 @@ public class HomeController {
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		}
 		
-		return ResponseEntity.ok("rental added");
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Rental was added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	
@@ -320,7 +323,10 @@ public class HomeController {
 		
 		rentalDAO.editRental(newRental);
 		
-		return ResponseEntity.ok("rental updated");
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		objNode.put("message", "Rental was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
