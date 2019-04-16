@@ -255,24 +255,32 @@ public class HomeController {
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
 		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
 		int sheridanId = rental.getCustomer().getSheridanId();
 		Customer customer = custDAO.getCustomer(sheridanId);
 		int bikeId = rental.getBike().getId();
 		Bike bike = bikeDAO.getBikeById(bikeId);
 		
-		if(customer != null && bike != null && bike.isAvailable()) {
-			rental.setCustomer(customer);
-			rental.setBike(bike);
-			rental.setSignOutDate(LocalDate.now());
-			rental.setDueDate(LocalDate.now().plusDays(7));
-			bike.setAvailable(false);
-			rentalDAO.addRental(rental);
-		} else {
+		if(customer == null) {
+			objNode.put("message", "Customer does not exist");
+			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+		} else if(bike == null) {
+			objNode.put("message", "Bike does not exist");
+			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+		} else if(!bike.isAvailable()) {
+			objNode.put("message", "Bike is not available");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
+		rental.setCustomer(customer);
+		rental.setBike(bike);
+		rental.setSignOutDate(LocalDate.now());
+		rental.setDueDate(LocalDate.now().plusDays(7));
+		bike.setAvailable(false);
+		rentalDAO.addRental(rental);
+				
 		objNode.put("message", "Rental was added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
