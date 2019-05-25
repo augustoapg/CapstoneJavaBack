@@ -1,3 +1,13 @@
+/**
+ * Project: HMC Bike Rental
+ * Group Name: Team Cube
+ * Team members:
+ * 		- Augusto A P Goncalez
+ * 		- Jianlin Luo
+ * 		- Julia Sakamoto
+ * 		- Vikki Wai-Kei Wong
+ */
+
 package ca.sheridancollege;
 
 import java.util.List;
@@ -54,15 +64,26 @@ public class HomeController {
 	}
 	
 	
-	@RequestMapping(value = "/getCustomer/{sheridanId}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getCustomerByID(@PathVariable int sheridanId) {
-		Customer customer = custDAO.getCustomer(sheridanId);
-		
-		if (customer == null) {
-			return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
-		}
+	@RequestMapping(value = "/getCustomer/{sheridanIdInput}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getCustomerByID(@PathVariable String sheridanIdInput) {
+		int sheridanId = 0;
+		try {
+			sheridanId = Integer.parseInt(sheridanIdInput);
+			Customer customer = custDAO.getCustomer(sheridanId);
+			
+			// if customer not found
+			if (customer == null) {
+				return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
+			}
 
-		return new ResponseEntity<Object>(customer, HttpStatus.OK);
+			return new ResponseEntity<Object>(customer, HttpStatus.OK);
+		} catch (NumberFormatException e) {
+			// if input is invalid (cannot convert string to int)
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectNode objNode = mapper.createObjectNode();
+			objNode.put("message", "Invalid Sheridan ID");
+			return new ResponseEntity<Object>(objNode, HttpStatus.NOT_ACCEPTABLE);
+		}
 	}
 	
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
