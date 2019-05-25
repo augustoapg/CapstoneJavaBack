@@ -33,4 +33,7 @@ public class Customer implements Serializable {
 	private boolean isBlackListed;
 	private boolean willRecvEmail;
 	private String notes;
+	private String emergencyContactFirstName;
+	private String emergencyContactLastName;
+	private String emergencyContactPhone;	
 }

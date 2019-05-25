@@ -121,10 +121,12 @@ public class DummyDataGenerator {
 		for(int i = 0; i < numOfCustomers; i++) {
 			String fName = faker.name().firstName();
 			String lName = faker.name().lastName();
+			String emContactFName = faker.name().firstName();
+			String emContactLName = faker.name().lastName();
 			
 			Customer customer = new Customer(999999900 + i, fName, lName,
 					faker.address().streetAddress(), fName + lName + "@sheridan.ca", fName + lName + "@gmail.com", faker.phoneNumber().cellPhone(), 
-					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "");
+					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName, faker.phoneNumber().cellPhone());
 			custDAO.addCustomer(customer);
 		}
 	}
