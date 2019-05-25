@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ca.sheridancollege.dao.*;
+import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -79,7 +80,7 @@ public class HomeController {
 			return new ResponseEntity<Object>(customer, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// if input is invalid (cannot convert string to int)
-			return ResponseEntity.badRequest().body("Invalid Sheridan ID");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Sheridan ID");
 		}
 	}
 	
@@ -276,7 +277,7 @@ public class HomeController {
 		} else if(bike == null) {
 			objNode.put("message", "Bike does not exist");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-		} else if(!bike.isAvailable()) {
+		} else if(bike.getBikeState() != BikeState.AVAILABLE) {
 			objNode.put("message", "Bike is not available");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		}
@@ -285,7 +286,7 @@ public class HomeController {
 		rental.setBike(bike);
 		rental.setSignOutDate(LocalDate.now());
 		rental.setDueDate(LocalDate.now().plusDays(7));
-		bike.setAvailable(false);
+		bike.setBikeState(BikeState.RENTED);
 		rentalDAO.addRental(rental);
 				
 		objNode.put("message", "Rental was added");

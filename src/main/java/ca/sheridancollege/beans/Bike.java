@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
+import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.RentalState;
 import lombok.*;
 
@@ -26,15 +27,19 @@ public class Bike {
 	@GeneratedValue
 	private int id;
 	private String notes;
-	private boolean isRepairNeeded;
-	private boolean available;
+	private BikeState bikeState;
 	private String imgPath;
-
-	public Bike(String notes, boolean isRepairNeeded, boolean available, String imgPath) {
+	private String manufacturer;
+	private String productCode;
+	private int serialNumber;
+	
+	public Bike(String notes, BikeState bikeState, String imgPath, String manufacturer,
+			String productCode, int serialNumber) {
 		this.notes = notes;
-		this.isRepairNeeded = isRepairNeeded;
-		this.available = available;
+		this.bikeState = bikeState;
 		this.imgPath = imgPath;
+		this.manufacturer = manufacturer;
+		this.productCode = productCode;
+		this.serialNumber = serialNumber;
 	}
-
 }

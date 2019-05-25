@@ -13,6 +13,7 @@ import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Rental;
+import ca.sheridancollege.enums.BikeState;
 
 public class RentalDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
@@ -21,7 +22,7 @@ public class RentalDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		rental.getBike().setAvailable(false);
+		rental.getBike().setBikeState(BikeState.RENTED);
 		session.save(rental);
 
 		session.getTransaction().commit();
@@ -108,7 +109,7 @@ public class RentalDAO {
 		rental.setReturnedDate(LocalDate.now());
 		
 		Bike bike = rental.getBike();
-		bike.setAvailable(true);
+		rental.getBike().setBikeState(BikeState.AVAILABLE);
 		
 		session.update(bike);
 		session.update(rental);
@@ -129,8 +130,6 @@ public class RentalDAO {
 		session.getTransaction().commit();
 		session.close();
 	}
-	
-	
 }
 
 

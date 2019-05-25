@@ -18,9 +18,7 @@ public class BikeDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Bike b = new Bike(bike.getNotes(), bike.isRepairNeeded(), bike.isAvailable(), bike.getImgPath());
-
-		session.save(b);
+		session.save(bike);
 
 		session.getTransaction().commit();
 		session.close();

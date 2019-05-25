@@ -18,6 +18,7 @@ import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
+import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
 
 public class DummyDataGenerator {
@@ -30,11 +31,12 @@ public class DummyDataGenerator {
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
-			Bike bike = new Bike(null, false, true, randomBetween(1, 2) + ".jpg");
+			Bike bike = new Bike(null, BikeState.AVAILABLE, randomBetween(1, 2) + ".jpg", "M" + randomBetween(1, 9), i + "", i);
 
-			if (Math.random() <= 0.5) {
-				bike.setRepairNeeded(true);
-				bike.setNotes("Scratched on body");
+			// at least half of the bikes will be AVAILABLE
+			if (i <= numOfBikes/2) {
+				bike.setBikeState(BikeState.values()[randomBetween(0, BikeState.values().length - 1)]);
+				bike.setNotes("This is a random note");
 			}
 			
 			bikeDAO.addBike(bike);
