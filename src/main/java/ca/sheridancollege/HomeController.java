@@ -79,10 +79,7 @@ public class HomeController {
 			return new ResponseEntity<Object>(customer, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// if input is invalid (cannot convert string to int)
-			ObjectMapper mapper = new ObjectMapper();
-			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("message", "Invalid Sheridan ID");
-			return new ResponseEntity<Object>(objNode, HttpStatus.NOT_ACCEPTABLE);
+			return ResponseEntity.badRequest().body("Invalid Sheridan ID");
 		}
 	}
 	
