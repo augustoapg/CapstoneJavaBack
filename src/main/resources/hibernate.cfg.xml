@@ -28,9 +28,9 @@
 
 		<!-- Database connection settings -->
 	    <property name="connection.driver_class">org.postgresql.Driver</property>
-	    <property name="connection.url">jdbc:postgresql://ec2-54-225-113-7.compute-1.amazonaws.com:5432/d877nl344uqv3q</property>
-	    <property name="connection.username">ygbkgofrqxhbjj</property>
-	    <property name="connection.password">3cae7d589e56cd88b9cfd657596107f737a020278c4d9082447dfc06ff526bd1</property>
+	    <property name="connection.url">jdbc:postgresql://ec2-50-19-254-63.compute-1.amazonaws.com:5432/dcbs5lqt32lchp</property>
+	    <property name="connection.username">klbtveksynxgjy</property>
+	    <property name="connection.password">a3e092c4b7237e500da52cd4d420cbadf0c0a4d7d60faed75c8296ecdbea9569</property>
 	
 	    <!-- JDBC connection pool (use the built-in) -->
 	    <property name="connection.pool_size">1</property>
