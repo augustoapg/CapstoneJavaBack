@@ -177,27 +177,6 @@ public class HomeController {
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
-	@PutMapping("/bike/{id}")
-	public ResponseEntity<Object> updateBike(@RequestBody Bike bike, @PathVariable int id) {
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
-		
-		Bike existingBike = bikeDAO.getBikeById(id);
-
-		if (existingBike == null) {
-			objNode.put("message", "Bike was not found");
-			return ResponseEntity.notFound().build();
-		}
-			
-		bike.setId(id);
-		bikeDAO.addBike(bike);
-		
-		objNode.put("message", "Bike was updated");
-		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-	}
-	
-
-	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editBike(@RequestBody Bike newBike) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -290,6 +269,18 @@ public class HomeController {
 		rentalDAO.addRental(rental);
 				
 		objNode.put("message", "Rental was added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/newBike", method = RequestMethod.POST,
+			produces = {"application/json"}, consumes = "application/json")
+	public ResponseEntity<?> newBike(@RequestBody Bike newBike) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		bikeDAO.addBike(newBike);
+		
+		objNode.put("message", "Bike was added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
