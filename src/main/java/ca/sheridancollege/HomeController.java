@@ -36,6 +36,7 @@ public class HomeController {
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
+	KeyLockDAO keyLockDAO = new KeyLockDAO();
 	
 	@RequestMapping(value = "/addDummyData", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> addDummyData(Model model) {
@@ -45,6 +46,7 @@ public class HomeController {
 		dummyData.generateRandomCustomer(30);
 		dummyData.generateRandomRentals();
 		dummyData.generateRandomSystemUsers();
+		dummyData.generateRandomKeyLocks(20);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
@@ -56,6 +58,18 @@ public class HomeController {
 	public ResponseEntity<Object> getBikes() {
 		List<Bike> bikes = bikeDAO.getAllBikes();
 		return new ResponseEntity<Object>(bikes, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getLocks", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getLocks() {
+		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
+		return new ResponseEntity<Object>(lockItems, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getKeys", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getKeys() {
+		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
+		return new ResponseEntity<Object>(keyItems, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.GET, produces = { "application/json" })

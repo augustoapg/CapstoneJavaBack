@@ -12,14 +12,19 @@ import com.github.javafaker.Faker;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
+import ca.sheridancollege.beans.KeyItem;
+import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.SystemUser;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
+import ca.sheridancollege.dao.KeyLockDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
+import ca.sheridancollege.enums.KeyState;
+import ca.sheridancollege.enums.LockState;
 
 public class DummyDataGenerator {
 
@@ -28,6 +33,7 @@ public class DummyDataGenerator {
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
+	KeyLockDAO keyLockDAO = new KeyLockDAO();
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
@@ -73,6 +79,14 @@ public class DummyDataGenerator {
 		rentalDAO.addRental(rentalReturnedLate);
 	}
 
+	public void generateRandomKeyLocks(int quantityOfKeyLocks) {
+		for(int i = 1; i < quantityOfKeyLocks + 1; i++) {
+			KeyItem keyItem = new KeyItem("K" + String.format("%03d", i), KeyState.AVAILABLE);
+			LockItem lockItem = new LockItem("L" + String.format("%03d", i), keyItem, LockState.AVAILABLE);
+			keyLockDAO.addKeyItem(keyItem);
+			keyLockDAO.addLockItem(lockItem);
+		}
+	}
 
 	private LocalDate setRandomSignedOutDate(String status) {
 		LocalDate signOut;
