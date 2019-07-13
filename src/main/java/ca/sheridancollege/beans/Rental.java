@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -40,17 +41,17 @@ public class Rental implements Serializable {
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	private Bike bike;
+	@ManyToMany(cascade=CascadeType.ALL)
+	private List<RentalComponent> rentalComponents;
 	private String comment;
 	
 	
-	public Rental(LocalDate signOutDate, LocalDate dueDate, LocalDate returnedDate, Customer customer, Bike bike, String comment) {
+	public Rental(LocalDate signOutDate, LocalDate dueDate, LocalDate returnedDate, Customer customer, List<RentalComponent> rentalComponents, String comment) {
 		this.signOutDate = signOutDate;
 		this.dueDate = dueDate;
 		this.returnedDate = returnedDate;
 		this.customer = customer;
-		this.bike = bike;
+		this.rentalComponents = rentalComponents;
 		this.comment = comment;
 	}
 	

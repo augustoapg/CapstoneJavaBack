@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,14 +19,12 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 @Entity
+@DiscriminatorValue("Bike")
 
 @NamedQuery(name="Bike.byID", query="from Bike where id=:id")
 @NamedQuery(name="Bike.all", query="from Bike")
-public class Bike {
+public class Bike extends RentalComponent {
 	
-	@Id
-	@GeneratedValue
-	private int id;
 	private String notes;
 	private BikeState bikeState;
 	private String imgPath;

@@ -3,6 +3,7 @@ package ca.sheridancollege.beans;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
@@ -16,9 +17,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-public class LockItem implements Serializable {
-	@Id
-	private String id;
+@DiscriminatorValue("LockItem")
+public class LockItem extends RentalComponent implements Serializable {
+
 	@OneToOne(cascade = CascadeType.ALL)
 	private KeyItem keyItem;
 	private LockState lockState;

@@ -56,35 +56,35 @@ public class DummyDataGenerator {
 		sysUserDAO.addSysUser(sysUser2);
 	}
 
-	public void generateRandomRentals() {
-		List<Customer> customers = custDAO.getAllCustomer();
-		List<Bike> bikes = bikeDAO.getAllBikes();
-		
-		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), bikes.get(0), "");
-		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), bikes.get(1), "");
-		
-		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
-		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
-		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
-		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), bikes.get(2), "");
-		
-		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
-		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
-		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
-		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), bikes.get(3), "");
-		
-		rentalDAO.addRental(rentalActive);
-		rentalDAO.addRental(rentalLate);
-		rentalDAO.addRental(rentalReturned);
-		rentalDAO.addRental(rentalReturnedLate);
-	}
+//	public void generateRandomRentals() {
+//		List<Customer> customers = custDAO.getAllCustomer();
+//		List<Bike> bikes = bikeDAO.getAllBikes();
+//		
+//		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), bikes.get(0), "");
+//		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), bikes.get(1), "");
+//		
+//		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
+//		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
+//		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
+//		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), bikes.get(2), "");
+//		
+//		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
+//		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
+//		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
+//		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), bikes.get(3), "");
+//		
+//		rentalDAO.addRental(rentalActive);
+//		rentalDAO.addRental(rentalLate);
+//		rentalDAO.addRental(rentalReturned);
+//		rentalDAO.addRental(rentalReturnedLate);
+//	}
 
 	public void generateRandomKeyLocks(int quantityOfKeyLocks) {
 		for(int i = 1; i < quantityOfKeyLocks + 1; i++) {
-			KeyItem keyItem = new KeyItem("K" + String.format("%03d", i), KeyState.AVAILABLE);
-			LockItem lockItem = new LockItem("L" + String.format("%03d", i), keyItem, LockState.AVAILABLE);
-			keyLockDAO.addKeyItem(keyItem);
-			keyLockDAO.addLockItem(lockItem);
+//			KeyItem keyItem = new KeyItem("K" + String.format("%03d", i), KeyState.AVAILABLE);
+//			LockItem lockItem = new LockItem("L" + String.format("%03d", i), keyItem, LockState.AVAILABLE);
+//			keyLockDAO.addKeyItem(keyItem);
+//			keyLockDAO.addLockItem(lockItem);
 		}
 	}
 

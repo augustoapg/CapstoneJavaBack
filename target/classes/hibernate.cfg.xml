@@ -4,48 +4,30 @@
 	<session-factory>
 
 		<!-- Database connection settings -->
-		<!-- <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+		<property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
 		<property name="connection.url">jdbc:mysql://localhost:3306/hibernatedb?serverTimezone=America/Toronto</property>
 		<property name="connection.username">root</property>
-		<property name="connection.password">root</property> -->
+		<property name="connection.password">root</property>
 
 		<!-- Set the database dialect -->
-		<!-- <property name="dialect">org.hibernate.dialect.MySQL8Dialect</property> -->
+		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
 
 		<!-- Echo all executed SQL to stdout -->
-		<!-- <property name="show_sql">true</property> -->
+		<property name="show_sql">true</property>
 
 		<!-- Drop and re-create the database schema on startup -->
-		<!-- <property name="hbm2ddl.auto">create</property> -->
+		<property name="hbm2ddl.auto">create</property>
 
 
 		<!-- dbcp connection pool configuration -->
-		<!-- <property name="dbcp.initialSize">5</property>
+		<property name="dbcp.initialSize">5</property>
 		<property name="dbcp.maxTotal">20</property>
 		<property name="dbcp.maxIdle">10</property>
 		<property name="dbcp.minIdle">5</property>
-		<property name="dbcp.maxWaitMillis">-1</property> -->
-
-		<!-- Database connection settings -->
-	    <property name="connection.driver_class">org.postgresql.Driver</property>
-	    <property name="connection.url">jdbc:postgresql://ec2-50-19-254-63.compute-1.amazonaws.com:5432/dcbs5lqt32lchp</property>
-	    <property name="connection.username">klbtveksynxgjy</property>
-	    <property name="connection.password">a3e092c4b7237e500da52cd4d420cbadf0c0a4d7d60faed75c8296ecdbea9569</property>
-	
-	    <!-- JDBC connection pool (use the built-in) -->
-	    <property name="connection.pool_size">1</property>
-	
-	    <!-- SQL dialect -->
-	    <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-	
-	    <!-- Echo all executed SQL to stdout -->
-	    <property name="show_sql">true</property>
-	
-	    <!-- Drop and re-create the database schema on startup -->
-	    <property name="hbm2ddl.auto">create</property>
+		<property name="dbcp.maxWaitMillis">-1</property>
 
 		<!-- Name the annotated Entity classes -->
-		<mapping class="ca.sheridancollege.beans.Bike" />
+		<mapping class="ca.sheridancollege.beans.RentalComponent" />
 		<mapping class="ca.sheridancollege.beans.Customer" />
 		<mapping class="ca.sheridancollege.beans.Rental" />
 		<mapping class="ca.sheridancollege.beans.SystemUser" />

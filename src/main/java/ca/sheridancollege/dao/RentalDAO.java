@@ -22,7 +22,7 @@ public class RentalDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		rental.getBike().setBikeState(BikeState.RENTED);
+//		rental.getBike().setBikeState(BikeState.RENTED);
 		session.save(rental);
 
 		session.getTransaction().commit();
@@ -101,23 +101,22 @@ public class RentalDAO {
 		return rentals;
 	}
 
-	public void returnRental(Rental newRental, Rental rental) {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-
-		rental.setComment(newRental.getComment());
-		rental.setReturnedDate(LocalDate.now());
-		
-		Bike bike = rental.getBike();
-		rental.getBike().setBikeState(BikeState.AVAILABLE);
-		
-		session.update(bike);
-		session.update(rental);
-
-		session.getTransaction().commit();
-		session.close();
-		
-	}
+//	public void returnRental(Rental newRental, Rental rental) {
+//		Session session = sessionFactory.openSession();
+//		session.beginTransaction();
+//
+//		rental.setComment(newRental.getComment());
+//		rental.setReturnedDate(LocalDate.now());
+//		
+//		Bike bike = rental.getBike();
+//		rental.getBike().setBikeState(BikeState.AVAILABLE);
+//		
+//		session.update(bike);
+//		session.update(rental);
+//
+//		session.getTransaction().commit();
+//		session.close();
+//	}
 
 	public void editRental(Rental newRental) {
 		Session session = sessionFactory.openSession();
