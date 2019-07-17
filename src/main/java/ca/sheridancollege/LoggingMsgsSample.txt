@@ -1,0 +1,40 @@
+Logging Messages:
+
+
+/getBikes - Getting All Bikes
+/getLocks - Getting All Locks
+/getKeys - Getting All Keys
+/getRentals - Getting All Rentals
+/getCustomers - Getting all Customers
+
+/getCustomer/{sheridanIdInput} - Cutomer not found
+/getCustomer/{sheridanIdInput} - Getting Customer with ID: sheridanIdInput
+/getCustomer/{sheridanIdInput} - Error. Customer ID: sheridanIdInput
+
+
+/getRental - Rental not found with ID: id
+/getRental - Getting Rental with ID: id
+/getActiveRentals - Getting All Active Rentals
+/getActiveRental/{id} - Getting Active Rental with ID: id
+/getActiveRental/{id} - Active Rental not found with ID: id
+/getArchivedRentals - Getting All Archived Rentals
+
+/editBike/{id} - Edited Bike with ID: Id
+/editBike/{id} - Bike not found with ID: Id
+
+/returnRental - Returned Bike with rental ID: rentalId
+
+/newCustomer - Added customer with ID: custId
+/newCustomer - Customer already exists with ID: custId
+
+/newRental - Customer does not exist with ID: custId
+/newRental - Bike does not exist with ID: bikeId
+/newRental - Bike is not available with ID: bikeId
+/newRental - Added rental with ID: rentalId
+
+
+/newBike - Added bike with ID: bikeId
+
+/editRental - Rental was not found with ID: rentalId
+/editRental - Edited Rental with ID: rentalId
+

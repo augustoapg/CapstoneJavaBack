@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -38,6 +40,8 @@ public class HomeController {
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	KeyLockDAO keyLockDAO = new KeyLockDAO();
 	
+	Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@RequestMapping(value = "/addDummyData", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> addDummyData(Model model) {
 		DummyDataGenerator dummyData = new DummyDataGenerator();
@@ -57,24 +61,35 @@ public class HomeController {
 	@RequestMapping(value = "/getBikes", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getBikes() {
 		List<Bike> bikes = bikeDAO.getAllBikes();
+		log.info("/getBikes - Getting All Bikes - " + bikes.size() + " retrieved");
 		return new ResponseEntity<Object>(bikes, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getLocks", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getLocks() {
 		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
+		log.info("/getLocks - Getting All Locks - " + lockItems.size() + " retrieved");
 		return new ResponseEntity<Object>(lockItems, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getKeys", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getKeys() {
 		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
+		log.info("/getKeys - Getting All Keys - " + keyItems.size() + " retrieved");
 		return new ResponseEntity<Object>(keyItems, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getRentals() {
+		List<Rental> rentals = rentalDAO.getAllRentals();
+		log.info("/getRentals - Getting All Rentals- " + rentals.size() + " retrieved");
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomers() {
 		List<Customer> customers = custDAO.getAllCustomer();
+		log.info("/getCustomers - Getting all Customers - " + customers.size() + " retrieved");
 		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
 	
@@ -88,12 +103,15 @@ public class HomeController {
 			
 			// if customer not found
 			if (customer == null) {
+				log.info("/getCustomer/{sheridanIdInput} - Cutomer not found with ID: " + sheridanIdInput);
 				return new ResponseEntity<Object>(customer, HttpStatus.NO_CONTENT);
 			}
 
+			log.info("/getCustomer/{sheridanIdInput} - Getting Customer with ID: " + sheridanIdInput);
 			return new ResponseEntity<Object>(customer, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// if input is invalid (cannot convert string to int)
+			log.error("/getCustomer/{sheridanIdInput} - Error. Customer ID:" + sheridanIdInput, e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid Sheridan ID");
 		}
 	}
@@ -103,18 +121,14 @@ public class HomeController {
 		Rental rental = rentalDAO.getRental(id);
 		
 		if (rental == null) {
+			log.info("/getRental - Rental not found with ID: " + id);
 			return new ResponseEntity<Object>(rental, HttpStatus.NO_CONTENT);
 		}
 
+		log.info("/getRental - Getting Rental with ID: " + id);
 		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getRentals() {
-		List<Rental> rentals = rentalDAO.getAllRentals();
-		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
-	}
-	
 	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getActiveRentals() {
 		ObjectMapper mapper = new ObjectMapper();
@@ -146,6 +160,7 @@ public class HomeController {
 
 			arrayNode.add(objNode);
 		}
+		log.info("/getActiveRentals - Getting All Active Rentals - " + rentals.size() + " retrieved");
 		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
 	}
 	
@@ -178,16 +193,19 @@ public class HomeController {
 			objNode.put("bikeId", rental.getBike().getId());
 
 		} else {
+			log.info("/getActiveRental/{id} - Active Rental not found with ID: " + id);
 			objNode.put("message", "Rental not found");
 			return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 		}
 		
+		log.info("/getActiveRental/{id} - Getting Active Rental with ID: " + id);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getArchiveRentals() {
 		List<Rental> rentals = rentalDAO.getArchiveRentals();
+		log.info("/getArchivedRentals - Getting All Archived Rentals- " + rentals.size() + " retrieved");
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
@@ -198,13 +216,14 @@ public class HomeController {
 		
 		Bike bike = bikeDAO.getBikeById(newBike.getId());
 	    if (bike == null) {
+	    	log.info("/editBike/{id} - Bike not found with ID: " + newBike.getId());
 	    	objNode.put("message", "Bike was not found");
 	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 	    }
 	    newBike.setId(bike.getId());
 	    bikeDAO.editBike(newBike);
 	    
-	    
+	    log.info("/editBike/{id} - Edited Bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike has been updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -222,12 +241,14 @@ public class HomeController {
 	    // If bike was returned before
 	    else if ("Returned".equals(rental.getRentalState().toString()) || 
 	    		"Returned Late".equals(rental.getRentalState().toString())) {
+	    	
+	    	log.info("/returnRental - Error. Bike has been returned. Rental ID: " + newRental.getId());
 	    	objNode.put("message", "This rental has already ended");
 	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 	    }
 	    rentalDAO.returnRental(newRental, rental);
 	    
-	    
+	    log.info("/returnRental - Returned Bike with rental ID: " + newRental.getId());
 		objNode.put("message", "Bike has been returned");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -239,6 +260,7 @@ public class HomeController {
 		ObjectNode objNode = mapper.createObjectNode();
 		
 		if(custDAO.getCustomer(customer.getSheridanId()) != null) {
+			log.info("/newCustomer - Customer already exists with ID: " + customer.getSheridanId());
 			objNode.put("message", "Customer already exists");
 	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
 		}
@@ -246,7 +268,7 @@ public class HomeController {
 		customer.setBlackListed(false);
 		custDAO.addCustomer(customer);
 		
-		
+		log.info("/newCustomer - Added customer with ID: " + customer.getSheridanId());
 		objNode.put("message", "Customer added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -264,13 +286,16 @@ public class HomeController {
 		int bikeId = rental.getBike().getId();
 		Bike bike = bikeDAO.getBikeById(bikeId);
 		
-		if(customer == null) {
+		if(customer == null) {		
+			log.info("/newRental - Customer does not exist with ID: " + sheridanId);
 			objNode.put("message", "Customer does not exist");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		} else if(bike == null) {
+			log.info("/newRental - Bike does not exist with ID: " + bikeId);
 			objNode.put("message", "Bike does not exist");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		} else if(bike.getBikeState() != BikeState.AVAILABLE) {
+			log.info("/newRental - Bike is not available with ID: " + bikeId);
 			objNode.put("message", "Bike is not available");
 			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
 		}
@@ -281,7 +306,8 @@ public class HomeController {
 		rental.setDueDate(LocalDate.now().plusDays(7));
 		bike.setBikeState(BikeState.RENTED);
 		rentalDAO.addRental(rental);
-				
+
+		log.info("/newRental - Added rental with ID: " + sheridanId);
 		objNode.put("message", "Rental was added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -294,6 +320,7 @@ public class HomeController {
 		
 		bikeDAO.addBike(newBike);
 		
+		log.info("/newBike - Added bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike was added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -308,12 +335,14 @@ public class HomeController {
 		Rental rental = rentalDAO.getRental(newRental.getId());
 		
 		if (rental == null) {
+			log.info("/editRental - Rental was not found with ID: " + newRental.getId());
 			objNode.put("message", "Rental was not found");
 			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 		}
 		
 		rentalDAO.editRental(newRental);
 		
+		log.info("/editRental - Edited Rental with ID: " + newRental.getId());
 		objNode.put("message", "Rental was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
