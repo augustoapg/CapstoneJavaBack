@@ -9,21 +9,24 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.beans.RentalComponent;
 
 public class BikeDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 
 	public void addBike(Bike bike) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-
+		
+		bike.setId(rentalComponentDAO.getNewRentalComponentId("B"));
 		session.save(bike);
 
 		session.getTransaction().commit();
 		session.close();
 	}
-	
+
 	public void editBike(Bike bike) {
 
 		Session session = sessionFactory.openSession();

@@ -81,10 +81,10 @@ public class DummyDataGenerator {
 
 	public void generateRandomKeyLocks(int quantityOfKeyLocks) {
 		for(int i = 1; i < quantityOfKeyLocks + 1; i++) {
-//			KeyItem keyItem = new KeyItem("K" + String.format("%03d", i), KeyState.AVAILABLE);
-//			LockItem lockItem = new LockItem("L" + String.format("%03d", i), keyItem, LockState.AVAILABLE);
-//			keyLockDAO.addKeyItem(keyItem);
-//			keyLockDAO.addLockItem(lockItem);
+			KeyItem keyItem = new KeyItem(KeyState.AVAILABLE);
+			LockItem lockItem = new LockItem(keyItem, LockState.AVAILABLE);
+			keyLockDAO.addKeyItem(keyItem);
+			keyLockDAO.addLockItem(lockItem);
 		}
 	}
 
