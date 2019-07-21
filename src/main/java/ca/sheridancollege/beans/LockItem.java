@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@DiscriminatorValue("LockItem")
 public class LockItem extends RentalComponent implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL)

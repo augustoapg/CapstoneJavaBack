@@ -19,7 +19,6 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 @Entity
-@DiscriminatorValue("Bike")
 
 @NamedQuery(name="Bike.byID", query="from Bike where id=:id")
 @NamedQuery(name="Bike.all", query="from Bike")

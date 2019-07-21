@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@DiscriminatorValue("KeyItem")
 public class KeyItem extends RentalComponent implements Serializable {
 	
 	private KeyState keyState;

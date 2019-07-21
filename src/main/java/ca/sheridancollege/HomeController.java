@@ -292,13 +292,12 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		bikeDAO.addBike(newBike);
+		String newBikeId = bikeDAO.addBike(newBike);
 		
-		objNode.put("message", "Bike was added");
+		objNode.put("message", "Bike was added with id " + newBikeId);
+		objNode.put("id", newBikeId);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
-	
-	
 
 	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {

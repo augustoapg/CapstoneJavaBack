@@ -14,9 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="component_type", 
-discriminatorType = DiscriminatorType.STRING)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NamedQuery(name="RentalComponent.getAllComponentsByPrefix", query="SELECT id FROM RentalComponent WHERE id like :id")
 public abstract class RentalComponent {
 
