@@ -12,7 +12,7 @@ Backend in Java of the HMC Bike Rental Capstone project
 | `/getLocks`  | GET | Get All Locks |
 | `/getRentals`  | GET | Get All Rentals |
 | `/getCustomers`  | GET | Get All Customers |
-| `/getCustomer/{sheridanIdInput}`  | GET |
+| `/getCustomer/{sheridanIdInput}`  | GET | Get Customer with ID |
 | `/getRental/{id}`  | GET | Get Rental with ID |
 | `/getActiveRentals`  | GET | Get Active Rentals |
 | `/getActiveRental/{id}`  | GET | Get Active Rental with ID |
