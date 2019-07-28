@@ -18,6 +18,7 @@
 		<!-- Drop and re-create the database schema on startup -->
 		<!-- <property name="hbm2ddl.auto">create</property> -->
 
+		<property name="show_sql">false</property>
 
 		<!-- dbcp connection pool configuration -->
 		<!-- <property name="dbcp.initialSize">5</property>
