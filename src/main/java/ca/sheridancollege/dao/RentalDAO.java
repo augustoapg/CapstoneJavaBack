@@ -23,7 +23,7 @@ public class RentalDAO {
 		session.beginTransaction();
 		
 //		rental.getBike().setBikeState(BikeState.RENTED);
-		session.save(rental);
+		session.merge(rental);
 
 		session.getTransaction().commit();
 		session.close();

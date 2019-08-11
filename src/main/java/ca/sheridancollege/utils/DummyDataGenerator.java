@@ -1,6 +1,7 @@
 package ca.sheridancollege.utils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.beans.KeyItem;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
+import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.beans.SystemUser;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
@@ -56,28 +58,75 @@ public class DummyDataGenerator {
 		sysUserDAO.addSysUser(sysUser2);
 	}
 
-//	public void generateRandomRentals() {
-//		List<Customer> customers = custDAO.getAllCustomer();
-//		List<Bike> bikes = bikeDAO.getAllBikes();
-//		
-//		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), bikes.get(0), "");
-//		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), bikes.get(1), "");
-//		
-//		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
-//		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
-//		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
-//		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), bikes.get(2), "");
-//		
-//		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
-//		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
-//		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
-//		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), bikes.get(3), "");
-//		
-//		rentalDAO.addRental(rentalActive);
-//		rentalDAO.addRental(rentalLate);
-//		rentalDAO.addRental(rentalReturned);
-//		rentalDAO.addRental(rentalReturnedLate);
-//	}
+	public void generateRandomRentals() {
+		List<Customer> customers = custDAO.getAllCustomer();
+		List<Bike> bikes = bikeDAO.getAllBikes();
+		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
+		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
+		
+		System.out.println("about to create active list");
+		
+		List<RentalComponent> rcListActive = new ArrayList<RentalComponent>();
+		rcListActive.add(bikes.get(0));
+		rcListActive.add(lockItems.get(0));
+		rcListActive.add(keyItems.get(0));
+		
+		System.out.println("about to create late list");
+		
+		List<RentalComponent> rcListLate = new ArrayList<RentalComponent>();
+		rcListActive.add(bikes.get(1));
+		rcListActive.add(lockItems.get(1));
+		rcListActive.add(keyItems.get(1));
+		
+		System.out.println("about to create rtn list");
+		
+		List<RentalComponent> rcListReturned = new ArrayList<RentalComponent>();
+		rcListActive.add(bikes.get(2));
+		rcListActive.add(lockItems.get(2));
+		rcListActive.add(keyItems.get(2));
+		
+		System.out.println("about to create rtn late list");
+		
+		List<RentalComponent> rcListReturnedLate = new ArrayList<RentalComponent>();
+		rcListActive.add(bikes.get(3));
+		rcListActive.add(lockItems.get(3));
+		rcListActive.add(keyItems.get(3));
+		
+		System.out.println("about to create rental active");
+		
+		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), rcListActive, "");
+		
+		System.out.println("about to create rental late");
+		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), rcListLate, "");
+		
+		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
+		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
+		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
+		System.out.println("about to create rental returned");
+		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), rcListReturned, "");
+		
+		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
+		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
+		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
+		System.out.println("about to create rental rtrned late");
+		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), rcListReturnedLate, "");
+		
+		System.out.println("about to add active into dao");
+		
+		rentalDAO.addRental(rentalActive);
+		
+		System.out.println("about to add late into dao");
+		
+		rentalDAO.addRental(rentalLate);
+		
+		System.out.println("about to add returned into dao");
+		
+		rentalDAO.addRental(rentalReturned);
+		
+		System.out.println("about to add returned late into dao");
+		
+		rentalDAO.addRental(rentalReturnedLate);
+	}
 
 	public void generateRandomKeyLocks(int quantityOfKeyLocks) {
 		for(int i = 1; i < quantityOfKeyLocks + 1; i++) {

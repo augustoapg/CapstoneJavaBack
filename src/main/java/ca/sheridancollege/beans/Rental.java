@@ -41,7 +41,7 @@ public class Rental implements Serializable {
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
 	
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany(cascade=CascadeType.PERSIST)
 	private List<RentalComponent> rentalComponents;
 	private String comment;
 	

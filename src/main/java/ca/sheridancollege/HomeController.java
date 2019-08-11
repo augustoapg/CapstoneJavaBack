@@ -44,9 +44,9 @@ public class HomeController {
 		
 		dummyData.generateRandomBikes(10);
 		dummyData.generateRandomCustomer(30);
-//		dummyData.generateRandomRentals();
-		dummyData.generateRandomSystemUsers();
 		dummyData.generateRandomKeyLocks(20);
+		dummyData.generateRandomRentals();
+		dummyData.generateRandomSystemUsers();
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
