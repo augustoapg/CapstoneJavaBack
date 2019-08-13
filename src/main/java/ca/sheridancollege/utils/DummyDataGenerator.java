@@ -64,67 +64,42 @@ public class DummyDataGenerator {
 		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
 		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
 		
-		System.out.println("about to create active list");
-		
 		List<RentalComponent> rcListActive = new ArrayList<RentalComponent>();
 		rcListActive.add(bikes.get(0));
 		rcListActive.add(lockItems.get(0));
 		rcListActive.add(keyItems.get(0));
 		
-		System.out.println("about to create late list");
-		
 		List<RentalComponent> rcListLate = new ArrayList<RentalComponent>();
-		rcListActive.add(bikes.get(1));
-		rcListActive.add(lockItems.get(1));
-		rcListActive.add(keyItems.get(1));
-		
-		System.out.println("about to create rtn list");
+		rcListLate.add(bikes.get(1));
+		rcListLate.add(lockItems.get(1));
+		rcListLate.add(keyItems.get(1));
 		
 		List<RentalComponent> rcListReturned = new ArrayList<RentalComponent>();
-		rcListActive.add(bikes.get(2));
-		rcListActive.add(lockItems.get(2));
-		rcListActive.add(keyItems.get(2));
-		
-		System.out.println("about to create rtn late list");
+		rcListReturned.add(bikes.get(2));
+		rcListReturned.add(lockItems.get(2));
+		rcListReturned.add(keyItems.get(2));
 		
 		List<RentalComponent> rcListReturnedLate = new ArrayList<RentalComponent>();
-		rcListActive.add(bikes.get(3));
-		rcListActive.add(lockItems.get(3));
-		rcListActive.add(keyItems.get(3));
-		
-		System.out.println("about to create rental active");
+		rcListReturnedLate.add(bikes.get(3));
+		rcListReturnedLate.add(lockItems.get(3));
+		rcListReturnedLate.add(keyItems.get(3));
 		
 		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), rcListActive, "");
-		
-		System.out.println("about to create rental late");
 		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), rcListLate, "");
 		
 		LocalDate returnedSignOut = setRandomSignedOutDate("returned");
 		LocalDate returnedDue = setRandomDueDate("returned", returnedSignOut);
 		LocalDate returnedReturn = setRandomReturnedDate("returned", returnedDue);
-		System.out.println("about to create rental returned");
 		Rental rentalReturned = new Rental(returnedSignOut, returnedDue, returnedReturn, customers.get(2), rcListReturned, "");
 		
 		LocalDate returnedLateSignOut = setRandomSignedOutDate("returned_late");
 		LocalDate returnedLateDue = setRandomDueDate("returned_late", returnedLateSignOut);
 		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
-		System.out.println("about to create rental rtrned late");
 		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), rcListReturnedLate, "");
 		
-		System.out.println("about to add active into dao");
-		
 		rentalDAO.addRental(rentalActive);
-		
-		System.out.println("about to add late into dao");
-		
 		rentalDAO.addRental(rentalLate);
-		
-		System.out.println("about to add returned into dao");
-		
 		rentalDAO.addRental(rentalReturned);
-		
-		System.out.println("about to add returned late into dao");
-		
 		rentalDAO.addRental(rentalReturnedLate);
 	}
 
