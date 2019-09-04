@@ -10,10 +10,17 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.beans.KeyItem;
+import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
+import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.KeyState;
+import ca.sheridancollege.enums.LockState;
 
 public class RentalDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
@@ -22,7 +29,27 @@ public class RentalDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-//		rental.getBike().setBikeState(BikeState.RENTED);
+		// update all rentalComponents status according to their type
+		for (RentalComponent rc : rental.getRentalComponents()) {
+			String rentalComponentId = rc.getId();
+					
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = (Bike)rc;
+					bike.setBikeState(BikeState.RENTED);
+					break;
+				case 'L':
+					LockItem lockItem = (LockItem)rc;
+					lockItem.setLockState(LockState.RENTED);
+					break;
+				case 'K':
+					KeyItem keyItem = (KeyItem)rc;
+					keyItem.setKeyState(KeyState.RENTED);
+					break;
+				default:
+					break;
+			}
+		}
 		session.save(rental);
 
 		session.getTransaction().commit();
@@ -49,8 +76,10 @@ public class RentalDAO {
 		Query query = session.getNamedQuery("Rental.byID");
 		query.setParameter("id", id);
 
+		System.out.println(id);
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
+		System.out.println(rentals);
 		session.getTransaction().commit();
 		session.close();
 

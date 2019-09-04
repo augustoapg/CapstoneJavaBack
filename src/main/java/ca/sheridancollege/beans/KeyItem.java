@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NamedQuery(name="KeyItem.all", query="from KeyItem")
+@NamedQuery(name="KeyItem.byID", query="from KeyItem where id=:id")
 public class KeyItem extends RentalComponent implements Serializable {
 	
 	private KeyState keyState;

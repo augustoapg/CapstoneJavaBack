@@ -10,6 +10,7 @@
 
 package ca.sheridancollege;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.KeyState;
+import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -37,6 +40,7 @@ public class HomeController {
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	KeyLockDAO keyLockDAO = new KeyLockDAO();
+	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	@RequestMapping(value = "/addDummyData", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> addDummyData(Model model) {
@@ -252,39 +256,70 @@ public class HomeController {
 	}
 	
 	
-//	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
-//			produces = {"application/json"}, consumes="application/json")
-//	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
-//		
-//		ObjectMapper mapper = new ObjectMapper();
-//		ObjectNode objNode = mapper.createObjectNode();
-//		
-//		int sheridanId = rental.getCustomer().getSheridanId();
-//		Customer customer = custDAO.getCustomer(sheridanId);
-//		int bikeId = rental.getBike().getId();
-//		Bike bike = bikeDAO.getBikeById(bikeId);
-//		
-//		if(customer == null) {
-//			objNode.put("message", "Customer does not exist");
-//			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-//		} else if(bike == null) {
-//			objNode.put("message", "Bike does not exist");
-//			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-//		} else if(bike.getBikeState() != BikeState.AVAILABLE) {
-//			objNode.put("message", "Bike is not available");
-//			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-//		}
-//		
-//		rental.setCustomer(customer);
-//		rental.setBike(bike);
-//		rental.setSignOutDate(LocalDate.now());
-//		rental.setDueDate(LocalDate.now().plusDays(7));
-//		bike.setBikeState(BikeState.RENTED);
-//		rentalDAO.addRental(rental);
-//				
-//		objNode.put("message", "Rental was added");
-//		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-//	}
+	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
+			produces = {"application/json"}, consumes="application/json")
+	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
+		System.out.println("I got here");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		// get all customer data and return error if customer not found
+		int sheridanId = rental.getCustomer().getSheridanId();
+		Customer customer = custDAO.getCustomer(sheridanId);
+		
+		if(customer == null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer does not exist: " + rental.getCustomer().getSheridanId());
+		}
+		
+		// get all RentalComponents
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
+		List<RentalComponent> rentalComponentsUpdated = new ArrayList<RentalComponent>();
+		
+		// get all data for each rentalComponent. Returns BadRequest in case RentalComponent does
+		// not start with valid character
+		for (RentalComponent rc : rentalComponents) {
+			String rentalComponentId = rc.getId();
+			
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = bikeDAO.getBikeById(rentalComponentId);
+					if(bike == null) {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					rentalComponentsUpdated.add(bike);
+					break;
+				case 'L':
+					LockItem lockItem = keyLockDAO.getLockItemById(rentalComponentId);
+					if(lockItem == null) {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					rentalComponentsUpdated.add(lockItem);
+					break;
+				case 'K':
+					KeyItem keyItem = keyLockDAO.getKeyItemById(rentalComponentId);
+					if(keyItem == null) {
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					rentalComponentsUpdated.add(keyItem);
+					break;
+	
+				default:
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + rentalComponentId + " is not valid");
+			}
+		}
+		System.out.println("I got hereee");
+		
+		rental.setCustomer(customer);
+		rental.setRentalComponents(rentalComponentsUpdated);
+		rental.setSignOutDate(LocalDate.now());
+		rental.setDueDate(LocalDate.now().plusDays(7));
+		
+		rentalDAO.addRental(rental);
+
+		objNode.put("message", "Rental was added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/newBike", method = RequestMethod.POST,
 			produces = {"application/json"}, consumes = "application/json")

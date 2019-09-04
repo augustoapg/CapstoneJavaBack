@@ -40,7 +40,7 @@ public class BikeDAO {
 		session.close();
 	}
 
-	public Bike getBikeById(int id) {
+	public Bike getBikeById(String id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 

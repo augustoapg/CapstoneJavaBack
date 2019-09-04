@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @NamedQuery(name="LockItem.all", query="from LockItem")
+@NamedQuery(name="LockItem.byID", query="from LockItem where id=:id")
 public class LockItem extends RentalComponent implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL)
