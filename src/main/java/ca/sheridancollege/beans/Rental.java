@@ -17,6 +17,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import ca.sheridancollege.enums.RentalState;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +45,7 @@ public class Rental implements Serializable {
 	private Customer customer;
 	
 	@ManyToMany(cascade=CascadeType.PERSIST)
+	@Fetch(FetchMode.JOIN)
 	private List<RentalComponent> rentalComponents;
 	private String comment;
 	
