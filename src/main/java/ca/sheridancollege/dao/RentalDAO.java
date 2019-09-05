@@ -24,32 +24,45 @@ import ca.sheridancollege.enums.LockState;
 
 public class RentalDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+	
+	BikeDAO bikeDAO = new BikeDAO();
+	KeyLockDAO keyLockDAO = new KeyLockDAO();
 
 	public void addRental(Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
+		
 		// update all rentalComponents status according to their type
-		for (RentalComponent rc : rental.getRentalComponents()) {
-			String rentalComponentId = rc.getId();
+		for (RentalComponent rentalComponent : rentalComponents) {
+			String rentalComponentId = rentalComponent.getId();
 					
 			switch (rentalComponentId.charAt(0)) {
 				case 'B':
-					Bike bike = (Bike)rc;
+					Bike bike = (Bike)rentalComponent;
+					System.out.println("updating bike status: " + bike.getId());
 					bike.setBikeState(BikeState.RENTED);
+					bikeDAO.editBike(bike);
 					break;
 				case 'L':
-					LockItem lockItem = (LockItem)rc;
+					LockItem lockItem = (LockItem)rentalComponent;
+					System.out.println("updating lock status: " + lockItem.getId());
 					lockItem.setLockState(LockState.RENTED);
+					keyLockDAO.editLockItem(lockItem);
 					break;
 				case 'K':
-					KeyItem keyItem = (KeyItem)rc;
+					KeyItem keyItem = (KeyItem)rentalComponent;
+					System.out.println("updating key status: " + keyItem.getId());
 					keyItem.setKeyState(KeyState.RENTED);
+					keyLockDAO.editKeyItem(keyItem);
 					break;
 				default:
 					break;
 			}
 		}
+		// set updated list of components back to rental object
+		rental.setRentalComponents(rentalComponents);
 		session.save(rental);
 
 		session.getTransaction().commit();
