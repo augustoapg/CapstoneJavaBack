@@ -21,7 +21,7 @@
 	    <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
 	    <!-- JDBC connection pool (use the built-in) -->
-	    <property name="connection.pool_size">-1</property>
+	    <!-- <property name="connection.pool_size">1</property> -->
 	
 		<!-- dbcp connection pool configuration -->
 		<!-- <property name="dbcp.initialSize">5</property>
@@ -31,13 +31,13 @@
 		<property name="dbcp.maxWaitMillis">-1</property> -->
 
 	    <!-- JDBC connection pool (use the built-in) -->
-	    <property name="connection.pool_size">100</property>
+	    <property name="connection.pool_size">200</property>
 	
 	    <!-- Echo all executed SQL to stdout -->
 	    <property name="show_sql">true</property>
 	
 	    <!-- Drop and re-create the database schema on startup -->
-	    <property name="hbm2ddl.auto">update</property>
+	    <property name="hbm2ddl.auto">create</property>
 
 		<!-- Name the annotated Entity classes -->
 		<mapping class="ca.sheridancollege.beans.RentalComponent" />
