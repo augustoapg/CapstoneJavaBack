@@ -10,19 +10,59 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.beans.KeyItem;
+import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
+import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.KeyState;
+import ca.sheridancollege.enums.LockState;
 
 public class RentalDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+	
+	BikeDAO bikeDAO = new BikeDAO();
+	KeyLockDAO keyLockDAO = new KeyLockDAO();
 
 	public void addRental(Rental rental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		rental.getBike().setBikeState(BikeState.RENTED);
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
+		
+		// update all rentalComponents status according to their type
+		for (RentalComponent rentalComponent : rentalComponents) {
+			String rentalComponentId = rentalComponent.getId();
+					
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = (Bike)rentalComponent;
+					System.out.println("updating bike status: " + bike.getId());
+					bike.setBikeState(BikeState.RENTED);
+					bikeDAO.editBike(bike);
+					break;
+				case 'L':
+					LockItem lockItem = (LockItem)rentalComponent;
+					System.out.println("updating lock status: " + lockItem.getId());
+					lockItem.setLockState(LockState.RENTED);
+					keyLockDAO.editLockItem(lockItem);
+					break;
+				case 'K':
+					KeyItem keyItem = (KeyItem)rentalComponent;
+					System.out.println("updating key status: " + keyItem.getId());
+					keyItem.setKeyState(KeyState.RENTED);
+					keyLockDAO.editKeyItem(keyItem);
+					break;
+				default:
+					break;
+			}
+		}
+		// set updated list of components back to rental object
+		rental.setRentalComponents(rentalComponents);
 		session.save(rental);
 
 		session.getTransaction().commit();
@@ -48,9 +88,9 @@ public class RentalDAO {
 
 		Query query = session.getNamedQuery("Rental.byID");
 		query.setParameter("id", id);
-
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
+		System.out.println(rentals);
 		session.getTransaction().commit();
 		session.close();
 
@@ -74,25 +114,61 @@ public class RentalDAO {
 
 		return rentals;
 	}
+	
+	public Rental getActiveRental(int id) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.active");
+		query.setParameter("id", id);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
+	}
 
 	public List<Rental> getActiveRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.active");
+		Query query = session.getNamedQuery("Rental.allActive");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
 		return rentals;
+	}
+	
+	public Rental getArchiveRental(int id) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.archive");
+		query.setParameter("id", id);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
 	}
 
 	public List<Rental> getArchiveRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.archive");
+		Query query = session.getNamedQuery("Rental.allArchive");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
@@ -101,22 +177,44 @@ public class RentalDAO {
 		return rentals;
 	}
 
-	public void returnRental(Rental newRental, Rental rental) {
+	public void returnRental(Rental rental, Rental newRental) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
 		rental.setComment(newRental.getComment());
 		rental.setReturnedDate(LocalDate.now());
 		
-		Bike bike = rental.getBike();
-		rental.getBike().setBikeState(BikeState.AVAILABLE);
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
 		
-		session.update(bike);
+		// update all rentalComponents status according to their type
+		for (RentalComponent rentalComponent : rentalComponents) {
+			String rentalComponentId = rentalComponent.getId();
+					
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = (Bike)rentalComponent;
+					bike.setBikeState(BikeState.AVAILABLE);
+					bikeDAO.editBike(bike);
+					break;
+				case 'L':
+					LockItem lockItem = (LockItem)rentalComponent;
+					lockItem.setLockState(LockState.AVAILABLE);
+					keyLockDAO.editLockItem(lockItem);
+					break;
+				case 'K':
+					KeyItem keyItem = (KeyItem)rentalComponent;
+					keyItem.setKeyState(KeyState.AVAILABLE);
+					keyLockDAO.editKeyItem(keyItem);
+					break;
+				default:
+					break;
+			}
+		}
+		
 		session.update(rental);
 
 		session.getTransaction().commit();
 		session.close();
-		
 	}
 
 	public void editRental(Rental newRental) {

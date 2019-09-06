@@ -2,8 +2,11 @@ package ca.sheridancollege.beans;
 
 import java.io.Serializable;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+
 import ca.sheridancollege.enums.KeyState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,8 +16,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
-public class KeyItem implements Serializable {
-	@Id
-	private String id;
+@NamedQuery(name="KeyItem.all", query="from KeyItem")
+@NamedQuery(name="KeyItem.byID", query="from KeyItem where id=:id")
+public class KeyItem extends RentalComponent implements Serializable {
+	
 	private KeyState keyState;
 }

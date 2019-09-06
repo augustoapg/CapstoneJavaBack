@@ -10,6 +10,7 @@
 
 package ca.sheridancollege;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
@@ -23,10 +24,8 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ca.sheridancollege.dao.*;
-import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -39,6 +38,7 @@ public class HomeController {
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	KeyLockDAO keyLockDAO = new KeyLockDAO();
+	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -48,9 +48,9 @@ public class HomeController {
 		
 		dummyData.generateRandomBikes(10);
 		dummyData.generateRandomCustomer(30);
+		dummyData.generateRandomKeyLocks(20);
 		dummyData.generateRandomRentals();
 		dummyData.generateRandomSystemUsers();
-		dummyData.generateRandomKeyLocks(20);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
@@ -131,82 +131,47 @@ public class HomeController {
 
 	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getActiveRentals() {
-		ObjectMapper mapper = new ObjectMapper();
-		ArrayNode arrayNode = mapper.createArrayNode();
-
 		List<Rental> rentals = rentalDAO.getActiveRentals();
 
-		for (Rental r : rentals) {
-			ObjectNode objNode = mapper.createObjectNode();
-			objNode.put("rentalId", r.getId());
-			if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
-			else objNode.put("signOutDate", "null");
-			
-			if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
-			else objNode.put("dueDate", "null");
-			
-			objNode.put("comment", r.getComment());
-			objNode.put("status", r.getRentalState());
-			
-			Customer customer = r.getCustomer();
-			
-			objNode.put("customerName", customer.getFirstName() + " " + r.getCustomer().getLastName());
-			objNode.put("sheridanId", customer.getSheridanId());
-			objNode.put("sheridanEmail", customer.getSheridanEmail());
-			objNode.put("personalEmail", customer.getPersonalEmail());
-			objNode.put("phone", customer.getPhone());
-			objNode.put("type", customer.getType().getCustomerType());
-			objNode.put("bikeId", r.getBike().getId());
-
-			arrayNode.add(objNode);
+		if (rentals.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No active rentals were found");
 		}
 		log.info("/getActiveRentals - Getting All Active Rentals - " + rentals.size() + " retrieved");
-		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/getActiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getActiveRental(@PathVariable int id) {
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
+		Rental rental = rentalDAO.getActiveRental(id);
 
-		Rental rental = rentalDAO.getRental(id);
-		
-		if(rental != null) {
-			objNode.put("rentalId", rental.getId());
-			if  (rental.getSignOutDate() != null) objNode.put("signOutDate", rental.getSignOutDate().toString());
-			else objNode.put("signOutDate", "null");
-			
-			if  (rental.getDueDate() != null) objNode.put("dueDate", rental.getDueDate().toString());
-			else objNode.put("dueDate", "null");
-			
-			objNode.put("comment", rental.getComment());
-			objNode.put("status", rental.getRentalState());
-			
-			Customer customer = rental.getCustomer();
-			
-			objNode.put("customerName", customer.getFirstName() + " " + rental.getCustomer().getLastName());
-			objNode.put("sheridanId", customer.getSheridanId());
-			objNode.put("sheridanEmail", customer.getSheridanEmail());
-			objNode.put("personalEmail", customer.getPersonalEmail());
-			objNode.put("phone", customer.getPhone());
-			objNode.put("type", customer.getType().getCustomerType());
-			objNode.put("bikeId", rental.getBike().getId());
-
-		} else {
+		if(rental == null) {
 			log.info("/getActiveRental/{id} - Active Rental not found with ID: " + id);
-			objNode.put("message", "Rental not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Active rental not found: " + id);
 		}
 		
 		log.info("/getActiveRental/{id} - Getting Active Rental with ID: " + id);
-		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getArchiveRentals() {
 		List<Rental> rentals = rentalDAO.getArchiveRentals();
 		log.info("/getArchivedRentals - Getting All Archived Rentals- " + rentals.size() + " retrieved");
+		
+		if (rentals.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No archive rentals were found");
+		}
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getArchiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchiveRental(@PathVariable int id) {
+		Rental rental = rentalDAO.getArchiveRental(id);
+
+		if(rental == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + id);
+		}
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
@@ -217,10 +182,8 @@ public class HomeController {
 		Bike bike = bikeDAO.getBikeById(newBike.getId());
 	    if (bike == null) {
 	    	log.info("/editBike/{id} - Bike not found with ID: " + newBike.getId());
-	    	objNode.put("message", "Bike was not found");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bike not found: " + newBike.getId());
 	    }
-	    newBike.setId(bike.getId());
 	    bikeDAO.editBike(newBike);
 	    
 	    log.info("/editBike/{id} - Edited Bike with ID: " + newBike.getId());
@@ -233,20 +196,19 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		Rental rental = rentalDAO.getRental(newRental.getId());
-	    if (rental == null) {
-	    	objNode.put("message", "Rental was not found");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+		Rental rentalToReturn = rentalDAO.getRental(newRental.getId());
+	    if (rentalToReturn == null) {
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Rental was not found: " + newRental.getId());
 	    }
 	    // If bike was returned before
-	    else if ("Returned".equals(rental.getRentalState().toString()) || 
-	    		"Returned Late".equals(rental.getRentalState().toString())) {
-	    	
+
+	    else if ("Returned".equals(rentalToReturn.getRentalState().toString()) || 
+	    		"Returned Late".equals(rentalToReturn.getRentalState().toString())) {
 	    	log.info("/returnRental - Error. Bike has been returned. Rental ID: " + newRental.getId());
-	    	objNode.put("message", "This rental has already ended");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("This rental has already ended: " + newRental.getId());
 	    }
-	    rentalDAO.returnRental(newRental, rental);
+	    
+	    rentalDAO.returnRental(rentalToReturn, newRental);
 	    
 	    log.info("/returnRental - Returned Bike with rental ID: " + newRental.getId());
 		objNode.put("message", "Bike has been returned");
@@ -281,30 +243,66 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
+		// get all customer data and return error if customer not found
 		int sheridanId = rental.getCustomer().getSheridanId();
 		Customer customer = custDAO.getCustomer(sheridanId);
-		int bikeId = rental.getBike().getId();
-		Bike bike = bikeDAO.getBikeById(bikeId);
 		
-		if(customer == null) {		
+		if(customer == null) {
 			log.info("/newRental - Customer does not exist with ID: " + sheridanId);
-			objNode.put("message", "Customer does not exist");
-			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-		} else if(bike == null) {
-			log.info("/newRental - Bike does not exist with ID: " + bikeId);
-			objNode.put("message", "Bike does not exist");
-			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
-		} else if(bike.getBikeState() != BikeState.AVAILABLE) {
-			log.info("/newRental - Bike is not available with ID: " + bikeId);
-			objNode.put("message", "Bike is not available");
-			return new ResponseEntity<Object>(HttpStatus.CONFLICT);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Customer does not exist: " + rental.getCustomer().getSheridanId());
+		}
+		
+		// get all RentalComponents
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
+		List<RentalComponent> rentalComponentsUpdated = new ArrayList<RentalComponent>();
+		
+		// get all data for each rentalComponent. Returns BadRequest in case RentalComponent does
+		// not start with valid character
+		for (RentalComponent rc : rentalComponents) {
+			String rentalComponentId = rc.getId();
+			
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = bikeDAO.getBikeById(rentalComponentId);
+					if(bike == null) {
+						log.info("/newRental - Bike does not exist with ID: " + rentalComponentId);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
+					// log.info("/newRental - Bike is not available with ID: " + rentalComponentId);
+					rentalComponentsUpdated.add(bike);
+					break;
+				case 'L':
+					LockItem lockItem = keyLockDAO.getLockItemById(rentalComponentId);
+					if(lockItem == null) {
+						log.info("/newRental - Lock does not exist with ID: " + rentalComponentId);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
+					// log.info("/newRental - Lock is not available with ID: " + rentalComponentId);
+					rentalComponentsUpdated.add(lockItem);
+					break;
+				case 'K':
+					KeyItem keyItem = keyLockDAO.getKeyItemById(rentalComponentId);
+					if(keyItem == null) {
+						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					}
+					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
+					// log.info("/newRental - Key is not available with ID: " + rentalComponentId);
+					rentalComponentsUpdated.add(keyItem);
+					break;
+	
+				default:
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + rentalComponentId + " is not valid");
+			}
 		}
 		
 		rental.setCustomer(customer);
-		rental.setBike(bike);
+		rental.setRentalComponents(rentalComponentsUpdated);
 		rental.setSignOutDate(LocalDate.now());
 		rental.setDueDate(LocalDate.now().plusDays(7));
-		bike.setBikeState(BikeState.RENTED);
+		
 		rentalDAO.addRental(rental);
 
 		log.info("/newRental - Added rental with ID: " + sheridanId);
@@ -318,14 +316,13 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		bikeDAO.addBike(newBike);
-		
+		String newBikeId = bikeDAO.addBike(newBike);
+
 		log.info("/newBike - Added bike with ID: " + newBike.getId());
-		objNode.put("message", "Bike was added");
+		objNode.put("message", "Bike was added with id " + newBikeId);
+		objNode.put("id", newBikeId);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
-	
-	
 
 	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {

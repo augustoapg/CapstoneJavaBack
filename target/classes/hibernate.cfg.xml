@@ -18,6 +18,7 @@
 		<!-- Drop and re-create the database schema on startup -->
 		<!-- <property name="hbm2ddl.auto">create</property> -->
 
+		<property name="show_sql">false</property>
 
 		<!-- dbcp connection pool configuration -->
 		<!-- <property name="dbcp.initialSize">5</property>
@@ -45,7 +46,10 @@
 	    <property name="hbm2ddl.auto">create</property>
 
 		<!-- Name the annotated Entity classes -->
+		<mapping class="ca.sheridancollege.beans.RentalComponent" />
 		<mapping class="ca.sheridancollege.beans.Bike" />
+		<mapping class="ca.sheridancollege.beans.LockItem" />
+		<mapping class="ca.sheridancollege.beans.KeyItem" />
 		<mapping class="ca.sheridancollege.beans.Customer" />
 		<mapping class="ca.sheridancollege.beans.Rental" />
 		<mapping class="ca.sheridancollege.beans.SystemUser" />

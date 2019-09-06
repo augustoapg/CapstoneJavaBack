@@ -10,15 +10,18 @@ import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.KeyItem;
 import ca.sheridancollege.beans.LockItem;
+import ca.sheridancollege.beans.RentalComponent;
 
 public class KeyLockDAO {
 
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
+	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	public void addKeyItem(KeyItem keyItem) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
+		keyItem.setId(rentalComponentDAO.getNewRentalComponentId("K"));
 		session.save(keyItem);
 
 		session.getTransaction().commit();
@@ -29,6 +32,7 @@ public class KeyLockDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
+		lockItem.setId(rentalComponentDAO.getNewRentalComponentId("L"));
 		session.save(lockItem);
 
 		session.getTransaction().commit();
