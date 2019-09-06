@@ -115,80 +115,45 @@ public class HomeController {
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
-//	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
-//	public ResponseEntity<Object> getActiveRentals() {
-//		ObjectMapper mapper = new ObjectMapper();
-//		ArrayNode arrayNode = mapper.createArrayNode();
-//
-//		List<Rental> rentals = rentalDAO.getActiveRentals();
-//
-//		for (Rental r : rentals) {
-//			ObjectNode objNode = mapper.createObjectNode();
-//			objNode.put("rentalId", r.getId());
-//			if  (r.getSignOutDate() != null) objNode.put("signOutDate", r.getSignOutDate().toString());
-//			else objNode.put("signOutDate", "null");
-//			
-//			if  (r.getDueDate() != null) objNode.put("dueDate", r.getDueDate().toString());
-//			else objNode.put("dueDate", "null");
-//			
-//			objNode.put("comment", r.getComment());
-//			objNode.put("status", r.getRentalState());
-//			
-//			Customer customer = r.getCustomer();
-//			
-//			objNode.put("customerName", customer.getFirstName() + " " + r.getCustomer().getLastName());
-//			objNode.put("sheridanId", customer.getSheridanId());
-//			objNode.put("sheridanEmail", customer.getSheridanEmail());
-//			objNode.put("personalEmail", customer.getPersonalEmail());
-//			objNode.put("phone", customer.getPhone());
-//			objNode.put("type", customer.getType().getCustomerType());
-//			objNode.put("bikeId", r.getBike().getId());
-//
-//			arrayNode.add(objNode);
-//		}
-//		return new ResponseEntity<Object>(arrayNode, HttpStatus.OK);
-//	}
-//	
-//	@RequestMapping(value = "/getActiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
-//	public ResponseEntity<Object> getActiveRental(@PathVariable int id) {
-//		ObjectMapper mapper = new ObjectMapper();
-//		ObjectNode objNode = mapper.createObjectNode();
-//
-//		Rental rental = rentalDAO.getRental(id);
-//		
-//		if(rental != null) {
-//			objNode.put("rentalId", rental.getId());
-//			if  (rental.getSignOutDate() != null) objNode.put("signOutDate", rental.getSignOutDate().toString());
-//			else objNode.put("signOutDate", "null");
-//			
-//			if  (rental.getDueDate() != null) objNode.put("dueDate", rental.getDueDate().toString());
-//			else objNode.put("dueDate", "null");
-//			
-//			objNode.put("comment", rental.getComment());
-//			objNode.put("status", rental.getRentalState());
-//			
-//			Customer customer = rental.getCustomer();
-//			
-//			objNode.put("customerName", customer.getFirstName() + " " + rental.getCustomer().getLastName());
-//			objNode.put("sheridanId", customer.getSheridanId());
-//			objNode.put("sheridanEmail", customer.getSheridanEmail());
-//			objNode.put("personalEmail", customer.getPersonalEmail());
-//			objNode.put("phone", customer.getPhone());
-//			objNode.put("type", customer.getType().getCustomerType());
-//			objNode.put("bikeId", rental.getBike().getId());
-//
-//		} else {
-//			objNode.put("message", "Rental not found");
-//			return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
-//		}
-//		
-//		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-//	}
+	@RequestMapping(value = "/getActiveRentals", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getActiveRentals() {
+		List<Rental> rentals = rentalDAO.getActiveRentals();
+
+		if (rentals.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No active rentals were found");
+		}
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/getActiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getActiveRental(@PathVariable int id) {
+		Rental rental = rentalDAO.getActiveRental(id);
+		
+		if(rental == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Active rental not found: " + id);
+		}
+		
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getArchiveRentals() {
 		List<Rental> rentals = rentalDAO.getArchiveRentals();
+		
+		if (rentals.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No archive rentals were found");
+		}
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getArchiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchiveRental(@PathVariable int id) {
+		Rental rental = rentalDAO.getArchiveRental(id);
+
+		if(rental == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + id);
+		}
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
@@ -196,15 +161,12 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-//		Bike bike = bikeDAO.getBikeById(newBike.getId());
-//	    if (bike == null) {
-//	    	objNode.put("message", "Bike was not found");
-//	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
-//	    }
-//	    newBike.setId(bike.getId());
+		Bike bike = bikeDAO.getBikeById(newBike.getId());
+	    if (bike == null) {
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bike not found: " + newBike.getId());
+	    }
 	    bikeDAO.editBike(newBike);
-	    
-	    
+
 		objNode.put("message", "Bike has been updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}

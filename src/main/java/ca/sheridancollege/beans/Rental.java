@@ -30,8 +30,10 @@ import lombok.NoArgsConstructor;
 
 @NamedQuery(name="Rental.byID", query="from Rental where id=:id")
 @NamedQuery(name="Rental.all", query="from Rental")
-@NamedQuery(name="Rental.active", query="from Rental where returnedDate is null")
-@NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null")
+@NamedQuery(name="Rental.active", query="from Rental where returnedDate is null and id=:id")
+@NamedQuery(name="Rental.allActive", query="from Rental where returnedDate is null")
+@NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null and id=:id")
+@NamedQuery(name="Rental.allArchive", query="from Rental where returnedDate is not null")
 public class Rental implements Serializable {
 	
 	@Id

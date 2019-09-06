@@ -88,8 +88,6 @@ public class RentalDAO {
 
 		Query query = session.getNamedQuery("Rental.byID");
 		query.setParameter("id", id);
-
-		System.out.println(id);
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		System.out.println(rentals);
@@ -116,12 +114,30 @@ public class RentalDAO {
 
 		return rentals;
 	}
+	
+	public Rental getActiveRental(int id) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.active");
+		query.setParameter("id", id);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
+	}
 
 	public List<Rental> getActiveRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.active");
+		Query query = session.getNamedQuery("Rental.allActive");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
@@ -129,12 +145,30 @@ public class RentalDAO {
 
 		return rentals;
 	}
+	
+	public Rental getArchiveRental(int id) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.archive");
+		query.setParameter("id", id);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
+	}
 
 	public List<Rental> getArchiveRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.archive");
+		Query query = session.getNamedQuery("Rental.allArchive");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
