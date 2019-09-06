@@ -11,8 +11,6 @@
 		<property name="connection.username">root</property>
 		<property name="connection.password">root</property> 
 		
-
-		
 		<property name="dialect">org.hibernate.dialect.MySQL8Dialect</property>
 	 -->
 		
@@ -23,9 +21,6 @@
 	    <property name="connection.username">klbtveksynxgjy</property>
 	    <property name="connection.password">a3e092c4b7237e500da52cd4d420cbadf0c0a4d7d60faed75c8296ecdbea9569</property>
 	    <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-
-	    <!-- JDBC connection pool (use the built-in) -->
-	    <!-- <property name="connection.pool_size">1</property> -->
 	
 		<!-- dbcp connection pool configuration -->
 		<property name="dbcp.initialSize">5</property>
@@ -33,9 +28,6 @@
 		<property name="dbcp.maxIdle">10</property>
 		<property name="dbcp.minIdle">5</property>
 		<property name="dbcp.maxWaitMillis">-1</property>
-
-	    <!-- JDBC connection pool (use the built-in) -->
-	    <property name="connection.pool_size">-1</property>
 
 	    <!-- JDBC connection pool (use the built-in) -->
 	    <property name="connection.pool_size">200</property>
