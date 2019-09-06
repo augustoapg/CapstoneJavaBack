@@ -143,22 +143,45 @@ public class RentalDAO {
 		return rentals;
 	}
 
-//	public void returnRental(Rental newRental, Rental rental) {
-//		Session session = sessionFactory.openSession();
-//		session.beginTransaction();
-//
-//		rental.setComment(newRental.getComment());
-//		rental.setReturnedDate(LocalDate.now());
-//		
-//		Bike bike = rental.getBike();
-//		rental.getBike().setBikeState(BikeState.AVAILABLE);
-//		
-//		session.update(bike);
-//		session.update(rental);
-//
-//		session.getTransaction().commit();
-//		session.close();
-//	}
+	public void returnRental(Rental rental, Rental newRental) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		rental.setComment(newRental.getComment());
+		rental.setReturnedDate(LocalDate.now());
+		
+		List<RentalComponent> rentalComponents = rental.getRentalComponents();
+		
+		// update all rentalComponents status according to their type
+		for (RentalComponent rentalComponent : rentalComponents) {
+			String rentalComponentId = rentalComponent.getId();
+					
+			switch (rentalComponentId.charAt(0)) {
+				case 'B':
+					Bike bike = (Bike)rentalComponent;
+					bike.setBikeState(BikeState.AVAILABLE);
+					bikeDAO.editBike(bike);
+					break;
+				case 'L':
+					LockItem lockItem = (LockItem)rentalComponent;
+					lockItem.setLockState(LockState.AVAILABLE);
+					keyLockDAO.editLockItem(lockItem);
+					break;
+				case 'K':
+					KeyItem keyItem = (KeyItem)rentalComponent;
+					keyItem.setKeyState(KeyState.AVAILABLE);
+					keyLockDAO.editKeyItem(keyItem);
+					break;
+				default:
+					break;
+			}
+		}
+		
+		session.update(rental);
+
+		session.getTransaction().commit();
+		session.close();
+	}
 
 	public void editRental(Rental newRental) {
 		Session session = sessionFactory.openSession();

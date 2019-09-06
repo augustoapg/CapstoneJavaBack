@@ -22,12 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import ca.sheridancollege.dao.*;
-import ca.sheridancollege.enums.BikeState;
-import ca.sheridancollege.enums.KeyState;
-import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -218,18 +214,17 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		Rental rental = rentalDAO.getRental(newRental.getId());
-	    if (rental == null) {
-	    	objNode.put("message", "Rental was not found");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+		Rental rentalToReturn = rentalDAO.getRental(newRental.getId());
+	    if (rentalToReturn == null) {
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Rental was not found: " + newRental.getId());
 	    }
 	    // If bike was returned before
-	    else if ("Returned".equals(rental.getRentalState().toString()) || 
-	    		"Returned Late".equals(rental.getRentalState().toString())) {
-	    	objNode.put("message", "This rental has already ended");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+	    else if ("Returned".equals(rentalToReturn.getRentalState().toString()) || 
+	    		"Returned Late".equals(rentalToReturn.getRentalState().toString())) {
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("This rental has already ended: " + newRental.getId());
 	    }
-//	    rentalDAO.returnRental(newRental, rental);
+	    
+	    rentalDAO.returnRental(rentalToReturn, newRental);
 	    
 	    
 		objNode.put("message", "Bike has been returned");
@@ -259,7 +254,6 @@ public class HomeController {
 	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
-		System.out.println("I got here");
 		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
@@ -308,7 +302,6 @@ public class HomeController {
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + rentalComponentId + " is not valid");
 			}
 		}
-		System.out.println("I got hereee");
 		
 		rental.setCustomer(customer);
 		rental.setRentalComponents(rentalComponentsUpdated);
