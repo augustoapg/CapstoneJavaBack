@@ -187,24 +187,32 @@ public class RentalDAO {
 		List<RentalComponent> rentalComponents = rental.getRentalComponents();
 		
 		// update all rentalComponents status according to their type
+		// NOTE: Only update component status to available if current status is RENTED. This
+		// is done to prevent overwriting another states such as MISSING, IN_MAINTENANCE, etc
 		for (RentalComponent rentalComponent : rentalComponents) {
 			String rentalComponentId = rentalComponent.getId();
 					
 			switch (rentalComponentId.charAt(0)) {
 				case 'B':
 					Bike bike = (Bike)rentalComponent;
-					bike.setBikeState(BikeState.AVAILABLE);
-					bikeDAO.editBike(bike);
+					if(bike.getBikeState() == BikeState.RENTED) {
+						bike.setBikeState(BikeState.AVAILABLE);
+						bikeDAO.editBike(bike);
+					}
 					break;
 				case 'L':
 					LockItem lockItem = (LockItem)rentalComponent;
-					lockItem.setLockState(LockState.AVAILABLE);
-					keyLockDAO.editLockItem(lockItem);
+					if(lockItem.getLockState() == LockState.RENTED) {
+						lockItem.setLockState(LockState.AVAILABLE);
+						keyLockDAO.editLockItem(lockItem);						
+					}
 					break;
 				case 'K':
 					KeyItem keyItem = (KeyItem)rentalComponent;
-					keyItem.setKeyState(KeyState.AVAILABLE);
-					keyLockDAO.editKeyItem(keyItem);
+					if(keyItem.getKeyState() == KeyState.RENTED) {
+						keyItem.setKeyState(KeyState.AVAILABLE);
+						keyLockDAO.editKeyItem(keyItem);
+					}
 					break;
 				default:
 					break;

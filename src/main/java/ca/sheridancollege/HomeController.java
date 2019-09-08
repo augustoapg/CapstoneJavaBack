@@ -26,6 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.sheridancollege.dao.*;
+import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.KeyState;
+import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
 import ca.sheridancollege.beans.SystemUser;
@@ -267,9 +270,10 @@ public class HomeController {
 					if(bike == null) {
 						log.info("/newRental - Bike does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					} else if(bike.getBikeState() != BikeState.AVAILABLE) {
+						log.info("/newRental - Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getBikeState());
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getBikeState());
 					}
-					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
-					// log.info("/newRental - Bike is not available with ID: " + rentalComponentId);
 					rentalComponentsUpdated.add(bike);
 					break;
 				case 'L':
@@ -277,9 +281,10 @@ public class HomeController {
 					if(lockItem == null) {
 						log.info("/newRental - Lock does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					} else if(lockItem.getLockState() != LockState.AVAILABLE) {
+						log.info("/newRental - Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getLockState());
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getLockState());
 					}
-					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
-					// log.info("/newRental - Lock is not available with ID: " + rentalComponentId);
 					rentalComponentsUpdated.add(lockItem);
 					break;
 				case 'K':
@@ -287,9 +292,10 @@ public class HomeController {
 					if(keyItem == null) {
 						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+					} else if(keyItem.getKeyState() != KeyState.AVAILABLE) {
+						log.info("/newRental - Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
 					}
-					// TODO: !!! REIMPLEMENT CHECK IF ITEM IS AVAILABLE
-					// log.info("/newRental - Key is not available with ID: " + rentalComponentId);
 					rentalComponentsUpdated.add(keyItem);
 					break;
 	
