@@ -103,12 +103,10 @@ public class DummyDataGenerator {
 		rentalDAO.addRental(rentalReturnedLate);
 	}
 
-	public void generateRandomKeyLocks(int quantityOfKeyLocks) {
-		for(int i = 1; i < quantityOfKeyLocks + 1; i++) {
-			KeyItem keyItem = new KeyItem(KeyState.AVAILABLE);
-			LockItem lockItem = new LockItem(keyItem, LockState.AVAILABLE);
-			keyLockDAO.addKeyItem(keyItem);
-			keyLockDAO.addLockItem(lockItem);
+	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) {
+		for(int i = 1; i < quantityOfLocks + 1; i++) {
+			LockItem lockItem = new LockItem(new ArrayList<KeyItem>(), LockState.AVAILABLE);
+			keyLockDAO.addLockWithNumOfKeys(lockItem, quantityOfKeysPerLock);
 		}
 	}
 
