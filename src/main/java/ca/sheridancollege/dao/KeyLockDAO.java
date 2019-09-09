@@ -1,5 +1,6 @@
 package ca.sheridancollege.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -11,6 +12,7 @@ import org.hibernate.cfg.Configuration;
 import ca.sheridancollege.beans.KeyItem;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.RentalComponent;
+import ca.sheridancollege.enums.KeyState;
 
 public class KeyLockDAO {
 
@@ -21,7 +23,9 @@ public class KeyLockDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		keyItem.setId(rentalComponentDAO.getNewRentalComponentId("K"));
+		if(keyItem.getId() == null) {			
+			keyItem.setId(rentalComponentDAO.getNewRentalComponentId("K"));
+		}
 		session.save(keyItem);
 
 		session.getTransaction().commit();
@@ -32,7 +36,44 @@ public class KeyLockDAO {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		lockItem.setId(rentalComponentDAO.getNewRentalComponentId("L"));
+		if(lockItem.getId() == null) {
+			lockItem.setId(rentalComponentDAO.getNewRentalComponentId("L"));			
+		}
+		session.save(lockItem);
+
+		session.getTransaction().commit();
+		session.close();
+	}
+	
+	public void addLockWithNumOfKeys(LockItem lockItem, int numOfKeys) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		String lockId = "";
+		String keyId = "";
+		List<KeyItem> keyItems = new ArrayList<KeyItem>();
+
+		// create new id if not yet there, or get old id
+		if(lockItem.getId() == null) {
+			lockId = rentalComponentDAO.getNewRentalComponentId("L");
+			lockItem.setId(lockId);
+		} else {
+			lockId = lockItem.getId();
+		}
+
+		// create keys and add them to DB
+		// key ids will be Kxyz-i, where xyz will match the lock's id and i will be the copy number (ex: K002-3) 
+		for(int i = 0; i < numOfKeys; i++) {
+			keyId = lockId.replace('L', 'K') + "-" + i;
+			KeyItem keyItem = new KeyItem(KeyState.AVAILABLE);
+			keyItem.setId(keyId);
+			addKeyItem(keyItem);
+			keyItems.add(keyItem);
+		}
+		
+		// add list of key items to lock
+		lockItem.setKeyItems(keyItems);
+		
 		session.save(lockItem);
 
 		session.getTransaction().commit();

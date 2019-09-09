@@ -51,7 +51,7 @@ public class HomeController {
 		
 		dummyData.generateRandomBikes(10);
 		dummyData.generateRandomCustomer(30);
-		dummyData.generateRandomKeyLocks(20);
+		dummyData.generateRandomKeyLocks(20, 4);
 		dummyData.generateRandomRentals();
 		dummyData.generateRandomSystemUsers();
 		
