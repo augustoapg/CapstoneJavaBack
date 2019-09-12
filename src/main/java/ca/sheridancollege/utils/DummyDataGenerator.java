@@ -13,7 +13,7 @@ import com.github.javafaker.Faker;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
-import ca.sheridancollege.beans.KeyItem;
+import ca.sheridancollege.beans.KeyItems;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
@@ -61,28 +61,28 @@ public class DummyDataGenerator {
 	public void generateRandomRentals() {
 		List<Customer> customers = custDAO.getAllCustomer();
 		List<Bike> bikes = bikeDAO.getAllBikes();
-		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
-		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
+		List<LockItem> lockItems = keyLockDAO.getAllKeysLocks();
+		// List<KeyItems> keyItems = keyLockDAO.getAllKeyItems();
 		
 		List<RentalComponent> rcListActive = new ArrayList<RentalComponent>();
 		rcListActive.add(bikes.get(0));
 		rcListActive.add(lockItems.get(0));
-		rcListActive.add(keyItems.get(0));
+		rcListActive.add(lockItems.get(0).getKeyItems().get(0));
 		
 		List<RentalComponent> rcListLate = new ArrayList<RentalComponent>();
 		rcListLate.add(bikes.get(1));
 		rcListLate.add(lockItems.get(1));
-		rcListLate.add(keyItems.get(1));
+		rcListActive.add(lockItems.get(1).getKeyItems().get(0));
 		
 		List<RentalComponent> rcListReturned = new ArrayList<RentalComponent>();
 		rcListReturned.add(bikes.get(2));
 		rcListReturned.add(lockItems.get(2));
-		rcListReturned.add(keyItems.get(2));
+		rcListActive.add(lockItems.get(2).getKeyItems().get(0));
 		
 		List<RentalComponent> rcListReturnedLate = new ArrayList<RentalComponent>();
 		rcListReturnedLate.add(bikes.get(3));
 		rcListReturnedLate.add(lockItems.get(3));
-		rcListReturnedLate.add(keyItems.get(3));
+		rcListActive.add(lockItems.get(3).getKeyItems().get(0));
 		
 		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), rcListActive, "");
 		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), rcListLate, "");
@@ -105,7 +105,7 @@ public class DummyDataGenerator {
 
 	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) {
 		for(int i = 1; i < quantityOfLocks + 1; i++) {
-			LockItem lockItem = new LockItem(new ArrayList<KeyItem>(), LockState.AVAILABLE);
+			LockItem lockItem = new LockItem(new ArrayList<KeyItems>(), LockState.AVAILABLE);
 			keyLockDAO.addLockWithNumOfKeys(lockItem, quantityOfKeysPerLock);
 		}
 	}

@@ -68,19 +68,35 @@ public class HomeController {
 		return new ResponseEntity<Object>(bikes, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/getLocks", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getLocks() {
-		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
-		log.info("/getLocks - Getting All Locks - " + lockItems.size() + " retrieved");
+	@RequestMapping(value = "/getAllKeysLocks", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getAllKeysLocks() {
+		List<LockItem> lockItems = keyLockDAO.getAllKeysLocks();
+		log.info("/getAllKeysLocks - Getting All Locks - " + lockItems.size() + " retrieved");
 		return new ResponseEntity<Object>(lockItems, HttpStatus.OK);
 	}
-	
-	@RequestMapping(value = "/getKeys", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getKeys() {
-		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
-		log.info("/getKeys - Getting All Keys - " + keyItems.size() + " retrieved");
-		return new ResponseEntity<Object>(keyItems, HttpStatus.OK);
+
+	@RequestMapping(value = "/getLockByID/{ID}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getLockByKeyID(@PathVariable String ID) {
+		LockItem lockItem = keyLockDAO.getLockByID(ID);
+		log.info("/getLockByKeyID/{ID} - Getting Lock - " + 1 + " retrieved");
+		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
 	}
+
+//	@RequestMapping(value = "/getKeysByLock/{ID}", method = RequestMethod.GET, produces = { "application/json" })
+//	public ResponseEntity<Object> getKeysByLockID(@PathVariable String ID) {
+//		// List<KeyItems> keyItems = keyLockDAO.getKeysByLockID(ID);
+//		LockItem lockItem = keyLockDAO.getLockByKeyID(ID);
+//		log.info("/getLockByKey - Getting Keys - " + 1 + " retrieved");
+//		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
+//	}
+
+
+//	@RequestMapping(value = "/getKeys", method = RequestMethod.GET, produces = { "application/json" })
+//	public ResponseEntity<Object> getKeys() {
+//		List<KeyItems> keyItems = keyLockDAO.getAllKeyItems();
+//		log.info("/getKeys - Getting All Keys - " + keyItems.size() + " retrieved");
+//		return new ResponseEntity<Object>(keyItems, HttpStatus.OK);
+//	}
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentals() {
@@ -288,7 +304,7 @@ public class HomeController {
 					rentalComponentsUpdated.add(lockItem);
 					break;
 				case 'K':
-					KeyItem keyItem = keyLockDAO.getKeyItemById(rentalComponentId);
+					KeyItems keyItem = keyLockDAO.getKeyItemById(rentalComponentId);
 					if(keyItem == null) {
 						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
@@ -349,6 +365,79 @@ public class HomeController {
 		objNode.put("message", "Rental was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value="/editLock", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editRental(@RequestBody LockItem newLock) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+		
+		LockItem lockItem = keyLockDAO.getLockItemById(newLock.getId());
+		
+		if (lockItem == null) {
+			log.info("/editLock - Lock was not found with ID: " + newLock.getId());
+			objNode.put("message", "Lock was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		} 
+		
+		// If Lock is missing, change KeyState to MISSING_LOCK
+		else if (newLock.getLockState() == LockState.MISSING) {
+			List<KeyItems> keys = newLock.getKeyItems();
+			for (KeyItems key : keys) {
+				if (key.getKeyState() != KeyState.MISSING) {
+					key.setKeyState(KeyState.MISSING_LOCK);
+					keyLockDAO.editKeyItem(key);
+				}
+			}
+		}
+		
+		keyLockDAO.editLockItem(newLock);
+		
+		log.info("/editLock - Edited Lock with ID: " + newLock.getId());
+		objNode.put("message", "Lock was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}	
+	
+	
+	@RequestMapping(value="/editKey", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editRental(@RequestBody KeyItems newKey) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+		
+		KeyItems keyItem = keyLockDAO.getKeyItemById(newKey.getId());
+		
+		if (keyItem == null) {
+			log.info("/editRental - Key was not found with ID: " + newKey.getId());
+			objNode.put("message", "Key was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+		
+		
+		
+		
+//		// Get key's lock, then get list of keys
+//		String lockId = keyLockDAO.getLockItemIdByKeyId(newKey.getId());
+//		LockItem lock = keyLockDAO.getLockItemById(lockId);
+//		lock.getKeyItemByID(newKey.getId()).setKeyState(newKey.getKeyState());
+//		
+//		// Check if keys are all missing
+//		lock.getKeyItems();
+//		
+//		boolean areMissing = lock.allKeysAreMissing();
+//		// If so, change lock to MISSING_KEYS
+//		
+//		keyLockDAO.editKeyItem(newKey);
+//		
+//		if (areMissing)  {
+//			lock.setLockState(LockState.MISSING_KEY);
+//			keyLockDAO.editLockItem(lock);
+//		}
+		
+		log.info("/editKey - Edited Key with ID: " + newKey.getId());
+		objNode.put("message", "Key was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
 	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {

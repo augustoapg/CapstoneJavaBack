@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.sheridancollege.beans.Bike;
-import ca.sheridancollege.beans.KeyItem;
+import ca.sheridancollege.beans.KeyItems;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
@@ -52,7 +52,7 @@ public class RentalDAO {
 					keyLockDAO.editLockItem(lockItem);
 					break;
 				case 'K':
-					KeyItem keyItem = (KeyItem)rentalComponent;
+					KeyItems keyItem = (KeyItems)rentalComponent;
 					System.out.println("updating key status: " + keyItem.getId());
 					keyItem.setKeyState(KeyState.RENTED);
 					keyLockDAO.editKeyItem(keyItem);
@@ -208,7 +208,7 @@ public class RentalDAO {
 					}
 					break;
 				case 'K':
-					KeyItem keyItem = (KeyItem)rentalComponent;
+					KeyItems keyItem = (KeyItems)rentalComponent;
 					if(keyItem.getKeyState() == KeyState.RENTED) {
 						keyItem.setKeyState(KeyState.AVAILABLE);
 						keyLockDAO.editKeyItem(keyItem);

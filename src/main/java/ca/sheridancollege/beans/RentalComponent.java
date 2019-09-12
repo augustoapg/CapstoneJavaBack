@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Bike.class, name = "Bike"),
     @JsonSubTypes.Type(value = LockItem.class, name = "LockItem"),
-    @JsonSubTypes.Type(value = KeyItem.class, name = "KeyItem"),}
+    @JsonSubTypes.Type(value = KeyItems.class, name = "KeyItems"),}
 )
 public abstract class RentalComponent {
 
