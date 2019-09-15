@@ -24,11 +24,11 @@ import lombok.NoArgsConstructor;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Bike.class, name = "Bike"),
-    @JsonSubTypes.Type(value = LockItem.class, name = "LockItem"),
-    @JsonSubTypes.Type(value = KeyItem.class, name = "KeyItem"),}
+    @JsonSubTypes.Type(value = LockItem.class, name = "LockItem")}
 )
 public abstract class RentalComponent {
 
 	@Id
 	private String id;
+	private String notes;
 }

@@ -1,7 +1,9 @@
 package ca.sheridancollege.beans;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -26,8 +28,8 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="LockItem.all", query="from LockItem")
 @NamedQuery(name="LockItem.byID", query="from LockItem where id=:id")
 public class LockItem extends RentalComponent implements Serializable {
-	@OneToMany(cascade = CascadeType.ALL)
-	@Fetch(FetchMode.JOIN)
-	private List<KeyItem> keyItems;
+
+	private int keyNum;
 	private LockState lockState;
+	
 }

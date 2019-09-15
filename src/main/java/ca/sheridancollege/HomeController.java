@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.BikeState;
-import ca.sheridancollege.enums.KeyState;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
@@ -40,7 +39,7 @@ public class HomeController {
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
-	KeyLockDAO keyLockDAO = new KeyLockDAO();
+	LockDAO lockDAO = new LockDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
@@ -70,16 +69,9 @@ public class HomeController {
 	
 	@RequestMapping(value = "/getLocks", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getLocks() {
-		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
+		List<LockItem> lockItems = lockDAO.getAllLockItems();
 		log.info("/getLocks - Getting All Locks - " + lockItems.size() + " retrieved");
 		return new ResponseEntity<Object>(lockItems, HttpStatus.OK);
-	}
-	
-	@RequestMapping(value = "/getKeys", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getKeys() {
-		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
-		log.info("/getKeys - Getting All Keys - " + keyItems.size() + " retrieved");
-		return new ResponseEntity<Object>(keyItems, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
@@ -96,6 +88,12 @@ public class HomeController {
 		return new ResponseEntity<Object>(customers, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/getLockByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getLockByID(@PathVariable String id) {
+		LockItem lockItem = lockDAO.getLockItemById(id);
+		log.info("/getLocks - Getting Lock by ID " +id+ " ");
+		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/getCustomer/{sheridanIdInput}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomerByID(@PathVariable String sheridanIdInput) {
@@ -277,7 +275,7 @@ public class HomeController {
 					rentalComponentsUpdated.add(bike);
 					break;
 				case 'L':
-					LockItem lockItem = keyLockDAO.getLockItemById(rentalComponentId);
+					LockItem lockItem = lockDAO.getLockItemById(rentalComponentId);
 					if(lockItem == null) {
 						log.info("/newRental - Lock does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
@@ -287,17 +285,17 @@ public class HomeController {
 					}
 					rentalComponentsUpdated.add(lockItem);
 					break;
-				case 'K':
-					KeyItem keyItem = keyLockDAO.getKeyItemById(rentalComponentId);
-					if(keyItem == null) {
-						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-					} else if(keyItem.getKeyState() != KeyState.AVAILABLE) {
-						log.info("/newRental - Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
-					}
-					rentalComponentsUpdated.add(keyItem);
-					break;
+//				case 'K':
+//					KeyItem keyItem = lockDAO.getKeyItemById(rentalComponentId);
+//					if(keyItem == null) {
+//						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
+//						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
+//					} else if(keyItem.getKeyState() != KeyState.AVAILABLE) {
+//						log.info("/newRental - Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
+//						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
+//					}
+//					rentalComponentsUpdated.add(keyItem);
+//					break;
 	
 				default:
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + rentalComponentId + " is not valid");
@@ -329,6 +327,20 @@ public class HomeController {
 		objNode.put("id", newBikeId);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/newLock", method = RequestMethod.POST,
+			produces = {"application/json"}, consumes = "application/json")
+	public ResponseEntity<?> newLock(@RequestBody LockItem newLock) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		String newLockID = lockDAO.addLockItem(newLock);
+
+		log.info("/newLock - Added lock with ID: " + newLock.getId());
+		objNode.put("message", "Lock was added with id " + newLockID);
+		objNode.put("id", newLockID);
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
 
 	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {
@@ -347,6 +359,26 @@ public class HomeController {
 		
 		log.info("/editRental - Edited Rental with ID: " + newRental.getId());
 		objNode.put("message", "Rental was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/editLock", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editLock(@RequestBody LockItem newLock) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+		
+		LockItem lock = lockDAO.getLockItemById(newLock.getId());
+		
+		if (lock == null) {
+			log.info("/editLock - LockItem was not found with ID: " + newLock.getId());
+			objNode.put("message", "LockItem was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+		
+		lockDAO.editLockItem(newLock);
+		
+		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
+		objNode.put("message", "LockItem was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	

@@ -13,19 +13,17 @@ import com.github.javafaker.Faker;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
-import ca.sheridancollege.beans.KeyItem;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.beans.SystemUser;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
-import ca.sheridancollege.dao.KeyLockDAO;
+import ca.sheridancollege.dao.LockDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
-import ca.sheridancollege.enums.KeyState;
 import ca.sheridancollege.enums.LockState;
 
 public class DummyDataGenerator {
@@ -35,7 +33,7 @@ public class DummyDataGenerator {
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
-	KeyLockDAO keyLockDAO = new KeyLockDAO();
+	LockDAO keyLockDAO = new LockDAO();
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
@@ -62,27 +60,22 @@ public class DummyDataGenerator {
 		List<Customer> customers = custDAO.getAllCustomer();
 		List<Bike> bikes = bikeDAO.getAllBikes();
 		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
-		List<KeyItem> keyItems = keyLockDAO.getAllKeyItems();
 		
 		List<RentalComponent> rcListActive = new ArrayList<RentalComponent>();
 		rcListActive.add(bikes.get(0));
 		rcListActive.add(lockItems.get(0));
-		rcListActive.add(keyItems.get(0));
 		
 		List<RentalComponent> rcListLate = new ArrayList<RentalComponent>();
 		rcListLate.add(bikes.get(1));
 		rcListLate.add(lockItems.get(1));
-		rcListLate.add(keyItems.get(1));
 		
 		List<RentalComponent> rcListReturned = new ArrayList<RentalComponent>();
 		rcListReturned.add(bikes.get(2));
 		rcListReturned.add(lockItems.get(2));
-		rcListReturned.add(keyItems.get(2));
 		
 		List<RentalComponent> rcListReturnedLate = new ArrayList<RentalComponent>();
 		rcListReturnedLate.add(bikes.get(3));
 		rcListReturnedLate.add(lockItems.get(3));
-		rcListReturnedLate.add(keyItems.get(3));
 		
 		Rental rentalActive = new Rental(setRandomSignedOutDate("active"), setRandomDueDate("active", null), null, customers.get(0), rcListActive, "");
 		Rental rentalLate = new Rental(setRandomSignedOutDate("late"), setRandomDueDate("late", null), null, customers.get(1), rcListLate, "");
@@ -105,8 +98,8 @@ public class DummyDataGenerator {
 
 	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) {
 		for(int i = 1; i < quantityOfLocks + 1; i++) {
-			LockItem lockItem = new LockItem(new ArrayList<KeyItem>(), LockState.AVAILABLE);
-			keyLockDAO.addLockWithNumOfKeys(lockItem, quantityOfKeysPerLock);
+			LockItem lockItem = new LockItem(quantityOfKeysPerLock, LockState.AVAILABLE);
+			keyLockDAO.addLockItem(lockItem);
 		}
 	}
 

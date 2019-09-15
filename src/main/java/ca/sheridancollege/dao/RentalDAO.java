@@ -14,19 +14,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import ca.sheridancollege.beans.Bike;
-import ca.sheridancollege.beans.KeyItem;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.enums.BikeState;
-import ca.sheridancollege.enums.KeyState;
 import ca.sheridancollege.enums.LockState;
 
 public class RentalDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	
 	BikeDAO bikeDAO = new BikeDAO();
-	KeyLockDAO keyLockDAO = new KeyLockDAO();
+	LockDAO keyLockDAO = new LockDAO();
 
 	public void addRental(Rental rental) {
 		Session session = sessionFactory.openSession();
@@ -51,12 +49,12 @@ public class RentalDAO {
 					lockItem.setLockState(LockState.RENTED);
 					keyLockDAO.editLockItem(lockItem);
 					break;
-				case 'K':
-					KeyItem keyItem = (KeyItem)rentalComponent;
-					System.out.println("updating key status: " + keyItem.getId());
-					keyItem.setKeyState(KeyState.RENTED);
-					keyLockDAO.editKeyItem(keyItem);
-					break;
+//				case 'K':
+//					KeyItem keyItem = (KeyItem)rentalComponent;
+//					System.out.println("updating key status: " + keyItem.getId());
+//					keyItem.setKeyState(KeyState.RENTED);
+//					keyLockDAO.editKeyItem(keyItem);
+//					break;
 				default:
 					break;
 			}
@@ -207,13 +205,13 @@ public class RentalDAO {
 						keyLockDAO.editLockItem(lockItem);						
 					}
 					break;
-				case 'K':
-					KeyItem keyItem = (KeyItem)rentalComponent;
-					if(keyItem.getKeyState() == KeyState.RENTED) {
-						keyItem.setKeyState(KeyState.AVAILABLE);
-						keyLockDAO.editKeyItem(keyItem);
-					}
-					break;
+//				case 'K':
+//					KeyItem keyItem = (KeyItem)rentalComponent;
+//					if(keyItem.getKeyState() == KeyState.RENTED) {
+//						keyItem.setKeyState(KeyState.AVAILABLE);
+//						keyLockDAO.editKeyItem(keyItem);
+//					}
+//					break;
 				default:
 					break;
 			}
