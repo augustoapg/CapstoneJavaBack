@@ -362,20 +362,28 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/editLock", method=RequestMethod.PATCH, produces = {"application/json"})
-	public ResponseEntity<?> editLock(@RequestBody LockItem newLock) {
+	@RequestMapping(value="/editLock/{oldId}", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editLock(@RequestBody LockItem newLock, @PathVariable String oldId) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();		
 		
-		LockItem lock = lockDAO.getLockItemById(newLock.getId());
+		LockItem lock = lockDAO.getLockItemById(oldId);
 		
 		if (lock == null) {
 			log.info("/editLock - LockItem was not found with ID: " + newLock.getId());
 			objNode.put("message", "LockItem was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return new ResponseEntity<Object>(objNode, HttpStatus.NO_CONTENT);
 		}
 		
-		lockDAO.editLockItem(newLock);
+		LockItem lockNewId = lockDAO.getLockItemById(newLock.getId());
+		
+		if (lockNewId != null) {
+			log.info("/editLock - LockItem was not found with ID: " + newLock.getId());
+			objNode.put("message", "New id chosen for lock already exists. Please change the new id: " + newLock.getId());
+			return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+		}
+		
+		lockDAO.editLockItem(oldId, newLock);
 		
 		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
 		objNode.put("message", "LockItem was updated");

@@ -47,7 +47,7 @@ public class RentalDAO {
 					LockItem lockItem = (LockItem)rentalComponent;
 					System.out.println("updating lock status: " + lockItem.getId());
 					lockItem.setLockState(LockState.RENTED);
-					keyLockDAO.editLockItem(lockItem);
+					keyLockDAO.editLockItem(lockItem.getId(), lockItem);
 					break;
 //				case 'K':
 //					KeyItem keyItem = (KeyItem)rentalComponent;
@@ -202,7 +202,7 @@ public class RentalDAO {
 					LockItem lockItem = (LockItem)rentalComponent;
 					if(lockItem.getLockState() == LockState.RENTED) {
 						lockItem.setLockState(LockState.AVAILABLE);
-						keyLockDAO.editLockItem(lockItem);						
+						keyLockDAO.editLockItem(lockItem.getId(), lockItem);
 					}
 					break;
 //				case 'K':

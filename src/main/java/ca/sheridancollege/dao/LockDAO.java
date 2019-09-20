@@ -33,11 +33,16 @@ public class LockDAO {
 		return lockItem.getId();
 	}
 	
-	public void editLockItem(LockItem lockItem) {
+	public void editLockItem(String oldId, LockItem newLockItem) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		session.update(lockItem);
+		// input new data into old object
+		LockItem oldLockItem = (LockItem)session.get(LockItem.class, oldId);
+		oldLockItem.setId(newLockItem.getId());
+		oldLockItem.setKeyNum(newLockItem.getKeyNum());
+		oldLockItem.setLockState(newLockItem.getLockState());
+		oldLockItem.setNotes(newLockItem.getNotes());
 
 		session.getTransaction().commit();
 		session.close();
