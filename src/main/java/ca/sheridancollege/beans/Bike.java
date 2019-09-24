@@ -17,6 +17,7 @@ import lombok.*;
 
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
 
@@ -25,19 +26,10 @@ import lombok.*;
 public class Bike extends RentalComponent {
 	
 	private String notes;
-	private BikeState bikeState;
+	private BikeState state;
 	private String imgPath;
 	private String manufacturer;
 	private String productCode;
-	private int serialNumber;
-	
-	public Bike(String notes, BikeState bikeState, String imgPath, String manufacturer,
-			String productCode, int serialNumber) {
-		this.notes = notes;
-		this.bikeState = bikeState;
-		this.imgPath = imgPath;
-		this.manufacturer = manufacturer;
-		this.productCode = productCode;
-		this.serialNumber = serialNumber;
-	}
+	private String serialNumber;
+	private String model;
 }

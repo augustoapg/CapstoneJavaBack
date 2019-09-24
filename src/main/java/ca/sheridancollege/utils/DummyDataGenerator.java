@@ -37,11 +37,11 @@ public class DummyDataGenerator {
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
-			Bike bike = new Bike(null, BikeState.AVAILABLE, randomBetween(1, 2) + ".jpg", "M" + randomBetween(1, 9), i + "", i);
+			Bike bike = new Bike(null, BikeState.AVAILABLE, randomBetween(1, 2) + ".jpg", "M" + randomBetween(1, 9), i + "", "serial" + i , "Model " + randomBetween(1, 3));
 
 			// at least half of the bikes will be AVAILABLE
 			if (i <= numOfBikes/2) {
-				bike.setBikeState(BikeState.values()[randomBetween(0, BikeState.values().length - 1)]);
+				bike.setState(BikeState.values()[randomBetween(0, BikeState.values().length - 1)]);
 				bike.setNotes("This is a random note");
 			}
 			

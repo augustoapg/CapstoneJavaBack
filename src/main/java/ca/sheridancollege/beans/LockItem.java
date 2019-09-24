@@ -30,6 +30,6 @@ import lombok.NoArgsConstructor;
 public class LockItem extends RentalComponent implements Serializable {
 
 	private int keyNum;
-	private LockState lockState;
+	private LockState state;
 	
 }

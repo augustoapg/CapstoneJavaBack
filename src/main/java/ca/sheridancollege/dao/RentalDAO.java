@@ -1,8 +1,6 @@
 package ca.sheridancollege.dao;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -10,8 +8,6 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.LockItem;
@@ -40,21 +36,15 @@ public class RentalDAO {
 				case 'B':
 					Bike bike = (Bike)rentalComponent;
 					System.out.println("updating bike status: " + bike.getId());
-					bike.setBikeState(BikeState.RENTED);
+					bike.setState(BikeState.RENTED);
 					bikeDAO.editBike(bike);
 					break;
 				case 'L':
 					LockItem lockItem = (LockItem)rentalComponent;
 					System.out.println("updating lock status: " + lockItem.getId());
-					lockItem.setLockState(LockState.RENTED);
+					lockItem.setState(LockState.RENTED);
 					keyLockDAO.editLockItem(lockItem);
 					break;
-//				case 'K':
-//					KeyItem keyItem = (KeyItem)rentalComponent;
-//					System.out.println("updating key status: " + keyItem.getId());
-//					keyItem.setKeyState(KeyState.RENTED);
-//					keyLockDAO.editKeyItem(keyItem);
-//					break;
 				default:
 					break;
 			}
@@ -193,25 +183,18 @@ public class RentalDAO {
 			switch (rentalComponentId.charAt(0)) {
 				case 'B':
 					Bike bike = (Bike)rentalComponent;
-					if(bike.getBikeState() == BikeState.RENTED) {
-						bike.setBikeState(BikeState.AVAILABLE);
+					if(bike.getState() == BikeState.RENTED) {
+						bike.setState(BikeState.AVAILABLE);
 						bikeDAO.editBike(bike);
 					}
 					break;
 				case 'L':
 					LockItem lockItem = (LockItem)rentalComponent;
-					if(lockItem.getLockState() == LockState.RENTED) {
-						lockItem.setLockState(LockState.AVAILABLE);
+					if(lockItem.getState() == LockState.RENTED) {
+						lockItem.setState(LockState.AVAILABLE);
 						keyLockDAO.editLockItem(lockItem);						
 					}
 					break;
-//				case 'K':
-//					KeyItem keyItem = (KeyItem)rentalComponent;
-//					if(keyItem.getKeyState() == KeyState.RENTED) {
-//						keyItem.setKeyState(KeyState.AVAILABLE);
-//						keyLockDAO.editKeyItem(keyItem);
-//					}
-//					break;
 				default:
 					break;
 			}

@@ -5,8 +5,7 @@ public enum BikeState {
 	RENTED ("Rented"),
 	OUT_OF_SERVICE ("Out of Service"),
 	NEEDS_SAFETY_CHECK ("Needs Safety Check"),
-	MISSING ("Missing"),
-	IN_MAINTENANCE ("In Maintenance");
+	ARCHIVED ("Archived");
 	
 	private final String stateName;
     

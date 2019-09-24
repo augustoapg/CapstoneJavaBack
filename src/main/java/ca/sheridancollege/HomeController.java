@@ -268,9 +268,9 @@ public class HomeController {
 					if(bike == null) {
 						log.info("/newRental - Bike does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-					} else if(bike.getBikeState() != BikeState.AVAILABLE) {
-						log.info("/newRental - Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getBikeState());
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getBikeState());
+					} else if(bike.getState() != BikeState.AVAILABLE) {
+						log.info("/newRental - Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getState());
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getState());
 					}
 					rentalComponentsUpdated.add(bike);
 					break;
@@ -279,9 +279,9 @@ public class HomeController {
 					if(lockItem == null) {
 						log.info("/newRental - Lock does not exist with ID: " + rentalComponentId);
 						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-					} else if(lockItem.getLockState() != LockState.AVAILABLE) {
-						log.info("/newRental - Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getLockState());
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getLockState());
+					} else if(lockItem.getState() != LockState.AVAILABLE) {
+						log.info("/newRental - Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getState());
+						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getState());
 					}
 					rentalComponentsUpdated.add(lockItem);
 					break;
