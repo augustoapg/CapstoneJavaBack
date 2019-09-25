@@ -1,8 +1,7 @@
 package ca.sheridancollege.beans;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -29,6 +28,14 @@ import lombok.NoArgsConstructor;
 public abstract class RentalComponent {
 
 	@Id
-	private String id;
+	@GeneratedValue
+	private int id;
+	private String name;
 	private String notes;
+	
+	// constructor used by child classes
+	public RentalComponent(String name, String notes) {
+		this.name = name;
+		this.notes = notes;
+	}
 }

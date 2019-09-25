@@ -17,13 +17,9 @@ public class LockDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
-	public String addLockItem(LockItem lockItem) {
+	public int addLockItem(LockItem lockItem) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-
-		if(lockItem.getId() == null) {
-			lockItem.setId(rentalComponentDAO.getNewRentalComponentId("L"));			
-		}
 		
 		session.save(lockItem);
 
@@ -43,7 +39,7 @@ public class LockDAO {
 		session.close();
 	}
 	
-	public LockItem getLockItemById(String id) {
+	public LockItem getLockItemById(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 

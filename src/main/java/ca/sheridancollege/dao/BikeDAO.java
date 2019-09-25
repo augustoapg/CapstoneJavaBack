@@ -15,12 +15,11 @@ public class BikeDAO {
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 
-	public String addBike(Bike bike) {
+	public int addBike(Bike bike) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		bike.setId(rentalComponentDAO.getNewRentalComponentId("B"));
 		session.save(bike);
 
 		session.getTransaction().commit();
@@ -40,7 +39,7 @@ public class BikeDAO {
 		session.close();
 	}
 
-	public Bike getBikeById(String id) {
+	public Bike getBikeById(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 

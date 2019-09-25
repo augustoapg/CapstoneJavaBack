@@ -55,10 +55,6 @@ public class RentalComponentDAO {
 			query = session.getNamedQuery("LockItem.byID");
 			query.setParameter("id", id);
 			break;
-		case 'K':
-			query = session.getNamedQuery("KeyItem.byID");
-			query.setParameter("id", id);
-			break;
 
 		default:
 			throw new IllegalArgumentException("Rental Component " + id + " is not valid");

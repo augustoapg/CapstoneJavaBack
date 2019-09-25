@@ -89,7 +89,7 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/getLockByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getLockByID(@PathVariable String id) {
+	public ResponseEntity<Object> getLockByID(@PathVariable int id) {
 		LockItem lockItem = lockDAO.getLockItemById(id);
 		log.info("/getLocks - Getting Lock by ID " +id+ " ");
 		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
@@ -260,45 +260,31 @@ public class HomeController {
 		// get all data for each rentalComponent. Returns BadRequest in case RentalComponent does
 		// not start with valid character
 		for (RentalComponent rc : rentalComponents) {
-			String rentalComponentId = rc.getId();
+			int id = rc.getId();
 			
-			switch (rentalComponentId.charAt(0)) {
-				case 'B':
-					Bike bike = bikeDAO.getBikeById(rentalComponentId);
-					if(bike == null) {
-						log.info("/newRental - Bike does not exist with ID: " + rentalComponentId);
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-					} else if(bike.getState() != BikeState.AVAILABLE) {
-						log.info("/newRental - Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getState());
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike is not available with ID: " + rentalComponentId + ". Current status: " + bike.getState());
-					}
-					rentalComponentsUpdated.add(bike);
-					break;
-				case 'L':
-					LockItem lockItem = lockDAO.getLockItemById(rentalComponentId);
-					if(lockItem == null) {
-						log.info("/newRental - Lock does not exist with ID: " + rentalComponentId);
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-					} else if(lockItem.getState() != LockState.AVAILABLE) {
-						log.info("/newRental - Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getState());
-						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + rentalComponentId + ". Current status: " + lockItem.getState());
-					}
-					rentalComponentsUpdated.add(lockItem);
-					break;
-//				case 'K':
-//					KeyItem keyItem = lockDAO.getKeyItemById(rentalComponentId);
-//					if(keyItem == null) {
-//						log.info("/newRental - Key does not exist with ID: " + rentalComponentId);
-//						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + rentalComponentId);
-//					} else if(keyItem.getKeyState() != KeyState.AVAILABLE) {
-//						log.info("/newRental - Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
-//						return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Key is not available with ID: " + rentalComponentId + ". Current status: " + keyItem.getKeyState());
-//					}
-//					rentalComponentsUpdated.add(keyItem);
-//					break;
+			if (rc instanceof Bike) {
+				Bike bike = bikeDAO.getBikeById(id);
+				if(bike == null) {
+					log.info("/newRental - Bike does not exist with ID: " + id);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + id);
+				} else if(bike.getState() != BikeState.AVAILABLE) {
+					log.info("/newRental - Bike is not available with ID: " + id + ". Current status: " + bike.getState());
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike is not available with ID: " + id + ". Current status: " + bike.getState());
+				}
+				rentalComponentsUpdated.add(bike);
+			} else if (rc instanceof LockItem) {
+				LockItem lockItem = lockDAO.getLockItemById(id);
+				if(lockItem == null) {
+					log.info("/newRental - Lock does not exist with ID: " + id);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + id);
+				} else if(lockItem.getState() != LockState.AVAILABLE) {
+					log.info("/newRental - Lock is not available with ID: " + id + ". Current status: " + lockItem.getState());
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + id + ". Current status: " + lockItem.getState());
+				}
+				rentalComponentsUpdated.add(lockItem);
 	
-				default:
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + rentalComponentId + " is not valid");
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + id + " is not valid");
 			}
 		}
 		
@@ -320,7 +306,7 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		String newBikeId = bikeDAO.addBike(newBike);
+		int newBikeId = bikeDAO.addBike(newBike);
 
 		log.info("/newBike - Added bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike was added with id " + newBikeId);
@@ -334,9 +320,9 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		String newLockID = lockDAO.addLockItem(newLock);
+		int newLockID = lockDAO.addLockItem(newLock);
 
-		log.info("/newLock - Added lock with ID: " + newLock.getId());
+		log.info("/newLock - Added lock with ID: " + newLockID);
 		objNode.put("message", "Lock was added with id " + newLockID);
 		objNode.put("id", newLockID);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);

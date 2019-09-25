@@ -30,23 +30,18 @@ public class RentalDAO {
 		
 		// update all rentalComponents status according to their type
 		for (RentalComponent rentalComponent : rentalComponents) {
-			String rentalComponentId = rentalComponent.getId();
+			int rentalComponentId = rentalComponent.getId();
 					
-			switch (rentalComponentId.charAt(0)) {
-				case 'B':
-					Bike bike = (Bike)rentalComponent;
-					System.out.println("updating bike status: " + bike.getId());
-					bike.setState(BikeState.RENTED);
-					bikeDAO.editBike(bike);
-					break;
-				case 'L':
-					LockItem lockItem = (LockItem)rentalComponent;
-					System.out.println("updating lock status: " + lockItem.getId());
-					lockItem.setState(LockState.RENTED);
-					keyLockDAO.editLockItem(lockItem);
-					break;
-				default:
-					break;
+			if(rentalComponent instanceof Bike) {
+				Bike bike = (Bike)rentalComponent;
+				System.out.println("updating bike status: " + rentalComponentId);
+				bike.setState(BikeState.RENTED);
+				bikeDAO.editBike(bike);
+			} else if (rentalComponent instanceof LockItem) {
+				LockItem lockItem = (LockItem)rentalComponent;
+				System.out.println("updating lock status: " + rentalComponentId);
+				lockItem.setState(LockState.RENTED);
+				keyLockDAO.editLockItem(lockItem);
 			}
 		}
 		// set updated list of components back to rental object
@@ -178,25 +173,19 @@ public class RentalDAO {
 		// NOTE: Only update component status to available if current status is RENTED. This
 		// is done to prevent overwriting another states such as MISSING, IN_MAINTENANCE, etc
 		for (RentalComponent rentalComponent : rentalComponents) {
-			String rentalComponentId = rentalComponent.getId();
 					
-			switch (rentalComponentId.charAt(0)) {
-				case 'B':
-					Bike bike = (Bike)rentalComponent;
-					if(bike.getState() == BikeState.RENTED) {
-						bike.setState(BikeState.AVAILABLE);
-						bikeDAO.editBike(bike);
-					}
-					break;
-				case 'L':
-					LockItem lockItem = (LockItem)rentalComponent;
-					if(lockItem.getState() == LockState.RENTED) {
-						lockItem.setState(LockState.AVAILABLE);
-						keyLockDAO.editLockItem(lockItem);						
-					}
-					break;
-				default:
-					break;
+			if (rentalComponent instanceof Bike) {
+				Bike bike = (Bike)rentalComponent;
+				if(bike.getState() == BikeState.RENTED) {
+					bike.setState(BikeState.AVAILABLE);
+					bikeDAO.editBike(bike);
+				}
+			} else if (rentalComponent instanceof LockItem) {
+				LockItem lockItem = (LockItem)rentalComponent;
+				if(lockItem.getState() == LockState.RENTED) {
+					lockItem.setState(LockState.AVAILABLE);
+					keyLockDAO.editLockItem(lockItem);						
+				}
 			}
 		}
 		

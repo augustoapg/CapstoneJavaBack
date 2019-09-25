@@ -21,15 +21,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @NamedQuery(name="LockItem.all", query="from LockItem")
 @NamedQuery(name="LockItem.byID", query="from LockItem where id=:id")
 public class LockItem extends RentalComponent implements Serializable {
-
 	private int keyNum;
 	private LockState state;
 	
+	public LockItem(String name, String notes, int keyNum, LockState state) {
+		super(name, notes);
+		this.keyNum = keyNum;
+		this.state = state;
+	}
 }

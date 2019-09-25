@@ -37,7 +37,14 @@ public class DummyDataGenerator {
 	
 	public void generateRandomBikes(int numOfBikes) {
 		for(int i = 0; i < numOfBikes; i++) {
-			Bike bike = new Bike(null, BikeState.AVAILABLE, randomBetween(1, 2) + ".jpg", "M" + randomBetween(1, 9), i + "", "serial" + i , "Model " + randomBetween(1, 3));
+			String name = "B" + String.format("%03d", (i + 1));
+			String imgPath = randomBetween(1, 2) + ".jpg";
+			String manufacturer = "M" + randomBetween(1, 9);
+			String prodCode = String.valueOf(i);
+			String serial = "serial" + i;
+			String model = "Model " + randomBetween(1, 3);
+			
+			Bike bike = new Bike(name, null, BikeState.AVAILABLE, imgPath, manufacturer, prodCode, serial, model);
 
 			// at least half of the bikes will be AVAILABLE
 			if (i <= numOfBikes/2) {
@@ -98,7 +105,8 @@ public class DummyDataGenerator {
 
 	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) {
 		for(int i = 1; i < quantityOfLocks + 1; i++) {
-			LockItem lockItem = new LockItem(quantityOfKeysPerLock, LockState.AVAILABLE);
+			String name = "L" + String.format("%03d", (i + 1));
+			LockItem lockItem = new LockItem(name, null, quantityOfKeysPerLock, LockState.AVAILABLE);
 			keyLockDAO.addLockItem(lockItem);
 		}
 	}
