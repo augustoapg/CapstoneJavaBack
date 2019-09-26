@@ -10,6 +10,7 @@ import lombok.*;
 @Data
 @Entity
 @NamedQuery(name="Bike.byID", query="from Bike where id=:id")
+@NamedQuery(name="Bike.byName", query="from Bike where name=:name")
 @NamedQuery(name="Bike.all", query="from Bike")
 public class Bike extends RentalComponent {
 	

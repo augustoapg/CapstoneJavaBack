@@ -46,16 +46,23 @@ public class HomeController {
 	
 	@RequestMapping(value = "/addDummyData", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> addDummyData(Model model) {
-		DummyDataGenerator dummyData = new DummyDataGenerator();
-		
-		dummyData.generateRandomBikes(10);
-		dummyData.generateRandomCustomer(30);
-		dummyData.generateRandomKeyLocks(20, 4);
-		dummyData.generateRandomRentals();
-		dummyData.generateRandomSystemUsers();
-		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
+
+		DummyDataGenerator dummyData = new DummyDataGenerator();
+		
+		try {
+			dummyData.generateRandomBikes(10);
+			dummyData.generateRandomCustomer(30);
+			dummyData.generateRandomKeyLocks(20, 4);
+			dummyData.generateRandomRentals();
+			dummyData.generateRandomSystemUsers();			
+		} catch (Exception e) {
+			log.info("/addDummyData - " + e.getMessage());
+			objNode.put("message", e.getMessage());
+	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+		}
+		
 		objNode.put("message", "Dummy data added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -185,7 +192,13 @@ public class HomeController {
 	    	log.info("/editBike/{id} - Bike not found with ID: " + newBike.getId());
 	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bike not found: " + newBike.getId());
 	    }
-	    bikeDAO.editBike(newBike);
+	    
+	    try {
+	    	bikeDAO.editBike(newBike);			
+		} catch (Exception e) {
+			log.info("/editBike/{id} - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+		}
 	    
 	    log.info("/editBike/{id} - Edited Bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike has been updated");
@@ -209,7 +222,12 @@ public class HomeController {
 	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("This rental has already ended: " + newRental.getId());
 	    }
 	    
-	    rentalDAO.returnRental(rentalToReturn, newRental);
+	    try {
+	    	rentalDAO.returnRental(rentalToReturn, newRental);	    	
+	    } catch (Exception e) {
+	    	log.info("/returnRental - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 	    
 	    log.info("/returnRental - Returned Bike with rental ID: " + newRental.getId());
 		objNode.put("message", "Bike has been returned");
@@ -293,7 +311,12 @@ public class HomeController {
 		rental.setSignOutDate(LocalDate.now());
 		rental.setDueDate(LocalDate.now().plusDays(7));
 		
-		rentalDAO.addRental(rental);
+		try {
+			rentalDAO.addRental(rental);			
+		} catch (Exception e) {
+	    	log.info("/newRental - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 
 		log.info("/newRental - Added rental with ID: " + sheridanId);
 		objNode.put("message", "Rental was added");
@@ -306,7 +329,14 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		int newBikeId = bikeDAO.addBike(newBike);
+		int newBikeId;
+		
+		try {
+			newBikeId = bikeDAO.addBike(newBike);			
+		} catch (Exception e) {
+	    	log.info("/newBike - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 
 		log.info("/newBike - Added bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike was added with id " + newBikeId);
@@ -320,7 +350,14 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		int newLockID = lockDAO.addLockItem(newLock);
+		int newLockID;
+		
+		try {
+			newLockID = lockDAO.addLockItem(newLock);			
+		} catch (Exception e) {
+	    	log.info("/newLock - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 
 		log.info("/newLock - Added lock with ID: " + newLockID);
 		objNode.put("message", "Lock was added with id " + newLockID);
@@ -341,7 +378,12 @@ public class HomeController {
 			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 		}
 		
-		rentalDAO.editRental(newRental);
+		try {
+			rentalDAO.editRental(newRental);			
+		} catch (Exception e) {
+	    	log.info("/editRental - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 		
 		log.info("/editRental - Edited Rental with ID: " + newRental.getId());
 		objNode.put("message", "Rental was updated");
@@ -361,7 +403,12 @@ public class HomeController {
 			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 		}
 		
-		lockDAO.editLockItem(newLock);
+		try {
+			lockDAO.editLockItem(newLock);			
+		} catch (Exception e) {
+	    	log.info("/editLock - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
 		
 		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
 		objNode.put("message", "LockItem was updated");

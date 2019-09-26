@@ -35,7 +35,7 @@ public class DummyDataGenerator {
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO keyLockDAO = new LockDAO();
 	
-	public void generateRandomBikes(int numOfBikes) {
+	public void generateRandomBikes(int numOfBikes) throws Exception {
 		for(int i = 0; i < numOfBikes; i++) {
 			String name = "B" + String.format("%03d", (i + 1));
 			String imgPath = randomBetween(1, 2) + ".jpg";
@@ -52,7 +52,11 @@ public class DummyDataGenerator {
 				bike.setNotes("This is a random note");
 			}
 			
-			bikeDAO.addBike(bike);
+			try {
+				bikeDAO.addBike(bike);				
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 	}
 
@@ -63,7 +67,7 @@ public class DummyDataGenerator {
 		sysUserDAO.addSysUser(sysUser2);
 	}
 
-	public void generateRandomRentals() {
+	public void generateRandomRentals() throws Exception {
 		List<Customer> customers = custDAO.getAllCustomer();
 		List<Bike> bikes = bikeDAO.getAllBikes();
 		List<LockItem> lockItems = keyLockDAO.getAllLockItems();
@@ -97,17 +101,25 @@ public class DummyDataGenerator {
 		LocalDate returnedLateReturn = setRandomReturnedDate("returned_late", returnedLateDue);
 		Rental rentalReturnedLate = new Rental(returnedLateSignOut, returnedLateDue, returnedLateReturn, customers.get(3), rcListReturnedLate, "");
 		
-		rentalDAO.addRental(rentalActive);
-		rentalDAO.addRental(rentalLate);
-		rentalDAO.addRental(rentalReturned);
-		rentalDAO.addRental(rentalReturnedLate);
+		try {
+			rentalDAO.addRental(rentalActive);
+			rentalDAO.addRental(rentalLate);
+			rentalDAO.addRental(rentalReturned);
+			rentalDAO.addRental(rentalReturnedLate);			
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
-	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) {
+	public void generateRandomKeyLocks(int quantityOfLocks, int quantityOfKeysPerLock) throws Exception {
 		for(int i = 1; i < quantityOfLocks + 1; i++) {
 			String name = "L" + String.format("%03d", (i + 1));
 			LockItem lockItem = new LockItem(name, null, quantityOfKeysPerLock, LockState.AVAILABLE);
-			keyLockDAO.addLockItem(lockItem);
+			try {
+				keyLockDAO.addLockItem(lockItem);				
+			} catch (Exception e) {
+				throw e;
+			}
 		}
 	}
 

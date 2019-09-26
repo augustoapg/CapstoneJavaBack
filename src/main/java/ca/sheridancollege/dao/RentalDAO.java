@@ -22,34 +22,36 @@ public class RentalDAO {
 	BikeDAO bikeDAO = new BikeDAO();
 	LockDAO keyLockDAO = new LockDAO();
 
-	public void addRental(Rental rental) {
+	public void addRental(Rental rental) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		List<RentalComponent> rentalComponents = rental.getRentalComponents();
-		
-		// update all rentalComponents status according to their type
-		for (RentalComponent rentalComponent : rentalComponents) {
-			int rentalComponentId = rentalComponent.getId();
-					
-			if(rentalComponent instanceof Bike) {
-				Bike bike = (Bike)rentalComponent;
-				System.out.println("updating bike status: " + rentalComponentId);
-				bike.setState(BikeState.RENTED);
-				bikeDAO.editBike(bike);
-			} else if (rentalComponent instanceof LockItem) {
-				LockItem lockItem = (LockItem)rentalComponent;
-				System.out.println("updating lock status: " + rentalComponentId);
-				lockItem.setState(LockState.RENTED);
-				keyLockDAO.editLockItem(lockItem);
+		try {
+			List<RentalComponent> rentalComponents = rental.getRentalComponents();
+			
+			// update all rentalComponents status according to their type
+			for (RentalComponent rentalComponent : rentalComponents) {
+				if(rentalComponent instanceof Bike) {
+					Bike bike = (Bike)rentalComponent;
+					bike.setState(BikeState.RENTED);
+					bikeDAO.editBike(bike);
+				} else if (rentalComponent instanceof LockItem) {
+					LockItem lockItem = (LockItem)rentalComponent;
+					lockItem.setState(LockState.RENTED);
+					keyLockDAO.editLockItem(lockItem);
+				}
 			}
+			
+			// set updated list of components back to rental object
+			rental.setRentalComponents(rentalComponents);
+			session.save(rental);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			// closes connection even in case of an error
+			session.getTransaction().commit();
+			session.close();			
 		}
-		// set updated list of components back to rental object
-		rental.setRentalComponents(rentalComponents);
-		session.save(rental);
-
-		session.getTransaction().commit();
-		session.close();
 	}
 
 	public void deleteRental(int id) {
@@ -160,51 +162,62 @@ public class RentalDAO {
 		return rentals;
 	}
 
-	public void returnRental(Rental rental, Rental newRental) {
+	public void returnRental(Rental rental, Rental newRental) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-
-		rental.setComment(newRental.getComment());
-		rental.setReturnedDate(LocalDate.now());
 		
-		List<RentalComponent> rentalComponents = rental.getRentalComponents();
-		
-		// update all rentalComponents status according to their type
-		// NOTE: Only update component status to available if current status is RENTED. This
-		// is done to prevent overwriting another states such as MISSING, IN_MAINTENANCE, etc
-		for (RentalComponent rentalComponent : rentalComponents) {
-					
-			if (rentalComponent instanceof Bike) {
-				Bike bike = (Bike)rentalComponent;
-				if(bike.getState() == BikeState.RENTED) {
-					bike.setState(BikeState.AVAILABLE);
-					bikeDAO.editBike(bike);
-				}
-			} else if (rentalComponent instanceof LockItem) {
-				LockItem lockItem = (LockItem)rentalComponent;
-				if(lockItem.getState() == LockState.RENTED) {
-					lockItem.setState(LockState.AVAILABLE);
-					keyLockDAO.editLockItem(lockItem);						
+		try {
+			rental.setComment(newRental.getComment());
+			rental.setReturnedDate(LocalDate.now());
+			
+			List<RentalComponent> rentalComponents = rental.getRentalComponents();
+			
+			// update all rentalComponents status according to their type
+			// NOTE: Only update component status to available if current status is RENTED. This
+			// is done to prevent overwriting another states such as MISSING, IN_MAINTENANCE, etc
+			for (RentalComponent rentalComponent : rentalComponents) {
+				
+				if (rentalComponent instanceof Bike) {
+					Bike bike = (Bike)rentalComponent;
+					if(bike.getState() == BikeState.RENTED) {
+						bike.setState(BikeState.AVAILABLE);
+						bikeDAO.editBike(bike);
+					}
+				} else if (rentalComponent instanceof LockItem) {
+					LockItem lockItem = (LockItem)rentalComponent;
+					if(lockItem.getState() == LockState.RENTED) {
+						lockItem.setState(LockState.AVAILABLE);
+						keyLockDAO.editLockItem(lockItem);						
+					}
 				}
 			}
+			
+			session.update(rental);
+			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();			
 		}
-		
-		session.update(rental);
-
-		session.getTransaction().commit();
-		session.close();
 	}
 
-	public void editRental(Rental newRental) {
+	public void editRental(Rental newRental) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
-		Rental rental = session.get(Rental.class, newRental.getId());
-		rental.setDueDate(newRental.getDueDate());
-		rental.setComment(newRental.getComment());
+		try {
+			Rental rental = session.get(Rental.class, newRental.getId());
+			rental.setDueDate(newRental.getDueDate());
+			rental.setComment(newRental.getComment());			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();			
+		}
 		
-		session.getTransaction().commit();
-		session.close();
+		
 	}
 }
 

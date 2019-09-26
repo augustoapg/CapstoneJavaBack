@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NamedQuery(name="LockItem.all", query="from LockItem")
 @NamedQuery(name="LockItem.byID", query="from LockItem where id=:id")
+@NamedQuery(name="LockItem.byName", query="from LockItem where name=:name")
 public class LockItem extends RentalComponent implements Serializable {
 	private int keyNum;
 	private LockState state;
