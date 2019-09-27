@@ -38,6 +38,7 @@ public class HomeController {
 	BikeDAO bikeDAO = new BikeDAO();
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
+	PayableDAO payableDAO = new PayableDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO lockDAO = new LockDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
@@ -88,6 +89,14 @@ public class HomeController {
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/getPayables", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getPayables() {
+		List<Payable> payables = payableDAO.getAllPayables();
+		log.info("/getPayables - Getting all Payables - " + payables.size() + " retrieved");
+		return new ResponseEntity<Object>(payables, HttpStatus.OK);
+	}
+	
+	
 	@RequestMapping(value = "/getCustomers", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getCustomers() {
 		List<Customer> customers = custDAO.getAllCustomer();
@@ -98,8 +107,23 @@ public class HomeController {
 	@RequestMapping(value = "/getLockByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getLockByID(@PathVariable int id) {
 		LockItem lockItem = lockDAO.getLockItemById(id);
-		log.info("/getLocks - Getting Lock by ID " +id+ " ");
+		log.info("/getLockByID - Getting Lock by ID " +id+ " ");
 		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value = "/getPayableByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getPayableByID(@PathVariable int id) {
+		Payable payable = payableDAO.getPayableById(id);
+		log.info("/getPayableByID - Getting Payable by ID "+ id );
+		return new ResponseEntity<Object>(payable, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getPayablesByCustID/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getPayablesByCustID(@PathVariable int id) {
+		List<Payable> payables = payableDAO.getPayablesByCustId(id);
+		log.info("/getPayables - Getting Payables by sheridanID" + id + " - " + payables.size() + " retrieved");
+		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getCustomer/{sheridanIdInput}", method = RequestMethod.GET, produces = { "application/json" })
@@ -251,6 +275,31 @@ public class HomeController {
 		
 		log.info("/newCustomer - Added customer with ID: " + customer.getSheridanId());
 		objNode.put("message", "Customer added");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/newPayable/{rentalID}", method = RequestMethod.POST, 
+			produces = {"application/json"}, consumes="application/json")
+	public ResponseEntity<?> newPayable(@PathVariable int rentalID, @RequestBody Payable payable) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		Rental rental = rentalDAO.getRental(rentalID);
+		
+		if(rental == null) {
+			// error
+		} 
+		
+		int payableID = 0;
+		try {
+			payableID = payableDAO.addPayable(payable, rental);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		log.info("/newPayable/"+ rentalID +"/ - Added payable with ID: " + payableID);
+		objNode.put("message", "Payable added");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
