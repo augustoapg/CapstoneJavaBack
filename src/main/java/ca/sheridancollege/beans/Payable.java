@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Payable.byID", query="from Payable where id=:id")
 @NamedQuery(name="Payable.all", query="from Payable")
 @NamedQuery(name="Payable.byCustId", query="from Payable where rental.customer.sheridanId=:id")
+@NamedQuery(name="Payable.byRentalId", query="from Payable where rental.id=:id")
 public class Payable {
 	
 	@Id

@@ -11,6 +11,7 @@ import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.LockItem;
+import ca.sheridancollege.beans.Payable;
 import ca.sheridancollege.beans.RentalComponent;
 
 public class LockDAO {

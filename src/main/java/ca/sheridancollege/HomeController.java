@@ -122,7 +122,14 @@ public class HomeController {
 	@RequestMapping(value = "/getPayablesByCustID/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getPayablesByCustID(@PathVariable int id) {
 		List<Payable> payables = payableDAO.getPayablesByCustId(id);
-		log.info("/getPayables - Getting Payables by sheridanID" + id + " - " + payables.size() + " retrieved");
+		log.info("/getPayablesByCustID/{id} - Getting Payables by sheridanID" + id + " - " + payables.size() + " retrieved");
+		return new ResponseEntity<Object>(payables, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getPayablesByRentalId/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getPayablesByRentalId(@PathVariable int id) {
+		List<Payable> payables = payableDAO.getPayablesByRentalId(id);
+		log.info("/getPayablesByRentalId/{id} - Getting Payables by Rental ID: " + id + " - " + payables.size() + " retrieved");
 		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
@@ -461,6 +468,32 @@ public class HomeController {
 		
 		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
 		objNode.put("message", "LockItem was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/editPayable", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editPayable(@RequestBody Payable newPayable) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+	
+		Payable payable = payableDAO.getPayableById(newPayable.getPayable_id());
+		
+		if (payable == null) {
+			log.info("/editPayable - Payable was not found with ID: " + newPayable.getPayable_id());
+			objNode.put("message", "Payable was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+		
+		try {
+			newPayable.setRental(payable.getRental());
+			payableDAO.editPayable(newPayable);
+		} catch (Exception e) {
+	    	log.info("/editLock - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
+		
+		log.info("/editPayable - Edited Payable with ID: " + newPayable.getPayable_id());
+		objNode.put("message", "Payable was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	

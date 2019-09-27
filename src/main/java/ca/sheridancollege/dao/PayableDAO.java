@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Payable;
 import ca.sheridancollege.beans.Rental;
 
@@ -80,6 +81,42 @@ public class PayableDAO {
 		}
 
 		return null;
+	}
+	
+	public List<Payable> getPayablesByRentalId(int id) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Payable.byRentalId");
+		query.setParameter("id", id);
+
+		List<Payable> payables = (List<Payable>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!payables.isEmpty()) {
+			return payables;
+		}
+
+		return null;
+	}
+	
+	public void editPayable(Payable payable) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		// using try-catch-finally so that no matter what happens, the session will be closed at the end
+		try {
+
+			session.update(payable);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();
+		}
+		
 	}
 	
 }
