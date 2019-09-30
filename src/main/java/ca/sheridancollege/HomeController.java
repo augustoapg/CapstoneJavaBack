@@ -245,8 +245,8 @@ public class HomeController {
 	    if (rentalToReturn == null) {
 	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Rental was not found: " + newRental.getId());
 	    }
+	    
 	    // If bike was returned before
-
 	    else if ("Returned".equals(rentalToReturn.getRentalState().toString()) || 
 	    		"Returned Late".equals(rentalToReturn.getRentalState().toString())) {
 	    	log.info("/returnRental - Error. Bike has been returned. Rental ID: " + newRental.getId());
@@ -497,25 +497,6 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
-	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
-		
-		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
-		
-		// Check if user exists and password is valid
-		if(sysUser != null && BCrypt.checkpw(loginUser.getPassword(), sysUser.getPassword())) {
-			objNode.put("valid", true);
-			objNode.put("role", "Admin");
-			objNode.put("token", "fakeToken"); // TODO: review this
-		} else {
-			objNode.put("valid", false);
-		}
-		
-		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
-	}
-	
 	@RequestMapping(value = "/updatePayables", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<Object> updatePayables(@RequestBody List<Payable> payablesList) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -532,6 +513,25 @@ public class HomeController {
 		
 		log.info("/updatePayables - List of Payables updated");
 		objNode.put("message", "Payables were updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
+	public ResponseEntity<Object> login(@RequestBody LoginUser loginUser) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		SystemUser sysUser = sysUserDAO.getSysUser(loginUser.getEmail());
+		
+		// Check if user exists and password is valid
+		if(sysUser != null && BCrypt.checkpw(loginUser.getPassword(), sysUser.getPassword())) {
+			objNode.put("valid", true);
+			objNode.put("role", "Admin");
+			objNode.put("token", "fakeToken"); // TODO: review this
+		} else {
+			objNode.put("valid", false);
+		}
+		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 }
