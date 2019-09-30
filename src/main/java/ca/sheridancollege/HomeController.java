@@ -502,6 +502,25 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
+		int rentalId = payablesList.get(0).getRental().getId();
+		List<Payable> payablesInDB = payableDAO.getPayablesByRentalId(rentalId);
+		
+		if (payablesInDB != null && !payablesInDB.isEmpty()) {
+			// check if there are any items in the DB that should be deleted
+			for (Payable payableInDB : payablesInDB) {
+				// if the Payable in the DB is not contained in the newly sent payablesList, delete it from DB
+				if (!payablesList.contains(payableInDB)) {
+					try {
+						payableDAO.deletePayable(payableInDB);					
+					} catch (Exception e) {
+						log.info("/updatePayables - " + e.getMessage());
+						return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+					}
+				}
+			}
+		}
+		
+		// add or update each Payable
 		for (Payable payable : payablesList) {
 			try {
 				payableDAO.editPayable(payable);
@@ -512,8 +531,9 @@ public class HomeController {
 		}
 		
 		log.info("/updatePayables - List of Payables updated");
-		objNode.put("message", "Payables were updated");
-		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		
+		List<Payable> payables = payableDAO.getPayablesByRentalId(rentalId);
+		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})

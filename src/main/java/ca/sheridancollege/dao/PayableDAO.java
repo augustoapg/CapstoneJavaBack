@@ -118,4 +118,20 @@ public class PayableDAO {
 		
 	}
 	
+	public void deletePayable(Payable payable) throws Exception {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		
+		// using try-catch-finally so that no matter what happens, the session will be closed at the end
+		try {
+			session.delete(payable);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();
+		}
+		
+	}
+	
 }

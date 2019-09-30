@@ -34,4 +34,25 @@ public class Payable {
 	@JoinColumn(name="RENTAL_ID")
 	private Rental rental;
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Payable other = (Payable) obj;
+		if (payable_id != other.payable_id)
+			return false;
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + payable_id;
+		return result;
+	}
 }
