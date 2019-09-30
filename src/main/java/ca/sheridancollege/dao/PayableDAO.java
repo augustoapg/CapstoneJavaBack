@@ -102,14 +102,13 @@ public class PayableDAO {
 		return null;
 	}
 	
-	public void editPayable(Payable payable) {
+	public void editPayable(Payable payable) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
 		try {
-
-			session.update(payable);
+			session.saveOrUpdate(payable);
 		} catch (Exception e) {
 			throw e;
 		} finally {

@@ -515,4 +515,23 @@ public class HomeController {
 		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/updatePayables", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<Object> updatePayables(@RequestBody List<Payable> payablesList) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		for (Payable payable : payablesList) {
+			try {
+				payableDAO.editPayable(payable);
+			} catch (Exception e) {
+				log.info("/updatePayables - " + e.getMessage());
+		    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+			}
+		}
+		
+		log.info("/updatePayables - List of Payables updated");
+		objNode.put("message", "Payables were updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
 }
