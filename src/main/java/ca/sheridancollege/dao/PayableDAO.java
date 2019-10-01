@@ -76,11 +76,7 @@ public class PayableDAO {
 		session.getTransaction().commit();
 		session.close();
 
-		if (!payables.isEmpty()) {
-			return payables;
-		}
-
-		return null;
+		return payables;
 	}
 	
 	public List<Payable> getPayablesByRentalId(int id) {
@@ -95,11 +91,7 @@ public class PayableDAO {
 		session.getTransaction().commit();
 		session.close();
 
-		if (!payables.isEmpty()) {
-			return payables;
-		}
-
-		return null;
+		return payables;
 	}
 	
 	public void editPayable(Payable payable) throws Exception {
