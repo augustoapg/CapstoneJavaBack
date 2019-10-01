@@ -92,7 +92,12 @@ public class HomeController {
 	@RequestMapping(value = "/getPayables", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getPayables() {
 		List<Payable> payables = payableDAO.getAllPayables();
-		log.info("/getPayables - Getting all Payables - " + payables.size() + " retrieved");
+		if (payables != null) {
+			log.info("/getPayables - Getting all Payables - " + payables.size() + " retrieved");
+		} else {
+			log.info("/getPayables - No Payables were found in DB");
+		}
+		
 		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
@@ -122,14 +127,22 @@ public class HomeController {
 	@RequestMapping(value = "/getPayablesByCustID/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getPayablesByCustID(@PathVariable int id) {
 		List<Payable> payables = payableDAO.getPayablesByCustId(id);
-		log.info("/getPayablesByCustID/{id} - Getting Payables by sheridanID" + id + " - " + payables.size() + " retrieved");
+		if (payables != null) {
+			log.info("/getPayablesByCustID/{id} - Getting Payables by sheridanID" + id + " - " + payables.size() + " retrieved");
+		} else {
+			log.info("/getPayablesByCustID/{id} - No Payables were found with Customer ID " + id);
+		}
 		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/getPayablesByRentalId/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getPayablesByRentalId(@PathVariable int id) {
 		List<Payable> payables = payableDAO.getPayablesByRentalId(id);
-		log.info("/getPayablesByRentalId/{id} - Getting Payables by Rental ID: " + id + " - " + payables.size() + " retrieved");
+		if (payables != null) {
+			log.info("/getPayablesByRentalId/{id} - Getting Payables by Rental ID: " + id + " - " + payables.size() + " retrieved");
+		} else {
+			log.info("/getPayablesByRentalId/{id} - No Payables were found with Rental ID " + id);
+		}
 		return new ResponseEntity<Object>(payables, HttpStatus.OK);
 	}
 	
