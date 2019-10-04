@@ -168,43 +168,26 @@ public class HomeController {
 		}
 	}
 	
-	@RequestMapping(value = "/getCustomersByName/{name}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getCustomersByName(@PathVariable String name) {
+	@RequestMapping(value = "/searchCustomers/{keyword}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> searchCustomers(@PathVariable String keyword) {
 		try {
-			List<Customer> customers = custDAO.getCustomersByName(name);
+			List<Customer> customers = custDAO.searchCustomers(keyword);
 
 			if (customers == null) {
-				log.info("/getCustomersByName/{name} - Customer not found with name: " + name);
+				log.info("/searchCustomers/{keyword} - Customer not found with keyword: " + keyword);
 				return new ResponseEntity<Object>(customers, HttpStatus.NO_CONTENT);
 			}
 			
-			log.info("/getCustomerByName/{name} - Getting Customers with name \""+name+"\" - " + customers.size() + " retrieved");
+			log.info("/searchCustomers/{keyword} - Getting Customers with keyword \""+keyword+"\" - " + customers.size() + " retrieved");
 			return new ResponseEntity<Object>(customers, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// if input is invalid (cannot convert string to int)
-			log.error("/getCustomerByName/{name} - Error.", e);
+			log.error("/searchCustomers/{keyword} - Error.", e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
 		}
 	}
 	
-	@RequestMapping(value = "/getCustomersByEmail/{email}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getCustomersByEmail(@PathVariable String email) {
-		try {
-			List<Customer> customers = custDAO.getCustomersByEmail(email);
-
-			if (customers == null) {
-				log.info("/getCustomersByEmail/{email} - Customer not found with email: " + email);
-				return new ResponseEntity<Object>(customers, HttpStatus.NO_CONTENT);
-			}
-			
-			log.info("/getCustomerByEmail/{email} - Getting Customers with email \""+email+"\" - " + customers.size() + " retrieved");
-			return new ResponseEntity<Object>(customers, HttpStatus.OK);
-		} catch (NumberFormatException e) {
-			// if input is invalid (cannot convert string to int)
-			log.error("/getCustomersByEmail/{email} - Error.", e);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
-		}
-	}
+	
 
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
