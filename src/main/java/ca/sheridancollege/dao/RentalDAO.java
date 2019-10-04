@@ -169,7 +169,6 @@ public class RentalDAO {
 		try {
 			rental.setComment(newRental.getComment());
 			rental.setReturnedDate(LocalDate.now());
-			rental.setDueDate(newRental.getDueDate());
 			
 			List<RentalComponent> rentalComponents = rental.getRentalComponents();
 			
