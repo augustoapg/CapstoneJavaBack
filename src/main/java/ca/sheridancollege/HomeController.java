@@ -173,11 +173,35 @@ public class HomeController {
 		try {
 			List<Customer> customers = custDAO.getCustomersByName(name);
 
+			if (customers == null) {
+				log.info("/getCustomersByName/{name} - Customer not found with name: " + name);
+				return new ResponseEntity<Object>(customers, HttpStatus.NO_CONTENT);
+			}
+			
 			log.info("/getCustomerByName/{name} - Getting Customers with name \""+name+"\" - " + customers.size() + " retrieved");
 			return new ResponseEntity<Object>(customers, HttpStatus.OK);
 		} catch (NumberFormatException e) {
 			// if input is invalid (cannot convert string to int)
 			log.error("/getCustomerByName/{name} - Error.", e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
+		}
+	}
+	
+	@RequestMapping(value = "/getCustomersByEmail/{email}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getCustomersByEmail(@PathVariable String email) {
+		try {
+			List<Customer> customers = custDAO.getCustomersByEmail(email);
+
+			if (customers == null) {
+				log.info("/getCustomersByEmail/{email} - Customer not found with email: " + email);
+				return new ResponseEntity<Object>(customers, HttpStatus.NO_CONTENT);
+			}
+			
+			log.info("/getCustomerByEmail/{email} - Getting Customers with email \""+email+"\" - " + customers.size() + " retrieved");
+			return new ResponseEntity<Object>(customers, HttpStatus.OK);
+		} catch (NumberFormatException e) {
+			// if input is invalid (cannot convert string to int)
+			log.error("/getCustomersByEmail/{email} - Error.", e);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
 		}
 	}

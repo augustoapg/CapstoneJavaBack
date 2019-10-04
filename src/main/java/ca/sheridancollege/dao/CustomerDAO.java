@@ -53,7 +53,7 @@ public class CustomerDAO {
 		List<Customer> result = new ArrayList<Customer>();
 		
 		
-		if (name != null) {
+		if (!name.isEmpty() && name != null) {
 			CriteriaBuilder cb = session.getCriteriaBuilder();
 			CriteriaQuery<Customer> criteria = cb.createQuery(Customer.class);
 			Root<Customer> root = criteria.from(Customer.class);
@@ -76,6 +76,40 @@ public class CustomerDAO {
 						cb.like(root.get("lastName"), "%"+name+"%")
 					));
 			}
+			
+			result.addAll(session.createQuery(criteria).getResultList());
+		}
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!result.isEmpty()) {
+			
+			return result;
+		}
+		
+		return null;
+	}
+	
+	public List<Customer> getCustomersByEmail(String email) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		List<Customer> result = new ArrayList<Customer>();
+		
+		
+		if (!email.isEmpty() && email != null) {
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<Customer> criteria = cb.createQuery(Customer.class);
+			Root<Customer> root = criteria.from(Customer.class);
+			
+			criteria.where( 
+				cb.or(
+					cb.like(root.get("sheridanEmail"), "%"+email+"%") ,
+					cb.like(root.get("personalEmail"), "%"+email+"%") 
+				)
+			);
+		
 			
 			result.addAll(session.createQuery(criteria).getResultList());
 		}
