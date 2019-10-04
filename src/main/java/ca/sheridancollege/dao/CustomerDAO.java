@@ -1,8 +1,12 @@
 package ca.sheridancollege.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,7 +27,6 @@ public class CustomerDAO {
 		session.close();
 	}
 
-	// TODO: getCustomer
 	public Customer getCustomer(int sheridanId) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
@@ -40,6 +43,51 @@ public class CustomerDAO {
 			return custs.get(0);
 		}
 
+		return null;
+	}
+	
+	public List<Customer> getCustomersByName(String name) {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		List<Customer> result = new ArrayList<Customer>();
+		
+		
+		if (name != null) {
+			CriteriaBuilder cb = session.getCriteriaBuilder();
+			CriteriaQuery<Customer> criteria = cb.createQuery(Customer.class);
+			Root<Customer> root = criteria.from(Customer.class);
+			if (name.contains(" ")) {
+				String[] splittedName = name.split(" ");
+				String firstName = name.split(" ")[0];
+				String lastName = name.split(" ")[splittedName.length-1];
+				criteria.where( cb.or(
+						cb.like(root.get("firstName"), "%"+firstName+"%"), 
+						cb.like(root.get("lastName"), "%"+lastName+"%")
+					));
+			} 
+			
+			else 
+			
+			{
+				criteria.where( 
+					cb.or(
+						cb.like(root.get("firstName"), "%"+name+"%"), 
+						cb.like(root.get("lastName"), "%"+name+"%")
+					));
+			}
+			
+			result.addAll(session.createQuery(criteria).getResultList());
+		}
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!result.isEmpty()) {
+			
+			return result;
+		}
+		
 		return null;
 	}
 

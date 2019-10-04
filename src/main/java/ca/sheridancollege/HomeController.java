@@ -168,6 +168,20 @@ public class HomeController {
 		}
 	}
 	
+	@RequestMapping(value = "/getCustomersByName/{name}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getCustomersByName(@PathVariable String name) {
+		try {
+			List<Customer> customers = custDAO.getCustomersByName(name);
+
+			log.info("/getCustomerByName/{name} - Getting Customers with name \""+name+"\" - " + customers.size() + " retrieved");
+			return new ResponseEntity<Object>(customers, HttpStatus.OK);
+		} catch (NumberFormatException e) {
+			// if input is invalid (cannot convert string to int)
+			log.error("/getCustomerByName/{name} - Error.", e);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
+		}
+	}
+
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
 		Rental rental = rentalDAO.getRental(id);
