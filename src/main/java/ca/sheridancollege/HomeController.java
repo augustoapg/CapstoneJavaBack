@@ -514,6 +514,12 @@ public class HomeController {
 	public ResponseEntity<Object> updatePayables(@RequestBody List<Payable> payablesList) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
+		List<Payable> result = new ArrayList<Payable>();
+		
+		if (payablesList.isEmpty()) {
+			log.info("/updatePayables - No Payables received");
+			return new ResponseEntity<Object>(result, HttpStatus.OK);
+		}
 		
 		int rentalId = payablesList.get(0).getRental().getId();
 		List<Payable> payablesInDB = payableDAO.getPayablesByRentalId(rentalId);
@@ -545,8 +551,8 @@ public class HomeController {
 		
 		log.info("/updatePayables - List of Payables updated");
 		
-		List<Payable> payables = payableDAO.getPayablesByRentalId(rentalId);
-		return new ResponseEntity<Object>(payables, HttpStatus.OK);
+		result.addAll(payableDAO.getPayablesByRentalId(rentalId));
+		return new ResponseEntity<Object>(result, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json"})
