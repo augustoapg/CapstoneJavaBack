@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.javafaker.Faker;
 
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.BikeState;
@@ -187,7 +188,43 @@ public class HomeController {
 		}
 	}
 	
+	@RequestMapping(value = "/getRentalByReturnDate/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getRentalByReturnDate(@PathVariable String stDate, @PathVariable String enDate) {
+		List<Rental> rentals = new ArrayList<Rental>();
+		try {
+			rentals = rentalDAO.getRentalByReturnDate(stDate, enDate);
+			
+		} catch (Exception e) {
+			log.error("/getRentalByReturnDate/{stDate}/{enDate} - Error.", e);
+		}
+		
+		if (rentals != null) {
+			log.info("/getRentalByReturnDate/{stDate}/{enDate} - Getting Rentals by return date - " + rentals.size() + " retrieved");
+		} else {
+			log.info("/getRentalByReturnDate/{stDate}/{enDate} - No rentals found with return date");
+		}
+		
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
 	
+	@RequestMapping(value = "/getRentalBySignOutDate/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getRentalBySignOutDate(@PathVariable String stDate, @PathVariable String enDate) {
+		List<Rental> rentals = new ArrayList<Rental>();
+		try {
+			rentals = rentalDAO.getRentalBySignOutDate(stDate, enDate);
+			
+		} catch (Exception e) {
+			log.error("/getRentalBySignOutDate/{stDate}/{enDate} - Error.", e);
+		}
+		
+		if (rentals != null) {
+			log.info("/getRentalBySignOutDate/{stDate}/{enDate} - Getting Rentals by signout date - " + rentals.size() + " retrieved");
+		} else {
+			log.info("/getRentalBySignOutDate/{stDate}/{enDate} - No rentals found with signout date");
+		}
+		
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/getRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getRentalById(@PathVariable int id) {
@@ -452,6 +489,31 @@ public class HomeController {
 		log.info("/newLock - Added lock with ID: " + newLockID);
 		objNode.put("message", "Lock was added with id " + newLockID);
 		objNode.put("id", newLockID);
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/editCustomer", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editCustomer(@RequestBody Customer newCustomer) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+		
+		Customer customer = custDAO.getCustomer(newCustomer.getSheridanId());
+		
+		if (customer == null) {
+			log.info("/editCustomer - Customer was not found with ID: " + newCustomer.getSheridanId());
+			objNode.put("message", "Customer was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+		
+		try {
+			custDAO.editCustomer(newCustomer);			
+		} catch (Exception e) {
+	    	log.info("/editCustomer - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
+		
+		log.info("/editCustomer - Edited Customer with ID: " + newCustomer.getSheridanId());
+		objNode.put("message", "Customer was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 

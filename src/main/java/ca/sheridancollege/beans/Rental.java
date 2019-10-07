@@ -34,6 +34,8 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.allActive", query="from Rental where returnedDate is null")
 @NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null and id=:id")
 @NamedQuery(name="Rental.allArchive", query="from Rental where returnedDate is not null")
+@NamedQuery(name="Rental.ByReturnDate", query="from Rental AS r WHERE r.returnedDate BETWEEN :stDate AND :edDate ")
+@NamedQuery(name="Rental.BySignOutDate", query="from Rental AS r WHERE r.signOutDate BETWEEN :stDate AND :edDate ")
 public class Rental implements Serializable {
 	
 	@Id

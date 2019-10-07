@@ -1,6 +1,10 @@
 package ca.sheridancollege.dao;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -218,6 +222,76 @@ public class RentalDAO {
 		}
 		
 		
+	}
+
+	public List<Rental> getRentalByReturnDate(String stDate, String enDate) throws Exception {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		List<Rental> rentals = new ArrayList<Rental>();
+		
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			//convert String to LocalDate
+			LocalDate frmDate = LocalDate.parse(stDate, formatter);
+			LocalDate endDate = LocalDate.parse(enDate, formatter);
+		
+			Query query = session.getNamedQuery("Rental.ByReturnDate");
+			
+			query.setParameter("stDate", frmDate);
+			query.setParameter("edDate", endDate);
+			
+			rentals.addAll(query.getResultList());
+			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();			
+		}
+		
+		if(rentals.isEmpty()) {
+			return null;
+		}
+		
+		return rentals;
+	}
+	
+	public List<Rental> getRentalBySignOutDate(String stDate, String enDate) throws Exception {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		List<Rental> rentals = new ArrayList<Rental>();
+		
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+			//convert String to LocalDate
+			LocalDate frmDate = LocalDate.parse(stDate, formatter);
+			LocalDate endDate = LocalDate.parse(enDate, formatter);
+			
+			if (frmDate.isBefore(endDate)) {
+				return null;
+			}
+		
+			Query query = session.getNamedQuery("Rental.BySignOutDate");
+			
+			query.setParameter("stDate", frmDate);
+			query.setParameter("edDate", endDate);
+			
+			rentals.addAll(query.getResultList());
+			
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();			
+		}
+		
+		if(rentals.isEmpty()) {
+			return null;
+		}
+		
+		return rentals;
 	}
 }
 

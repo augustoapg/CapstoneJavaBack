@@ -174,8 +174,11 @@ public class DummyDataGenerator {
 			String emContactLName = faker.name().lastName();
 			
 			Customer customer = new Customer(999999900 + i, fName, lName,
-					faker.address().streetAddress(), fName + lName + "@sheridan.ca", fName + lName + "@gmail.com", faker.phoneNumber().cellPhone(), 
-					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName, faker.phoneNumber().cellPhone());
+					faker.address().streetAddress(), fName + lName + "@sheridan.ca", fName + lName + "@gmail.com", 
+					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-().]", ""))), 
+					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName, 
+					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-\\.()]", "")))
+					);
 			custDAO.addCustomer(customer);
 		}
 	}

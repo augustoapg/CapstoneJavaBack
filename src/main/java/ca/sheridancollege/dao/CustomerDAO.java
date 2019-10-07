@@ -12,6 +12,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.utils.RegexCheck;
 
@@ -94,8 +95,6 @@ public class CustomerDAO {
 		
 		return null;
 	}
-	
-	
 
 	public List<Customer> getAllCustomer() {
 		Session session = sessionFactory.openSession();
@@ -109,6 +108,33 @@ public class CustomerDAO {
 		session.close();
 
 		return custs;
+	}
+	
+	public void editCustomer(Customer cust) throws Exception {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		// using try-catch-finally so that no matter what happens, the session will be closed at the end
+		try {
+			Customer existingCust = getCustomer(cust.getSheridanId());
+			String errorMessage = "";
+			
+			// verify if there is another bike (one with a different ID) with the new name already in the DB
+			if (existingCust == null || existingCust.getSheridanId() == cust.getSheridanId()) {
+				session.update(cust);
+			} else {
+				errorMessage = "There is already a customer" + cust.getSheridanId() + " registered)";
+			}
+
+			if (!errorMessage.isEmpty()) {
+				throw new IllegalArgumentException(errorMessage);
+			}
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();
+		}
 	}
 
 }

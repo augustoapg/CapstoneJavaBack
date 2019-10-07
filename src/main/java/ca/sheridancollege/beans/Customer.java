@@ -28,12 +28,12 @@ public class Customer implements Serializable {
 	private String address;
 	private String sheridanEmail;
 	private String personalEmail;
-	private String phone;
+	private Long phone;
 	private CustomerType type;
 	private boolean isBlackListed;
 	private boolean willRecvEmail;
 	private String notes;
 	private String emergencyContactFirstName;
 	private String emergencyContactLastName;
-	private String emergencyContactPhone;	
+	private Long emergencyContactPhone;	
 }
