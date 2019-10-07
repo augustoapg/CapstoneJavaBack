@@ -8,9 +8,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Restrictions;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
@@ -72,17 +74,29 @@ public class CustomerDAO {
 			
 			else if (RegexCheck.isNumeric(keyword)) {
 				id = Integer.parseInt(keyword);
+				
+				Criteria cri = session.createCriteria(Customer.class);
+				cri.add(Restrictions.sqlRestriction(" sheridanId LIKE '%"+id+"%' "));
+				
+				result.addAll(cri.list());
 			}
 			
-			criteria.where( cb.or(
-					cb.equal(root.get("sheridanId"), id) ,
-					cb.like(root.get("sheridanEmail"), "%"+keyword+"%") ,
-					cb.like(root.get("personalEmail"), "%"+keyword+"%") ,
-					cb.like(root.get("firstName"), "%"+firstName+"%"), 
-					cb.like(root.get("lastName"), "%"+lastName+"%")
-				));
-		
-			result.addAll(session.createQuery(criteria).getResultList());
+			else {
+				
+				criteria.where( cb.or(
+						//cb.equal(root.get("sheridanId"), id)
+						//cb.like(root.get("sheridanId"), "%"+keyword+"%") ,
+						
+						cb.like(root.get("sheridanEmail"), "%"+keyword+"%") ,
+						cb.like(root.get("personalEmail"), "%"+keyword+"%") ,
+						cb.like(root.get("firstName"), "%"+firstName+"%"), 
+						cb.like(root.get("lastName"), "%"+lastName+"%")
+					));
+			
+				result.addAll(session.createQuery(criteria).getResultList());
+				
+			}
+			
 		}
 
 		session.getTransaction().commit();
