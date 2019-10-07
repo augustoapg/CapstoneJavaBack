@@ -235,6 +235,10 @@ public class RentalDAO {
 			//convert String to LocalDate
 			LocalDate frmDate = LocalDate.parse(stDate, formatter);
 			LocalDate endDate = LocalDate.parse(enDate, formatter);
+			
+			if (frmDate.isBefore(endDate)) {
+				return null;
+			}
 		
 			Query query = session.getNamedQuery("Rental.ByReturnDate");
 			
