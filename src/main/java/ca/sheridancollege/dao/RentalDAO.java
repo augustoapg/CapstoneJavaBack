@@ -236,7 +236,7 @@ public class RentalDAO {
 			LocalDate frmDate = LocalDate.parse(stDate, formatter);
 			LocalDate endDate = LocalDate.parse(enDate, formatter);
 			
-			if (frmDate.isBefore(endDate)) {
+			if (frmDate.isAfter(endDate)) {
 				return null;
 			}
 		
@@ -273,7 +273,7 @@ public class RentalDAO {
 			LocalDate frmDate = LocalDate.parse(stDate, formatter);
 			LocalDate endDate = LocalDate.parse(enDate, formatter);
 			
-			if (frmDate.isBefore(endDate)) {
+			if (frmDate.isAfter(endDate)) {
 				return null;
 			}
 		

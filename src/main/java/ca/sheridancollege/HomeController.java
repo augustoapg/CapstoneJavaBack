@@ -192,6 +192,7 @@ public class HomeController {
 	public ResponseEntity<Object> getRentalByReturnDate(@PathVariable String stDate, @PathVariable String enDate) {
 		List<Rental> rentals = new ArrayList<Rental>();
 		try {
+			
 			rentals = rentalDAO.getRentalByReturnDate(stDate, enDate);
 			
 		} catch (Exception e) {
@@ -211,6 +212,7 @@ public class HomeController {
 	public ResponseEntity<Object> getRentalBySignOutDate(@PathVariable String stDate, @PathVariable String enDate) {
 		List<Rental> rentals = new ArrayList<Rental>();
 		try {
+			
 			rentals = rentalDAO.getRentalBySignOutDate(stDate, enDate);
 			
 		} catch (Exception e) {
