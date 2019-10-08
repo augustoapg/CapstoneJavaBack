@@ -66,13 +66,8 @@ public class CustomerDAO {
 			String lastName = keyword;
 			int id = 0;
 			
-			if (keyword.contains(" ")) {
-				String[] splittedName = keyword.split(" ");
-				firstName = keyword.split(" ")[0];
-				lastName = keyword.split(" ")[splittedName.length-1];
-			} 
-			
-			else if (RegexCheck.isNumeric(keyword)) {
+			if (RegexCheck.isNumeric(keyword)) 
+			{
 				id = Integer.parseInt(keyword);
 				
 				Criteria cri = session.createCriteria(Customer.class);
@@ -81,12 +76,17 @@ public class CustomerDAO {
 				result.addAll(cri.list());
 			}
 			
-			else {
+			else 
+			{
+				
+				if (keyword.contains(" ")) {
+					String[] splittedName = keyword.split(" ");
+					firstName = keyword.split(" ")[0];
+					lastName = keyword.split(" ")[splittedName.length-1];
+					System.out.println(firstName + lastName);
+				} 
 				
 				criteria.where( cb.or(
-						//cb.equal(root.get("sheridanId"), id)
-						//cb.like(root.get("sheridanId"), "%"+keyword+"%") ,
-						
 						cb.like(root.get("sheridanEmail"), "%"+keyword+"%") ,
 						cb.like(root.get("personalEmail"), "%"+keyword+"%") ,
 						cb.like(root.get("firstName"), "%"+firstName+"%"), 
