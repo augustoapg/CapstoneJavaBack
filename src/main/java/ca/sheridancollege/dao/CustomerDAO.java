@@ -76,7 +76,7 @@ public class CustomerDAO {
 				id = Integer.parseInt(keyword);
 				
 				Criteria cri = session.createCriteria(Customer.class);
-				cri.add(Restrictions.sqlRestriction(" sheridanId LIKE '%"+id+"%' "));
+				cri.add(Restrictions.sqlRestriction("sheridanId::varchar(255) LIKE '%"+keyword+"%' "));
 				
 				result.addAll(cri.list());
 			}
