@@ -32,10 +32,21 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.all", query="from Rental")
 @NamedQuery(name="Rental.active", query="from Rental where returnedDate is null and id=:id")
 @NamedQuery(name="Rental.allActive", query="from Rental where returnedDate is null")
-@NamedQuery(name="Rental.archive", query="from Rental where returnedDate is not null and id=:id")
-@NamedQuery(name="Rental.allArchive", query="from Rental where returnedDate is not null")
-@NamedQuery(name="Rental.ByReturnDate", query="from Rental AS r WHERE r.returnedDate BETWEEN :stDate AND :edDate ")
-@NamedQuery(name="Rental.BySignOutDate", query="from Rental AS r WHERE r.signOutDate BETWEEN :stDate AND :edDate ")
+@NamedQuery(name="Rental.archived", query="from Rental where returnedDate is not null and id=:id")
+@NamedQuery(name="Rental.allArchived", query="from Rental where returnedDate is not null")
+
+@NamedQuery(name="Rental.ArchiveByDueDate", query="from Rental AS r WHERE (r.dueDate BETWEEN :stDate AND :edDate) "
+														+ "AND (returnedDate is not null)")
+@NamedQuery(name="Rental.ArchiveBySignOutDate", query="from Rental AS r WHERE (r.signOutDate BETWEEN :stDate AND :edDate) "
+														+ "AND (returnedDate is not null)")
+@NamedQuery(name="Rental.ArchiveByReturnDate", query="from Rental AS r WHERE (r.returnedDate BETWEEN :stDate AND :edDate) "
+														+ "AND (returnedDate is not null)")
+
+@NamedQuery(name="Rental.ActiveByDueDate", query="from Rental AS r WHERE r.dueDate BETWEEN :stDate AND :edDate "
+														+ "AND (returnedDate is null)")
+@NamedQuery(name="Rental.ActiveBySignOutDate", query="from Rental AS r WHERE (r.signOutDate BETWEEN :stDate AND :edDate) "
+														+ "AND (returnedDate is null)")
+
 public class Rental implements Serializable {
 	
 	@Id

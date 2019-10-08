@@ -135,11 +135,11 @@ public class RentalDAO {
 		return rentals;
 	}
 	
-	public Rental getArchiveRental(int id) {
+	public Rental getArchivedRental(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.archive");
+		Query query = session.getNamedQuery("Rental.archived");
 		query.setParameter("id", id);
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
@@ -152,12 +152,12 @@ public class RentalDAO {
 
 		return null;
 	}
-
-	public List<Rental> getArchiveRentals() {
+	
+	public List<Rental> getArchivedRentals() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Rental.allArchive");
+		Query query = session.getNamedQuery("Rental.allArchived");
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
@@ -223,8 +223,9 @@ public class RentalDAO {
 		
 		
 	}
+	
+	public List<Rental> getRentalsByDate(String type, String stDate, String enDate) throws Exception{
 
-	public List<Rental> getRentalByReturnDate(String stDate, String enDate) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 		List<Rental> rentals = new ArrayList<Rental>();
@@ -239,8 +240,10 @@ public class RentalDAO {
 			if (frmDate.isAfter(endDate)) {
 				return null;
 			}
-		
-			Query query = session.getNamedQuery("Rental.ByReturnDate");
+			
+			String namedQuery = getNamedQueryRentals(type);
+			
+			Query query = session.getNamedQuery(namedQuery);
 			
 			query.setParameter("stDate", frmDate);
 			query.setParameter("edDate", endDate);
@@ -255,48 +258,50 @@ public class RentalDAO {
 		}
 		
 		if(rentals.isEmpty()) {
+			System.out.println("EMPTY 437");
 			return null;
 		}
 		
 		return rentals;
 	}
 	
-	public List<Rental> getRentalBySignOutDate(String stDate, String enDate) throws Exception {
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		List<Rental> rentals = new ArrayList<Rental>();
+	
+	public String getNamedQueryRentals(String type) {
+		String namedQuery = "";
 		
-		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-			//convert String to LocalDate
-			LocalDate frmDate = LocalDate.parse(stDate, formatter);
-			LocalDate endDate = LocalDate.parse(enDate, formatter);
-			
-			if (frmDate.isAfter(endDate)) {
-				return null;
-			}
+		switch (type.toLowerCase()) {
 		
-			Query query = session.getNamedQuery("Rental.BySignOutDate");
+			// Archive Rentals By Due Date
+			case "archiveduedate":
+				namedQuery = "Rental.ArchiveByDueDate";
+				break;
 			
-			query.setParameter("stDate", frmDate);
-			query.setParameter("edDate", endDate);
+			// Archive Rentals By Signout Date
+			case "archivesignout":
+				namedQuery = "Rental.ArchiveBySignOutDate";
+				break;
 			
-			rentals.addAll(query.getResultList());
-			
-		} catch (Exception e) {
-			throw e;
-		} finally {
-			session.getTransaction().commit();
-			session.close();			
+			// Archive Rentals By Return Date
+			case "archivereturn":
+				namedQuery = "Rental.ArchiveByReturnDate";
+				break;
+				
+			// Active Rentals By Due Date
+			case "activeduedate":
+				namedQuery = "Rental.ActiveByDueDate";
+				break;
+				
+			// Active Rentals By Signout Date
+			case "activesignout":
+				namedQuery = "Rental.ActiveBySignOutDate";
+				break;
+			default:	
 		}
 		
-		if(rentals.isEmpty()) {
-			return null;
-		}
+		return namedQuery;
 		
-		return rentals;
 	}
+	
 }
 
 

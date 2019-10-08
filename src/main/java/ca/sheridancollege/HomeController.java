@@ -186,42 +186,62 @@ public class HomeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid input");
 		}
 	}
-	
-	@RequestMapping(value = "/getRentalByReturnDate/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getRentalByReturnDate(@PathVariable String stDate, @PathVariable String enDate) {
+
+
+	@RequestMapping(value = "/getActiveRentalByDate/{type}/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getActiveRentalByDate(@PathVariable String type, @PathVariable String stDate, @PathVariable String enDate) {
 		List<Rental> rentals = new ArrayList<Rental>();
 		try {
-			
-			rentals = rentalDAO.getRentalByReturnDate(stDate, enDate);
+			if (type.equalsIgnoreCase("due")) {
+				rentals = rentalDAO.getRentalsByDate("activeduedate", stDate, enDate);
+			} 
+			else if (type.equalsIgnoreCase("signout")) {
+				rentals = rentalDAO.getRentalsByDate("activesignout", stDate, enDate);
+			} 
+			else {
+				// type not recognized
+				log.error("/getActiveRentalByDate/{type}/{stDate}/{enDate} - Type \""+type+"\" not recognized");
+			}
 			
 		} catch (Exception e) {
-			log.error("/getRentalByReturnDate/{stDate}/{enDate} - Error.", e);
+			log.error("/getActiveRentalByDate/{type}/{stDate}/{enDate} - Error.", e);
 		}
 		
 		if (rentals != null) {
-			log.info("/getRentalByReturnDate/{stDate}/{enDate} - Getting Rentals by return date - " + rentals.size() + " retrieved");
+			log.info("/getActiveRentalByDate/{type}/{stDate}/{enDate} - Getting Rentals by date - " + rentals.size() + " retrieved");
 		} else {
-			log.info("/getRentalByReturnDate/{stDate}/{enDate} - No rentals found with return date");
+			log.info("/getActiveRentalByDate/{type}/{stDate}/{enDate} - No rentals found with date");
 		}
 		
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/getRentalBySignOutDate/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getRentalBySignOutDate(@PathVariable String stDate, @PathVariable String enDate) {
+	@RequestMapping(value = "/getArchivedRentalByDate/{type}/{stDate}/{enDate}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchivedRentalByDate(@PathVariable String type, @PathVariable String stDate, @PathVariable String enDate) {
 		List<Rental> rentals = new ArrayList<Rental>();
 		try {
-			
-			rentals = rentalDAO.getRentalBySignOutDate(stDate, enDate);
+			if (type.equalsIgnoreCase("due")) {
+				rentals = rentalDAO.getRentalsByDate("archiveduedate", stDate, enDate);
+			} 
+			else if (type.equalsIgnoreCase("signout")) {
+				rentals = rentalDAO.getRentalsByDate("archivesignout", stDate, enDate);
+			} 
+			else if (type.equalsIgnoreCase("return")) {
+				rentals = rentalDAO.getRentalsByDate("archivereturn", stDate, enDate);
+			} 
+			else {
+				// type not recognized. 
+				log.error("/getArchivedRentalByDate/{type}/{stDate}/{enDate} - Type \""+type+"\" not recognized");
+			}
 			
 		} catch (Exception e) {
-			log.error("/getRentalBySignOutDate/{stDate}/{enDate} - Error.", e);
+			log.error("/getArchivedRentalByDate/{type}/{stDate}/{enDate} - Error.", e);
 		}
 		
 		if (rentals != null) {
-			log.info("/getRentalBySignOutDate/{stDate}/{enDate} - Getting Rentals by signout date - " + rentals.size() + " retrieved");
+			log.info("/getArchivedRentalByDate/{type}/{stDate}/{enDate} - Getting Rentals by date - " + rentals.size() + " retrieved");
 		} else {
-			log.info("/getRentalBySignOutDate/{stDate}/{enDate} - No rentals found with signout date");
+			log.info("/getArchivedRentalByDate/{type}/{stDate}/{enDate} - No rentals found with date");
 		}
 		
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
@@ -265,19 +285,19 @@ public class HomeController {
 	}
 	
 	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getArchiveRentals() {
-		List<Rental> rentals = rentalDAO.getArchiveRentals();
+	public ResponseEntity<Object> getArchivedRentals() {
+		List<Rental> rentals = rentalDAO.getArchivedRentals();
 		log.info("/getArchivedRentals - Getting All Archived Rentals- " + rentals.size() + " retrieved");
 		
 		if (rentals.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No archive rentals were found");
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No archived rentals were found");
 		}
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/getArchiveRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getArchiveRental(@PathVariable int id) {
-		Rental rental = rentalDAO.getArchiveRental(id);
+	@RequestMapping(value = "/getArchivedRental/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchivedRental(@PathVariable int id) {
+		Rental rental = rentalDAO.getArchivedRental(id);
 
 		if(rental == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + id);

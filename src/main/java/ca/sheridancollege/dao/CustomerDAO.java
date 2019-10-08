@@ -84,7 +84,7 @@ public class CustomerDAO {
 					firstName = keyword.split(" ")[0];
 					lastName = keyword.split(" ")[splittedName.length-1];
 					System.out.println(firstName + lastName);
-				} 
+				}
 				
 				criteria.where( cb.or(
 						cb.like(root.get("sheridanEmail"), "%"+keyword+"%") ,
