@@ -35,6 +35,9 @@ import ca.sheridancollege.beans.SystemUser;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class HomeController {
+	
+	
+	
 	BikeDAO bikeDAO = new BikeDAO();
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
