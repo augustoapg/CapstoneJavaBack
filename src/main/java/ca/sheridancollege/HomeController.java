@@ -511,7 +511,7 @@ public class HomeController {
 	    }
 
 		log.info("/newLock - Added lock with ID: " + newLockID);
-		objNode.put("message", "Lock was added with id " + newLockID);
+		objNode.put("message", "Lock was added with id " + newLock.getName());
 		objNode.put("id", newLockID);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -587,7 +587,7 @@ public class HomeController {
 	    }
 		
 		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
-		objNode.put("message", "LockItem was updated");
+		objNode.put("message", "Lock was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
