@@ -189,11 +189,23 @@ public class DummyDataGenerator {
 			String emContactFName = faker.name().firstName();
 			String emContactLName = faker.name().lastName();
 			
-			Customer customer = new Customer(999999900 + i, fName, lName,
-					faker.address().streetAddress(), fName + lName + "@sheridan.ca", fName + lName + "@gmail.com", 
-					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-().]", ""))), 
-					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName, 
-					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-\\.()]", "")))
+			LocalDate today = LocalDate.now();
+			
+			// user created today, with end of program in december 31 two years from now and next waiver to be signed next year in august
+			Customer customer = new Customer(
+					999999900 + i,
+					fName,
+					lName,
+					faker.address().streetAddress(),
+					fName + lName + "@sheridan.ca",
+					fName + lName + "@gmail.com",
+					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-().]", ""))),
+					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName,
+					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-\\.()]", ""))),
+					today,
+					LocalDate.of(today.getYear() + 2, 12, 31),
+					today,
+					LocalDate.of(today.getYear() + 1, 8, 1)
 					);
 			custDAO.addCustomer(customer);
 		}

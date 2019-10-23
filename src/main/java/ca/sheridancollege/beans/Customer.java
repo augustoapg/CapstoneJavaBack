@@ -1,12 +1,15 @@
 package ca.sheridancollege.beans;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import ca.sheridancollege.enums.CustomerType;
 import lombok.AllArgsConstructor;
@@ -35,5 +38,14 @@ public class Customer implements Serializable {
 	private String notes;
 	private String emergencyContactFirstName;
 	private String emergencyContactLastName;
-	private Long emergencyContactPhone;	
+	private Long emergencyContactPhone;
+	
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate createdOn;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate endOfProgram;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate lastWaiverSignedAt;
+	@JsonFormat(pattern="yyyy-MM-dd")
+	private LocalDate waiverExpirationDate;
 }
