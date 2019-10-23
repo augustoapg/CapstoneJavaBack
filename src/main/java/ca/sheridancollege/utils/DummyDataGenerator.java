@@ -11,17 +11,20 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.github.javafaker.Faker;
 
+import ca.sheridancollege.beans.Basket;
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.beans.LockItem;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.beans.SystemUser;
+import ca.sheridancollege.dao.BasketDAO;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
 import ca.sheridancollege.dao.LockDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
+import ca.sheridancollege.enums.BasketState;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.enums.LockState;
@@ -34,6 +37,7 @@ public class DummyDataGenerator {
 	RentalDAO rentalDAO = new RentalDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO keyLockDAO = new LockDAO();
+	BasketDAO basketDAO = new BasketDAO();
 	
 	public void generateRandomBikes(int numOfBikes) throws Exception {
 		for(int i = 0; i < numOfBikes; i++) {
@@ -117,6 +121,18 @@ public class DummyDataGenerator {
 			LockItem lockItem = new LockItem(name, null, quantityOfKeysPerLock, LockState.AVAILABLE);
 			try {
 				keyLockDAO.addLockItem(lockItem);				
+			} catch (Exception e) {
+				throw e;
+			}
+		}
+	}
+	
+	public void generateRandomBaskets(int quantityOfLocks) throws Exception {
+		for(int i = 1; i < quantityOfLocks + 1; i++) {
+			String name = "BSK" + String.format("%03d", (i + 1));
+			Basket basket = new Basket(name, null, BasketState.AVAILABLE);
+			try {
+				basketDAO.addBasket(basket);				
 			} catch (Exception e) {
 				throw e;
 			}
