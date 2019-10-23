@@ -2,8 +2,6 @@ package ca.sheridancollege.utils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -191,7 +189,7 @@ public class DummyDataGenerator {
 			
 			LocalDate today = LocalDate.now();
 			
-			// user created today, with end of program in december 31 two years from now and next waiver to be signed next year in august
+			// user created today, with end of program in December 31 two years from now. Waiver dates are added in the addCustomer()
 			Customer customer = new Customer(
 					999999900 + i,
 					fName,
@@ -202,10 +200,10 @@ public class DummyDataGenerator {
 					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-().]", ""))),
 					CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", emContactFName, emContactLName,
 					Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-\\.()]", ""))),
-					today,
+					null,
 					LocalDate.of(today.getYear() + 2, 12, 31),
-					today,
-					LocalDate.of(today.getYear() + 1, 8, 1)
+					null,
+					null
 					);
 			custDAO.addCustomer(customer);
 		}

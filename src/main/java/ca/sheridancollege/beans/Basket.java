@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 
 import ca.sheridancollege.enums.BasketState;
-import ca.sheridancollege.enums.BikeState;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

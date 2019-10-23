@@ -1,5 +1,6 @@
 package ca.sheridancollege.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.utils.RegexCheck;
 
@@ -24,7 +24,15 @@ public class CustomerDAO {
 	public void addCustomer(Customer customer) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
+		
+		LocalDate today = LocalDate.now();
 
+		// before adding user, update dates
+		customer.setCreatedOn(today);
+		customer.setLastWaiverSignedAt(today);
+		
+		// TODO: Review waiver expiration Date
+		customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 1));
 		session.save(customer);
 
 		session.getTransaction().commit();
