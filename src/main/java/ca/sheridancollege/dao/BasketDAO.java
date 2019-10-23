@@ -1,6 +1,5 @@
 package ca.sheridancollege.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,30 +8,27 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import ca.sheridancollege.beans.Bike;
-import ca.sheridancollege.beans.LockItem;
-import ca.sheridancollege.beans.Payable;
-import ca.sheridancollege.beans.RentalComponent;
+import ca.sheridancollege.beans.Basket;
 
-public class LockDAO {
-
+public class BasketDAO {
+	
 	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
-	public int addLockItem(LockItem lockItem) throws Exception {
+	public int addBasket(Basket basket) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
 		try {
-			LockItem existingLock = getLockItemByName(lockItem.getName());
+			Basket existingBasket = getBasketByName(basket.getName());
 			String errorMessage = "";
 			
-			// verify if there is a lock with this name already in the DB
-			if (existingLock == null) {
-				session.save(lockItem);
+			// verify if there is a basket with this name already in the DB
+			if (existingBasket == null) {
+				session.save(basket);
 			} else {
-				errorMessage = "There is already a lock with name " + lockItem.getName() + " registered (Lock ID: " + existingLock.getId() + ")";
+				errorMessage = "There is already a basket with name " + basket.getName() + " registered (Basket ID: " + existingBasket.getId() + ")";
 			}
 
 			if (!errorMessage.isEmpty()) {
@@ -45,23 +41,23 @@ public class LockDAO {
 			session.close();
 		}
 		
-		return lockItem.getId();
+		return basket.getId();
 	}
 	
-	public void editLockItem(LockItem lockItem) throws Exception {
+	public void editBasket(Basket basket) throws Exception {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
 		try {
-			LockItem existingLock = getLockItemByName(lockItem.getName());
+			Basket existingBasket = getBasketByName(basket.getName());
 			String errorMessage = "";
 			
-			// verify if there is another lock (with different ID) with this name already in the DB
-			if (existingLock == null || lockItem.getId() == existingLock.getId()) {
-				session.update(lockItem);
+			// verify if there is another basket (with different ID) with this name already in the DB
+			if (existingBasket == null || basket.getId() == existingBasket.getId()) {
+				session.update(basket);
 			} else {
-				errorMessage = "There is already a lock with name " + lockItem.getName() + " registered (Lock ID: " + existingLock.getId() + ")";
+				errorMessage = "There is already a Basket with name " + basket.getName() + " registered (Basket ID: " + existingBasket.getId() + ")";
 			}
 
 			if (!errorMessage.isEmpty()) {
@@ -75,55 +71,55 @@ public class LockDAO {
 		}
 	}
 	
-	public LockItem getLockItemById(int id) {
+	public Basket getBasketById(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("LockItem.byID");
+		Query query = session.getNamedQuery("Basket.byID");
 		query.setParameter("id", id);
 
-		List<LockItem> lockItems = (List<LockItem>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		if (!lockItems.isEmpty()) {
-			return lockItems.get(0);
+		if (!baskets.isEmpty()) {
+			return baskets.get(0);
 		}
 
 		return null;
 	}
 	
-	public LockItem getLockItemByName(String name) {
+	public Basket getBasketByName(String name) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("LockItem.byName");
+		Query query = session.getNamedQuery("Basket.byName");
 		query.setParameter("name", name);
 
-		List<LockItem> lockItems = (List<LockItem>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		if (!lockItems.isEmpty()) {
-			return lockItems.get(0);
+		if (!baskets.isEmpty()) {
+			return baskets.get(0);
 		}
 
 		return null;
 	}
 	
-	public List<LockItem> getAllLockItems() {
+	public List<Basket> getAllBaskets() {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("LockItem.all");
+		Query query = session.getNamedQuery("Basket.all");
 
-		List<LockItem> lockItems = (List<LockItem>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		return lockItems;
+		return baskets;
 	}
 }
