@@ -21,7 +21,7 @@ public class AutomaticBan {
 	 * with those Rentals and black list them (ban).
 	 * It will run once everyday automatically at 1AM (01:00:00 AM)
 	 */
-	@Scheduled(cron = "0 5 22 * * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void automaticBanCustomers() {
 		RentalDAO rentalDAO = new RentalDAO();
 		CustomerDAO customerDAO = new CustomerDAO();
