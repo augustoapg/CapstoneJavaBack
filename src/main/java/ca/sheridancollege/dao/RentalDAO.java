@@ -133,6 +133,20 @@ public class RentalDAO {
 		return rentals;
 	}
 	
+	public List<Rental> getLateRentals() {
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.allLate");
+		query.setParameter("today", LocalDate.now());
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return rentals;
+	}
+	
 	public Rental getArchivedRental(int id) {
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();

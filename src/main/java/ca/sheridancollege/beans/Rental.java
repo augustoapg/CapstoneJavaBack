@@ -46,6 +46,7 @@ import lombok.NoArgsConstructor;
 														+ "AND (returnedDate is null)")
 @NamedQuery(name="Rental.ActiveBySignOutDate", query="from Rental AS r WHERE (r.signOutDate BETWEEN :stDate AND :edDate) "
 														+ "AND (returnedDate is null)")
+@NamedQuery(name="Rental.allLate", query="from Rental where returnedDate is null AND dueDate < :today")
 
 public class Rental implements Serializable {
 	
