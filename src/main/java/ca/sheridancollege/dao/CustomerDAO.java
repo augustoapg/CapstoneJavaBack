@@ -141,7 +141,7 @@ public class CustomerDAO {
 			Customer existingCust = getCustomer(cust.getSheridanId());
 			String errorMessage = "";
 			
-			// verify if there is another bike (one with a different ID) with the new name already in the DB
+			// verify if there is another customer (one with a different ID) with the new name already in the DB
 			if (existingCust == null || existingCust.getSheridanId() == cust.getSheridanId()) {
 				session.update(cust);
 			} else {
