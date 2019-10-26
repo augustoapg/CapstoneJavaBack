@@ -5,22 +5,14 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.beans.SystemUser;
+import ca.sheridancollege.utils.HibernateUtil;
 
 public class SystemUserDAO {
-	
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
-	
-	
-
 	// ------------------------------ SystemUser -----------------------------------
 
 	public void addSysUser(SystemUser systemUser) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		session.save(systemUser);
@@ -30,7 +22,7 @@ public class SystemUserDAO {
 	}
 	
 	public SystemUser getSysUser(String username) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("SystemUser.byUsername");

@@ -5,18 +5,15 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Basket;
+import ca.sheridancollege.utils.HibernateUtil;
 
 public class BasketDAO {
-	
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	public int addBasket(Basket basket) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
@@ -45,7 +42,7 @@ public class BasketDAO {
 	}
 	
 	public void editBasket(Basket basket) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
@@ -72,7 +69,7 @@ public class BasketDAO {
 	}
 	
 	public Basket getBasketById(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Basket.byID");
@@ -91,7 +88,7 @@ public class BasketDAO {
 	}
 	
 	public Basket getBasketByName(String name) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Basket.byName");
@@ -110,7 +107,7 @@ public class BasketDAO {
 	}
 	
 	public List<Basket> getAllBaskets() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Basket.all");

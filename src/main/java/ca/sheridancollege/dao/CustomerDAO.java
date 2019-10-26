@@ -11,18 +11,16 @@ import javax.persistence.criteria.Root;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
 import ca.sheridancollege.beans.Customer;
+import ca.sheridancollege.utils.HibernateUtil;
 import ca.sheridancollege.utils.RegexCheck;
 
 public class CustomerDAO {
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 
 	public void addCustomer(Customer customer) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		LocalDate today = LocalDate.now();
@@ -40,7 +38,7 @@ public class CustomerDAO {
 	}
 
 	public Customer getCustomer(int sheridanId) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Customer.byID");
@@ -59,7 +57,7 @@ public class CustomerDAO {
 	}
 	
 	public List<Customer> searchCustomers(String keyword) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		List<Customer> result = new ArrayList<Customer>();
@@ -119,7 +117,7 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomer() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Customer.all");
@@ -133,7 +131,7 @@ public class CustomerDAO {
 	}
 	
 	public void editCustomer(Customer cust) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end

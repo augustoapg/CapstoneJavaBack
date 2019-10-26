@@ -5,20 +5,17 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.RentalComponent;
+import ca.sheridancollege.utils.HibernateUtil;
 
 public class RentalComponentDAO {
-	
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	
 	public String getNewRentalComponentId(String prefix) {
 		prefix = prefix.toUpperCase(); // ensure uppercase prefix (B, L, K)
 		String newComponentId = prefix + "000"; // default value
 		
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		Query query = session.getNamedQuery("RentalComponent.getAllComponentsByPrefix");
@@ -41,7 +38,7 @@ public class RentalComponentDAO {
 	
 	public RentalComponent getRentalComponent(String id) throws IllegalArgumentException {
 	
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		Query query = null;
