@@ -30,7 +30,6 @@ import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
-import ca.sheridancollege.beans.SystemUser;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -402,15 +401,18 @@ public class HomeController {
 		Rental rental = rentalDAO.getRental(rentalID);
 		
 		if(rental == null) {
-			// error
+			log.info("/newPayable/" + rentalID + " - Error. No rental was found with ID: " + rentalID);
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No rental was found with ID: " + rentalID);
 		} 
 		
 		int payableID = 0;
 		try {
 			payableID = payableDAO.addPayable(payable, rental);
+			// Customer gets blacklisted if a new Payable was added and if was not blacklisted before
+			blackListCustomer(rental.getCustomer());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("/newPayable/" + rentalID + "-" + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/newPayable/"+ rentalID +"/ - Added payable with ID: " + payableID);
@@ -418,7 +420,13 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	
+	private void blackListCustomer(Customer customer) throws Exception {
+		if (!customer.isBlackListed()) {
+			customer.setBlackListed(true);
+			custDAO.editCustomer(customer);				
+		}
+	}
+
 	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
@@ -663,8 +671,11 @@ public class HomeController {
 		}
 		
 		try {
-			newPayable.setRental(payable.getRental());
+			// updates the rental
+			Rental rental = payable.getRental();
+			newPayable.setRental(rental);
 			payableDAO.editPayable(newPayable);
+			blackListCustomer(rental.getCustomer());
 		} catch (Exception e) {
 	    	log.info("/editPayable - " + e.getMessage());
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -712,6 +723,17 @@ public class HomeController {
 				log.info("/updatePayables - " + e.getMessage());
 		    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 			}
+		}
+		
+		// blacklist customer if not yet blacklisted
+		try {
+			// rental object that comes with the request body does not contain full rental object, just its id
+			Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
+			Customer customer = rental.getCustomer();
+			blackListCustomer(customer);
+		} catch (Exception e) {
+			log.info("/updatePayables - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/updatePayables - List of Payables updated");
