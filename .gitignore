@@ -1,2 +1,4 @@
 **/target
-src/main/resources/hibernate.cfg.xml
+CapstoneJavaBack.iml
+CapstoneBack.iml
+.idea/
