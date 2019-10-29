@@ -20,6 +20,8 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import ca.sheridancollege.enums.RentalState;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -53,8 +55,11 @@ public class Rental implements Serializable {
 	@Id
 	@GeneratedValue
 	private int id;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate signOutDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dueDate;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate returnedDate;
 	@ManyToOne
 	@JoinColumn(name="CUSTOMER_ID")
