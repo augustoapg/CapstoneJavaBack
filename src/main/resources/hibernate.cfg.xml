@@ -44,6 +44,7 @@
 		<mapping class="ca.sheridancollege.beans.RentalComponent" />
 		<mapping class="ca.sheridancollege.beans.Bike" />
 		<mapping class="ca.sheridancollege.beans.LockItem" />
+		<mapping class="ca.sheridancollege.beans.Basket" />
 		<mapping class="ca.sheridancollege.beans.Customer" />
 		<mapping class="ca.sheridancollege.beans.Rental" />
 		<mapping class="ca.sheridancollege.beans.Payable" />

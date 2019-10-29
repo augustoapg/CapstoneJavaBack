@@ -30,20 +30,18 @@ import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
-import ca.sheridancollege.beans.SystemUser;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class HomeController {
-	
-	
-	
+
 	BikeDAO bikeDAO = new BikeDAO();
 	CustomerDAO custDAO = new CustomerDAO();
 	RentalDAO rentalDAO = new RentalDAO();
 	PayableDAO payableDAO = new PayableDAO();
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO lockDAO = new LockDAO();
+	BasketDAO basketDAO = new BasketDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
@@ -59,6 +57,7 @@ public class HomeController {
 			dummyData.generateRandomBikes(10);
 			dummyData.generateRandomCustomer(30);
 			dummyData.generateRandomKeyLocks(20, 4);
+			dummyData.generateRandomBaskets(10);
 			dummyData.generateRandomRentals();
 			dummyData.generateRandomSystemUsers();			
 		} catch (Exception e) {
@@ -83,6 +82,13 @@ public class HomeController {
 		List<LockItem> lockItems = lockDAO.getAllLockItems();
 		log.info("/getLocks - Getting All Locks - " + lockItems.size() + " retrieved");
 		return new ResponseEntity<Object>(lockItems, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getBaskets", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getBaskets() {
+		List<Basket> baskets = basketDAO.getAllBaskets();
+		log.info("/getBaskets - Getting All Baskets - " + baskets.size() + " retrieved");
+		return new ResponseEntity<Object>(baskets, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/getRentals", method = RequestMethod.GET, produces = { "application/json" })
@@ -119,6 +125,12 @@ public class HomeController {
 		return new ResponseEntity<Object>(lockItem, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/getBasketByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getBasketByID(@PathVariable int id) {
+		Basket basket = basketDAO.getBasketById(id);
+		log.info("/getBasketByID - Getting Basket by ID " + id + " ");
+		return new ResponseEntity<Object>(basket, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/getPayableByID/{id}", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getPayableByID(@PathVariable int id) {
@@ -389,15 +401,18 @@ public class HomeController {
 		Rental rental = rentalDAO.getRental(rentalID);
 		
 		if(rental == null) {
-			// error
+			log.info("/newPayable/" + rentalID + " - Error. No rental was found with ID: " + rentalID);
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No rental was found with ID: " + rentalID);
 		} 
 		
 		int payableID = 0;
 		try {
 			payableID = payableDAO.addPayable(payable, rental);
+			// Customer gets blacklisted if a new Payable was added and if was not blacklisted before
+			blackListCustomer(rental.getCustomer());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.info("/newPayable/" + rentalID + "-" + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/newPayable/"+ rentalID +"/ - Added payable with ID: " + payableID);
@@ -405,7 +420,13 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	
+	private void blackListCustomer(Customer customer) throws Exception {
+		if (!customer.isBlackListed()) {
+			customer.setBlackListed(true);
+			custDAO.editCustomer(customer);				
+		}
+	}
+
 	@RequestMapping(value = "/newRental", method = RequestMethod.POST, 
 			produces = {"application/json"}, consumes="application/json")
 	public ResponseEntity<?> newRental(@RequestBody Rental rental) {
@@ -516,6 +537,26 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/newBasket", method = RequestMethod.POST,
+			produces = {"application/json"}, consumes = "application/json")
+	public ResponseEntity<?> newBasket(@RequestBody Basket newBasket) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		int newBasketID;
+		
+		try {
+			newBasketID = basketDAO.addBasket(newBasket);			
+		} catch (Exception e) {
+	    	log.info("/newBasket - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
+
+		log.info("/newBasket - Added basket with ID: " + newBasketID);
+		objNode.put("message", "Basket was added with id " + newBasket.getName());
+		objNode.put("id", newBasketID);
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value="/editCustomer", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editCustomer(@RequestBody Customer newCustomer) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -591,6 +632,31 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/editBasket", method=RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editBasket(@RequestBody Basket newBasket) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();		
+		
+		Basket basket = basketDAO.getBasketById(newBasket.getId());
+		
+		if (basket == null) {
+			log.info("/editBasket - Basket was not found with ID: " + newBasket.getId());
+			objNode.put("message", "Basket was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+		
+		try {
+			basketDAO.editBasket(newBasket);			
+		} catch (Exception e) {
+	    	log.info("/editBasket - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+	    }
+		
+		log.info("/editBasketItem - Edited BasketItem with ID: " + newBasket.getId());
+		objNode.put("message", "Basket was updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value="/editPayable", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editPayable(@RequestBody Payable newPayable) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -605,10 +671,13 @@ public class HomeController {
 		}
 		
 		try {
-			newPayable.setRental(payable.getRental());
+			// updates the rental
+			Rental rental = payable.getRental();
+			newPayable.setRental(rental);
 			payableDAO.editPayable(newPayable);
+			blackListCustomer(rental.getCustomer());
 		} catch (Exception e) {
-	    	log.info("/editLock - " + e.getMessage());
+	    	log.info("/editPayable - " + e.getMessage());
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 	    }
 		
@@ -654,6 +723,17 @@ public class HomeController {
 				log.info("/updatePayables - " + e.getMessage());
 		    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 			}
+		}
+		
+		// blacklist customer if not yet blacklisted
+		try {
+			// rental object that comes with the request body does not contain full rental object, just its id
+			Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
+			Customer customer = rental.getCustomer();
+			blackListCustomer(customer);
+		} catch (Exception e) {
+			log.info("/updatePayables - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/updatePayables - List of Payables updated");

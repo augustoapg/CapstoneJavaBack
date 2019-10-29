@@ -6,26 +6,26 @@ import javax.persistence.Query;
 
 import org.hibernate.Session;
 
-import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.beans.Basket;
 import ca.sheridancollege.utils.HibernateUtil;
 
-public class BikeDAO {
+public class BasketDAO {
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
-
-	public int addBike(Bike bike) throws Exception {
+	
+	public int addBasket(Basket basket) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
 		try {
-			Bike existingBike = getBikeByName(bike.getName());
+			Basket existingBasket = getBasketByName(basket.getName());
 			String errorMessage = "";
 			
-			// verify if there is a bike with this name already in the DB
-			if (existingBike == null) {
-				session.save(bike);
+			// verify if there is a basket with this name already in the DB
+			if (existingBasket == null) {
+				session.save(basket);
 			} else {
-				errorMessage = "There is already a bike with name " + bike.getName() + " registered (Bike ID: " + existingBike.getId() + ")";
+				errorMessage = "There is already a basket with name " + basket.getName() + " registered (Basket ID: " + existingBasket.getId() + ")";
 			}
 
 			if (!errorMessage.isEmpty()) {
@@ -38,23 +38,23 @@ public class BikeDAO {
 			session.close();
 		}
 		
-		return bike.getId();
+		return basket.getId();
 	}
-
-	public void editBike(Bike bike) throws Exception {
+	
+	public void editBasket(Basket basket) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
 		try {
-			Bike existingBike = getBikeByName(bike.getName());
+			Basket existingBasket = getBasketByName(basket.getName());
 			String errorMessage = "";
 			
-			// verify if there is another bike (one with a different ID) with the new name already in the DB
-			if (existingBike == null || existingBike.getId() == bike.getId()) {
-				session.update(bike);
+			// verify if there is another basket (with different ID) with this name already in the DB
+			if (existingBasket == null || basket.getId() == existingBasket.getId()) {
+				session.update(basket);
 			} else {
-				errorMessage = "There is already a bike with name " + bike.getName() + " registered (Bike ID: " + existingBike.getId() + ")";
+				errorMessage = "There is already a Basket with name " + basket.getName() + " registered (Basket ID: " + existingBasket.getId() + ")";
 			}
 
 			if (!errorMessage.isEmpty()) {
@@ -67,56 +67,56 @@ public class BikeDAO {
 			session.close();
 		}
 	}
-
-	public Bike getBikeById(int id) {
+	
+	public Basket getBasketById(int id) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Bike.byID");
+		Query query = session.getNamedQuery("Basket.byID");
 		query.setParameter("id", id);
 
-		List<Bike> bikes = (List<Bike>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		if (!bikes.isEmpty()) {
-			return bikes.get(0);
+		if (!baskets.isEmpty()) {
+			return baskets.get(0);
 		}
 
 		return null;
 	}
 	
-	public Bike getBikeByName(String name) {
+	public Basket getBasketByName(String name) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Bike.byName");
+		Query query = session.getNamedQuery("Basket.byName");
 		query.setParameter("name", name);
 
-		List<Bike> bikes = (List<Bike>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		if (!bikes.isEmpty()) {
-			return bikes.get(0);
+		if (!baskets.isEmpty()) {
+			return baskets.get(0);
 		}
 
 		return null;
 	}
-
-	public List<Bike> getAllBikes() {
+	
+	public List<Basket> getAllBaskets() {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
-		Query query = session.getNamedQuery("Bike.all");
+		Query query = session.getNamedQuery("Basket.all");
 
-		List<Bike> bikes = (List<Bike>) query.getResultList();
+		List<Basket> baskets = (List<Basket>) query.getResultList();
 
 		session.getTransaction().commit();
 		session.close();
 
-		return bikes;
+		return baskets;
 	}
 }

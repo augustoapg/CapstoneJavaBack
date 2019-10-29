@@ -1,5 +1,6 @@
 package ca.sheridancollege.dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,21 +11,26 @@ import javax.persistence.criteria.Root;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
+import ca.sheridancollege.utils.HibernateUtil;
 import ca.sheridancollege.utils.RegexCheck;
 
 public class CustomerDAO {
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 
 	public void addCustomer(Customer customer) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
+		
+		LocalDate today = LocalDate.now();
 
+		// before adding user, update dates
+		customer.setCreatedOn(today);
+		customer.setLastWaiverSignedAt(today);
+		
+		// TODO: Review waiver expiration Date
+		customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 1));
 		session.save(customer);
 
 		session.getTransaction().commit();
@@ -32,7 +38,7 @@ public class CustomerDAO {
 	}
 
 	public Customer getCustomer(int sheridanId) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Customer.byID");
@@ -51,7 +57,7 @@ public class CustomerDAO {
 	}
 	
 	public List<Customer> searchCustomers(String keyword) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		List<Customer> result = new ArrayList<Customer>();
@@ -111,7 +117,7 @@ public class CustomerDAO {
 	}
 
 	public List<Customer> getAllCustomer() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Customer.all");
@@ -125,7 +131,7 @@ public class CustomerDAO {
 	}
 	
 	public void editCustomer(Customer cust) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
@@ -133,7 +139,7 @@ public class CustomerDAO {
 			Customer existingCust = getCustomer(cust.getSheridanId());
 			String errorMessage = "";
 			
-			// verify if there is another bike (one with a different ID) with the new name already in the DB
+			// verify if there is another customer (one with a different ID) with the new name already in the DB
 			if (existingCust == null || existingCust.getSheridanId() == cust.getSheridanId()) {
 				session.update(cust);
 			} else {

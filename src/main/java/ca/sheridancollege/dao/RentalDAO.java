@@ -1,17 +1,13 @@
 package ca.sheridancollege.dao;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.LockItem;
@@ -19,15 +15,14 @@ import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.LockState;
+import ca.sheridancollege.utils.HibernateUtil;
 
 public class RentalDAO {
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
-	
 	BikeDAO bikeDAO = new BikeDAO();
 	LockDAO keyLockDAO = new LockDAO();
 
 	public void addRental(Rental rental) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		try {
@@ -59,7 +54,7 @@ public class RentalDAO {
 	}
 
 	public void deleteRental(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Rental r = (Rental) session.get(Rental.class, id);
@@ -72,7 +67,7 @@ public class RentalDAO {
 
 
 	public Rental getRental(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.byID");
@@ -91,7 +86,7 @@ public class RentalDAO {
 	}
 
 	public List<Rental> getAllRentals() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.all");
@@ -105,7 +100,7 @@ public class RentalDAO {
 	}
 	
 	public Rental getActiveRental(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.active");
@@ -123,7 +118,7 @@ public class RentalDAO {
 	}
 
 	public List<Rental> getActiveRentals() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.allActive");
@@ -135,8 +130,22 @@ public class RentalDAO {
 		return rentals;
 	}
 	
+	public List<Rental> getLateRentals() {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.allLate");
+		query.setParameter("today", LocalDate.now());
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return rentals;
+	}
+	
 	public Rental getArchivedRental(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.archived");
@@ -154,7 +163,7 @@ public class RentalDAO {
 	}
 	
 	public List<Rental> getArchivedRentals() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.allArchived");
@@ -167,7 +176,7 @@ public class RentalDAO {
 	}
 
 	public void returnRental(Rental rental, Rental newRental) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		try {
@@ -207,7 +216,7 @@ public class RentalDAO {
 	}
 
 	public void editRental(Rental newRental) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
 		try {
@@ -226,7 +235,7 @@ public class RentalDAO {
 	
 	public List<Rental> getRentalsByDate(String type, String stDate, String enDate) throws Exception{
 
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		List<Rental> rentals = new ArrayList<Rental>();
 		

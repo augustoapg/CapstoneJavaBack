@@ -1,26 +1,18 @@
 package ca.sheridancollege.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.LockItem;
-import ca.sheridancollege.beans.Payable;
-import ca.sheridancollege.beans.RentalComponent;
+import ca.sheridancollege.utils.HibernateUtil;
 
 public class LockDAO {
-
-	SessionFactory sessionFactory = new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	public int addLockItem(LockItem lockItem) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
@@ -28,7 +20,7 @@ public class LockDAO {
 			LockItem existingLock = getLockItemByName(lockItem.getName());
 			String errorMessage = "";
 			
-			// verify if there is a bike with this name already in the DB
+			// verify if there is a lock with this name already in the DB
 			if (existingLock == null) {
 				session.save(lockItem);
 			} else {
@@ -49,7 +41,7 @@ public class LockDAO {
 	}
 	
 	public void editLockItem(LockItem lockItem) throws Exception {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		// using try-catch-finally so that no matter what happens, the session will be closed at the end
@@ -76,7 +68,7 @@ public class LockDAO {
 	}
 	
 	public LockItem getLockItemById(int id) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("LockItem.byID");
@@ -95,7 +87,7 @@ public class LockDAO {
 	}
 	
 	public LockItem getLockItemByName(String name) {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("LockItem.byName");
@@ -114,7 +106,7 @@ public class LockDAO {
 	}
 	
 	public List<LockItem> getAllLockItems() {
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("LockItem.all");
