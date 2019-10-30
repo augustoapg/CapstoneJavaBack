@@ -215,7 +215,8 @@ public class HomeController {
 			} 
 			else {
 				// type not recognized
-				log.error("/getActiveRentalByDate/{type}/{stDate}/{enDate} - Type \""+type+"\" not recognized");
+				log.error("/getActiveRentalByDate/{type}/{stDate}/{enDate} - " +
+						"Type \""+type+"\" not recognized");
 			}
 			
 		} catch (Exception e) {
@@ -604,6 +605,38 @@ public class HomeController {
 		objNode.put("message", "Customer was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
+
+	@RequestMapping(value="/customerSignedWaiver/{id}", method=
+			RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> customerSignedWaiver(@PathVariable int id) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+
+		Customer existingCust = custDAO.getCustomer(id);
+
+		if (existingCust == null) {
+			log.info("/customerSignedWaiver - Customer was not found with ID: " + id);
+			objNode.put("message", "Customer was not found");
+			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+		}
+
+		try {
+			custDAO.updateCustomerWaiver(existingCust);
+		} catch (Exception e) {
+			log.info("/customerSignedWaiver - " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}
+
+		log.info("/customerSignedWaiver - Customer signed waiver with ID: " + id);
+
+		objNode.put("message", "Customer was updated");
+		objNode.put("signdate",
+				existingCust.getLastWaiverSignedAt().toString());
+		objNode.put("expirydate",
+				existingCust.getWaiverExpirationDate().toString());
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+
 
 	@RequestMapping(value="/editRental", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editRental(@RequestBody Rental newRental) {

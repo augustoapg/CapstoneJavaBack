@@ -157,4 +157,42 @@ public class CustomerDAO {
 		}
 	}
 
+	public void updateCustomerWaiver(Customer cust) {
+
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		// using try-catch-finally so that no matter what happens, the session will be closed at the end
+		try {
+
+			if (cust != null) {
+				Customer updatedCust = signWaiver(cust);
+				session.update(updatedCust);
+			} else {
+				throw new IllegalArgumentException("Customer ID " +
+						cust.getSheridanId() + " " +
+						"not found.");
+			}
+
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			session.getTransaction().commit();
+			session.close();
+		}
+
+	}
+
+	public Customer signWaiver(Customer customer) {
+		LocalDate today = LocalDate.now();
+
+		customer.setCreatedOn(today);
+		customer.setLastWaiverSignedAt(today);
+
+		customer.setWaiverExpirationDate(LocalDate.of(
+				today.getYear() + 1, 8,1));
+
+		return customer;
+	}
+
 }

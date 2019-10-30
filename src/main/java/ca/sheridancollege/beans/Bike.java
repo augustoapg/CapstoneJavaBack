@@ -3,7 +3,8 @@ package ca.sheridancollege.beans;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import ca.sheridancollege.enums.BikeState;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @NoArgsConstructor
