@@ -10,10 +10,14 @@
 
 package ca.sheridancollege;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
+import ca.sheridancollege.utils.ExcelGenerator;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -333,15 +337,15 @@ public class HomeController {
 		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getArchivedRentalByCustID/{sheridanId}", method =
+	@RequestMapping(value = "/getArchivedRentalsByCustID/{sheridanId}", method =
 			RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<Object> getArchivedRentalByCustID(@PathVariable int sheridanId) {
-		Rental rental = rentalDAO.getArchivedRentalByCustID(sheridanId);
+	public ResponseEntity<Object> getArchivedRentalsByCustID(@PathVariable int sheridanId) {
+		List<Rental> rentals = rentalDAO.getArchivedRentalsByCustID(sheridanId);
 
-		if(rental == null) {
+		if(rentals == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + sheridanId);
 		}
-		return new ResponseEntity<Object>(rental, HttpStatus.OK);
+		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})

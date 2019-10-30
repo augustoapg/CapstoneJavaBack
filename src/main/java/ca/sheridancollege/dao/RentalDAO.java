@@ -181,7 +181,7 @@ public class RentalDAO {
 		return null;
 	}
 
-	public Rental getArchivedRentalByCustID(int sheridanId) {
+	public List<Rental> getArchivedRentalsByCustID(int sheridanId) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 
@@ -193,7 +193,7 @@ public class RentalDAO {
 		session.close();
 
 		if (!rentals.isEmpty()) {
-			return rentals.get(0);
+			return rentals;
 		}
 
 		return null;
