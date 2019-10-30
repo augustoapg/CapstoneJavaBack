@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
 
-//import ca.sheridancollege.utils.ExcelGenerator;
+import ca.sheridancollege.utils.ExcelGenerator;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -820,4 +820,38 @@ public class HomeController {
 		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
+
+
+	@RequestMapping(value = "/download/report.xlsx",
+			method =
+			RequestMethod.GET)
+	public ResponseEntity<Object> excelRentalsReport() throws Exception {
+		List<Rental> rentals = rentalDAO.getAllRentals();
+		List<Bike> bikes = bikeDAO.getAllBikes();
+		List<LockItem> locks = lockDAO.getAllLockItems();
+		List<Basket> baskets = basketDAO.getAllBaskets();
+		List<Customer> customers = custDAO.getAllCustomer();
+
+		ByteArrayInputStream in = ExcelGenerator.reportExcel(rentals, bikes,
+				locks, baskets, customers);
+		// return IOUtils.toByteArray(in);
+
+		HttpHeaders headers = new HttpHeaders();
+
+		//TODO: CHANGE FILENAME TO DATE
+
+		headers.add("Content-Disposition", "attachment; " +
+				"filename=rentals.xlsx");
+
+		headers.add("Content-Type", "application/vnd" +
+				".openxmlformats-officedocument.spreadsheetml.sheet");
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new InputStreamResource(in));
+	}
+
+
+
 }
