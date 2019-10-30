@@ -34,8 +34,13 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.all", query="from Rental")
 @NamedQuery(name="Rental.active", query="from Rental where returnedDate is null and id=:id")
 @NamedQuery(name="Rental.allActive", query="from Rental where returnedDate is null")
+@NamedQuery(name="Rental.activeByCust", query="from Rental WHERE " +
+		"returnedDate is null and customer_id=:id")
+
 @NamedQuery(name="Rental.archived", query="from Rental where returnedDate is not null and id=:id")
 @NamedQuery(name="Rental.allArchived", query="from Rental where returnedDate is not null")
+@NamedQuery(name="Rental.archivedByCust", query="from Rental WHERE " +
+		"returnedDate is not null and customer_id=:id")
 
 @NamedQuery(name="Rental.ArchiveByDueDate", query="from Rental AS r WHERE (r.dueDate BETWEEN :stDate AND :edDate) "
 														+ "AND (returnedDate is not null)")

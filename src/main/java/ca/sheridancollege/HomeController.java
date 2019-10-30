@@ -298,7 +298,19 @@ public class HomeController {
 		log.info("/getActiveRental/{id} - Getting Active Rental with ID: " + id);
 		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}
-	
+
+	@RequestMapping(value = "/getActiveRentalByCustID/{sheridanId}", method =
+			RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getActiveRentalByCustID(@PathVariable int sheridanId) {
+		Rental rental = rentalDAO.getActiveRentalByCustID(sheridanId);
+
+		if(rental == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Active " +
+					"rental not found: " + sheridanId);
+		}
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/getArchivedRentals", method = RequestMethod.GET, produces = { "application/json" })
 	public ResponseEntity<Object> getArchivedRentals() {
 		List<Rental> rentals = rentalDAO.getArchivedRentals();
@@ -316,6 +328,17 @@ public class HomeController {
 
 		if(rental == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + id);
+		}
+		return new ResponseEntity<Object>(rental, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/getArchivedRentalByCustID/{sheridanId}", method =
+			RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<Object> getArchivedRentalByCustID(@PathVariable int sheridanId) {
+		Rental rental = rentalDAO.getArchivedRentalByCustID(sheridanId);
+
+		if(rental == null) {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Archive rental not found: " + sheridanId);
 		}
 		return new ResponseEntity<Object>(rental, HttpStatus.OK);
 	}

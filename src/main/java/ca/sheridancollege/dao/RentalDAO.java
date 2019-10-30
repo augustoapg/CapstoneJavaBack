@@ -117,6 +117,25 @@ public class RentalDAO {
 		return null;
 	}
 
+	public Rental getActiveRentalByCustID(int sheridanId) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.activeByCust");
+		query.setParameter("id", sheridanId);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
+	}
+
+
 	public List<Rental> getActiveRentals() {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
@@ -150,6 +169,24 @@ public class RentalDAO {
 
 		Query query = session.getNamedQuery("Rental.archived");
 		query.setParameter("id", id);
+		List<Rental> rentals = (List<Rental>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		if (!rentals.isEmpty()) {
+			return rentals.get(0);
+		}
+
+		return null;
+	}
+
+	public Rental getArchivedRentalByCustID(int sheridanId) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Rental.archivedByCust");
+		query.setParameter("id", sheridanId);
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
