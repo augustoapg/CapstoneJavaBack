@@ -353,6 +353,11 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
+		if (newBike.getName() == null || newBike.getName().trim().isEmpty()) {
+			log.info("/editBike/{id} - Bike sent without name: " + newBike.getId());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Bike requires a name");
+		}
+	
 		Bike bike = bikeDAO.getBikeById(newBike.getId());
 	    if (bike == null) {
 	    	log.info("/editBike/{id} - Bike not found with ID: " + newBike.getId());
@@ -529,6 +534,11 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
+		if (newBike.getName() == null || newBike.getName().trim().isEmpty()) {
+			log.info("/newBike - Bike sent without name");
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Bike requires a name");
+		}
+		
 		int newBikeId;
 		
 		try {
@@ -550,6 +560,11 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
+		if (newLock.getName() == null || newLock.getName().trim().isEmpty()) {
+			log.info("/newLock - Lock sent without name");
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Lock requires a name");
+		}
+		
 		int newLockID;
 		
 		try {
@@ -570,6 +585,12 @@ public class HomeController {
 	public ResponseEntity<?> newBasket(@RequestBody Basket newBasket) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
+		
+		if (newBasket.getName() == null || newBasket.getName().trim().isEmpty()) {
+			log.info("/newBasket - Basket sent without name");
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Basket requires a name");
+		}
+		
 		int newBasketID;
 		
 		try {
@@ -670,7 +691,12 @@ public class HomeController {
 	@RequestMapping(value="/editLock", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editLock(@RequestBody LockItem newLock) {
 		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();		
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		if (newLock.getName() == null || newLock.getName().trim().isEmpty()) {
+			log.info("/editLock/{id} - Lock sent without name");
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Lock requires a name");
+		}
 		
 		LockItem lock = lockDAO.getLockItemById(newLock.getId());
 		
@@ -687,7 +713,7 @@ public class HomeController {
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 	    }
 		
-		log.info("/editLockItem - Edited LockItem with ID: " + newLock.getId());
+		log.info("/editLock - Edited LockItem with ID: " + newLock.getId());
 		objNode.put("message", "Lock was updated");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
@@ -695,7 +721,12 @@ public class HomeController {
 	@RequestMapping(value="/editBasket", method=RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editBasket(@RequestBody Basket newBasket) {
 		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();		
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		if (newBasket.getName() == null || newBasket.getName().trim().isEmpty()) {
+			log.info("/editBasket/{id} - Basket sent without name");
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("Basket requires a name");
+		}
 		
 		Basket basket = basketDAO.getBasketById(newBasket.getId());
 		
