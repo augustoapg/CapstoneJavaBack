@@ -348,6 +348,17 @@ public class HomeController {
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/getReportGeneralData/from={strFromDate}&to={strToDate}", method =
+			RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<?> getReportGeneralData(@PathVariable String strFromDate, @PathVariable String strToDate) {
+		LocalDate fromDate = LocalDate.parse(strFromDate);
+		LocalDate toDate = LocalDate.parse(strToDate);
+		
+		
+		
+		return null;
+	}
+	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editBike(@RequestBody Bike newBike) {
 		ObjectMapper mapper = new ObjectMapper();
