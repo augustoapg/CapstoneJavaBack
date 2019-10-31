@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 //import ca.sheridancollege.utils.ExcelGenerator;
 import org.springframework.core.io.InputStreamResource;
@@ -354,9 +355,60 @@ public class HomeController {
 		LocalDate fromDate = LocalDate.parse(strFromDate);
 		LocalDate toDate = LocalDate.parse(strToDate);
 		
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
 		
+		int numTotalRentals = 0;
+		int numLateRentals = 0;
+		int numNewCustomers = 0;
+		double avgRentDays = 0.0;
+		List<Rental> rentals = null;
 		
-		return null;
+		try {
+			rentals = rentalDAO.getRentalsByDate("allsignout", strFromDate, strToDate);
+			numTotalRentals = rentals.size();
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("There was a problem getting the rental information.");
+		}
+		
+		List<Rental> lateRentals = rentalDAO.getLateRentals();
+		numLateRentals = lateRentals.size();
+		
+		List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(strFromDate, strToDate);
+		numNewCustomers = newCustomers.size();
+		
+		avgRentDays = getAverageRentDays(rentals);
+		
+		objNode.put("totalRentals", numTotalRentals);
+		objNode.put("numOfLateRentals", numLateRentals);
+		objNode.put("numOfNewCustomers", numNewCustomers);
+		objNode.put("avgRentDays", avgRentDays);
+		
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	private double getAverageRentDays(List<Rental> rentals) {
+		long[] rentalDays = new long[rentals.size()];
+		double avg = 0.0;
+		
+		for (int i = 0; i < rentals.size(); i++) {
+			Rental rental = rentals.get(i);
+			if (rental.getReturnedDate() != null) {
+				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), rental.getReturnedDate());
+			} else {
+				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), LocalDate.now());
+			}
+		}
+		
+		long sum = 0;
+		
+		for (int i = 0; i < rentalDays.length; i++) {
+			sum += rentalDays[i];
+		}
+		
+		avg = (double)sum/(double)rentalDays.length;
+		
+		return avg;
 	}
 	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})

@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 
 @NamedQuery(name="Customer.byID", query="from Customer where sheridanId=:sheridanId")
 @NamedQuery(name="Customer.all", query="from Customer")
+@NamedQuery(name="Customer.byCreatedDate", query="from Customer where createdOn BETWEEN :stDate AND :edDate")
 public class Customer implements Serializable {
 	@Id
 	private int sheridanId;

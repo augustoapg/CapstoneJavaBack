@@ -341,6 +341,9 @@ public class RentalDAO {
 			case "activesignout":
 				namedQuery = "Rental.ActiveBySignOutDate";
 				break;
+				
+			case "allsignout":
+				namedQuery = "Rental.betweenSignOutDate";
 			default:	
 		}
 		
