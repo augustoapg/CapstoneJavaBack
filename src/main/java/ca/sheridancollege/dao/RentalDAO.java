@@ -284,7 +284,7 @@ public class RentalDAO {
 			LocalDate endDate = LocalDate.parse(enDate, formatter);
 			
 			if (frmDate.isAfter(endDate)) {
-				return null;
+				throw new IllegalArgumentException("Start date must be before the End date");
 			}
 			
 			String namedQuery = getNamedQueryRentals(type);
@@ -341,6 +341,9 @@ public class RentalDAO {
 			case "activesignout":
 				namedQuery = "Rental.ActiveBySignOutDate";
 				break;
+				
+			case "allsignout":
+				namedQuery = "Rental.betweenSignOutDate";
 			default:	
 		}
 		

@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import ca.sheridancollege.beans.Customer;
+import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.utils.HibernateUtil;
 import ca.sheridancollege.utils.RegexCheck;
 
@@ -109,11 +110,40 @@ public class CustomerDAO {
 		session.close();
 
 		if (!result.isEmpty()) {
-			
 			return result;
 		}
 		
 		return null;
+	}
+	
+	public List<Customer> getCustomerByCreatedDate(LocalDate startDate, LocalDate endDate) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Customer.byCreatedDate");
+		query.setParameter("stDate", startDate);
+		query.setParameter("edDate", endDate);
+		List<Customer> custs = (List<Customer>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return custs;
+	}
+	
+	public long getNumberOfCustomersByType(CustomerType customerType) {
+		long numOfCustomers = 0;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		
+		Query query = session.getNamedQuery("Customer.numberOfCustomersByType");
+		query.setParameter("type", customerType);
+		numOfCustomers = (Long)query.getSingleResult();
+		
+		session.getTransaction().commit();
+		session.close();
+		
+		return numOfCustomers;
 	}
 
 	public List<Customer> getAllCustomer() {
