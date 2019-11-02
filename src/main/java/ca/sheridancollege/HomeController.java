@@ -13,6 +13,7 @@ package ca.sheridancollege;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
@@ -355,38 +357,60 @@ public class HomeController {
 	
 	@RequestMapping(value = "/getReportGeneralData/from={strFromDate}&to={strToDate}", method =
 			RequestMethod.GET, produces = { "application/json" })
-	public ResponseEntity<?> getReportGeneralData(@PathVariable String strFromDate, @PathVariable String strToDate) {
-		LocalDate fromDate = LocalDate.parse(strFromDate);
-		LocalDate toDate = LocalDate.parse(strToDate);
-		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode objNode = mapper.createObjectNode();
-		
+	public ResponseEntity<?> getReportGeneralData(@PathVariable String strFromDate, @PathVariable String strToDate) {			
 		int numTotalRentals = 0;
 		int numLateRentals = 0;
 		int numNewCustomers = 0;
 		double avgRentDays = 0.0;
+		
+		long numOfStudents = 0;
+		long numOfStaff = 0;
+		double avgHistoricalRentDays = 0.0;
+		
+		// getting information on Customers created by date range
+		try {
+			LocalDate fromDate = LocalDate.parse(strFromDate);
+			LocalDate toDate = LocalDate.parse(strToDate);			
+			List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(fromDate, toDate);
+			numNewCustomers = newCustomers.size();
+		} catch (DateTimeException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid date.");
+		}
+		
+		// getting num of rentals and average rental days for date range
 		List<Rental> rentals = null;
 		
 		try {
 			rentals = rentalDAO.getRentalsByDate("allsignout", strFromDate, strToDate);
-			numTotalRentals = rentals.size();
+			if (rentals != null) {
+				numTotalRentals = rentals.size();
+				avgRentDays = getAverageRentDays(rentals);
+			}
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("There was a problem getting the rental information.");
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
+		// getting late rentals
 		List<Rental> lateRentals = rentalDAO.getLateRentals();
 		numLateRentals = lateRentals.size();
 		
-		List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(fromDate, toDate);
-		numNewCustomers = newCustomers.size();
+		// getting historical values 
+		numOfStudents = custDAO.getNumberOfCustomersByType(CustomerType.STUDENT);
+		numOfStaff = custDAO.getNumberOfCustomersByType(CustomerType.STAFF);
+		List<Rental> allRentals = rentalDAO.getAllRentals();
+		avgHistoricalRentDays = getAverageRentDays(allRentals);
 		
-		avgRentDays = getAverageRentDays(rentals);
+		// creating JSON
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
 		
 		objNode.put("totalRentals", numTotalRentals);
 		objNode.put("numOfLateRentals", numLateRentals);
 		objNode.put("numOfNewCustomers", numNewCustomers);
 		objNode.put("avgRentDays", avgRentDays);
+		objNode.put("numberOfStudents", numOfStudents);
+		objNode.put("numberOfStaff", numOfStaff);
+		objNode.put("historicalRentDays", avgHistoricalRentDays);
 		
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
