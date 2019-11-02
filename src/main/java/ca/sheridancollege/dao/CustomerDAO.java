@@ -116,7 +116,7 @@ public class CustomerDAO {
 		return null;
 	}
 	
-	public List<Customer> getCustomerByCreatedDate(String startDate, String endDate) {
+	public List<Customer> getCustomerByCreatedDate(LocalDate startDate, LocalDate endDate) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 

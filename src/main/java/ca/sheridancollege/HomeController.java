@@ -14,6 +14,10 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import ca.sheridancollege.utils.ExcelGenerator;
@@ -374,7 +378,7 @@ public class HomeController {
 		List<Rental> lateRentals = rentalDAO.getLateRentals();
 		numLateRentals = lateRentals.size();
 		
-		List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(strFromDate, strToDate);
+		List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(fromDate, toDate);
 		numNewCustomers = newCustomers.size();
 		
 		avgRentDays = getAverageRentDays(rentals);
@@ -396,7 +400,7 @@ public class HomeController {
 			if (rental.getReturnedDate() != null) {
 				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), rental.getReturnedDate());
 			} else {
-				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), LocalDate.now());
+				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), ZonedDateTime.now(ZoneId.of("America/Toronto")));
 			}
 		}
 		
