@@ -1,6 +1,8 @@
 package ca.sheridancollege.dao;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +156,8 @@ public class RentalDAO {
 		session.beginTransaction();
 
 		Query query = session.getNamedQuery("Rental.allLate");
-		query.setParameter("today", LocalDate.now());
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+		query.setParameter("today", today.toLocalDate());
 		List<Rental> rentals = (List<Rental>) query.getResultList();
 
 		session.getTransaction().commit();
@@ -218,7 +221,8 @@ public class RentalDAO {
 		
 		try {
 			rental.setComment(newRental.getComment());
-			rental.setReturnedDate(LocalDate.now());
+			ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+			rental.setReturnedDate(today.toLocalDate());
 			
 			List<RentalComponent> rentalComponents = rental.getRentalComponents();
 			

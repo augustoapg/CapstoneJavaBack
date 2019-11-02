@@ -2,6 +2,8 @@ package ca.sheridancollege.beans;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -85,7 +87,8 @@ public class Rental implements Serializable {
 		// all rentals should have signOutDate and dueDate
 		if(this.signOutDate != null && this.dueDate != null) {
 			if(this.returnedDate == null) {
-				return (this.dueDate.isAfter(LocalDate.now())) ? "Active" : "Late";
+				ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+				return (this.dueDate.isAfter(today.toLocalDate())) ? "Active" : "Late";
 			} else {
 				return (this.returnedDate.isBefore(this.dueDate)) ? "Returned" : "Returned Late";
 			}

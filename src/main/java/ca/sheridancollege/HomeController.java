@@ -492,7 +492,7 @@ public class HomeController {
 	    }
 	    
 	    log.info("/returnRental - Returned Bike with rental ID: " + newRental.getId());
-		objNode.put("message", "Bike has been returned");
+		objNode.put("message", "Rental has been returned");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
@@ -602,13 +602,15 @@ public class HomeController {
 			}
 		}
 		
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+		
 		rental.setCustomer(customer);
 		rental.setRentalComponents(rentalComponentsUpdated);
-		rental.setSignOutDate(LocalDate.now());
-		rental.setDueDate(LocalDate.now().plusDays(7));
+		rental.setSignOutDate(today.toLocalDate());
+		rental.setDueDate(today.toLocalDate().plusDays(7));
 		
 		try {
-			rentalDAO.addRental(rental);			
+			rentalDAO.addRental(rental);
 		} catch (Exception e) {
 	    	log.info("/newRental - " + e.getMessage());
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
