@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
@@ -218,7 +220,8 @@ public class ExcelGenerator {
     public static String dateFormatter(LocalDate date) {
 
         if (date != null) {
-            LocalDate localDate = LocalDate.now();//For reference
+        	ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+            LocalDate localDate = today.toLocalDate();//For reference
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy" +
                     "-MM-dd");
             String formattedString = localDate.format(formatter);
