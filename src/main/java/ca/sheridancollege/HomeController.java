@@ -366,10 +366,6 @@ public class HomeController {
 		int numNewCustomers = 0;
 		double avgRentDays = 0.0;
 		
-		long numOfStudents = 0;
-		long numOfStaff = 0;
-		double avgHistoricalRentDays = 0.0;
-		
 		// getting information on Customers created by date range
 		try {
 			LocalDate fromDate = LocalDate.parse(strFromDate);
@@ -397,6 +393,25 @@ public class HomeController {
 		List<Rental> lateRentals = rentalDAO.getLateRentals();
 		numLateRentals = lateRentals.size();
 		
+		// creating JSON
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		objNode.put("totalRentals", numTotalRentals);
+		objNode.put("numOfLateRentals", numLateRentals);
+		objNode.put("numOfNewCustomers", numNewCustomers);
+		objNode.put("avgRentDays", avgRentDays);
+		
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getReportHistoricalData", method =
+			RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<?> getReportHistoricalData() {
+		long numOfStudents = 0;
+		long numOfStaff = 0;
+		double avgHistoricalRentDays = 0.0;
+		
 		// getting historical values 
 		numOfStudents = custDAO.getNumberOfCustomersByType(CustomerType.STUDENT);
 		numOfStaff = custDAO.getNumberOfCustomersByType(CustomerType.STAFF);
@@ -407,10 +422,6 @@ public class HomeController {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		
-		objNode.put("totalRentals", numTotalRentals);
-		objNode.put("numOfLateRentals", numLateRentals);
-		objNode.put("numOfNewCustomers", numNewCustomers);
-		objNode.put("avgRentDays", avgRentDays);
 		objNode.put("numberOfStudents", numOfStudents);
 		objNode.put("numberOfStaff", numOfStaff);
 		objNode.put("historicalRentDays", avgHistoricalRentDays);
