@@ -969,7 +969,7 @@ public class HomeController {
 			// check if there are any items in the DB that should be deleted
 			for (Payable payableInDB : payablesInDB) {
 				// if the Payable in the DB is not contained in the newly sent payablesList, delete it from DB
-				if (!payablesList.contains(payableInDB)) {
+				if (payablesList == null || !payablesList.contains(payableInDB)) {
 					try {
 						payableDAO.deletePayable(payableInDB);					
 					} catch (Exception e) {
