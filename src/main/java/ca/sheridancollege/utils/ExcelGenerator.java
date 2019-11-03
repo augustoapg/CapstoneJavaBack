@@ -218,10 +218,9 @@ public class ExcelGenerator {
     public static String dateFormatter(LocalDate date) {
 
         if (date != null) {
-            LocalDate localDate = LocalDate.now();//For reference
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy" +
                     "-MM-dd");
-            String formattedString = localDate.format(formatter);
+            String formattedString = date.format(formatter);
 
             return formattedString;
         }

@@ -11,6 +11,7 @@
 package ca.sheridancollege;
 
 import java.io.ByteArrayInputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -34,6 +35,8 @@ import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
+
+import static ca.sheridancollege.utils.ExcelGenerator.dateFormatter;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -856,7 +859,7 @@ public class HomeController {
 	@RequestMapping(value = "/download/report.xlsx",
 			method =
 			RequestMethod.GET)
-	public ResponseEntity<Object> excelRentalsReport() throws Exception {
+	public ResponseEntity<Object> excelReport() throws Exception {
 		List<Rental> rentals = rentalDAO.getAllRentals();
 		List<Bike> bikes = bikeDAO.getAllBikes();
 		List<LockItem> locks = lockDAO.getAllLockItems();
@@ -870,9 +873,13 @@ public class HomeController {
 		HttpHeaders headers = new HttpHeaders();
 
 		//TODO: CHANGE FILENAME TO DATE
+		LocalDate date = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy" +
+				"-MM-dd H:m");
+		String formatedString = date.format(formatter);
 
 		headers.add("Content-Disposition", "attachment; " +
-				"filename=rentals.xlsx");
+				"filename=BikeHubReport" + formatedString + ".xlsx");
 
 		headers.add("Content-Type", "application/vnd" +
 				".openxmlformats-officedocument.spreadsheetml.sheet");
