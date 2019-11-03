@@ -186,13 +186,13 @@ public class DummyDataGenerator {
 	}
 
 	public void generateRandomCustomer(int numOfCustomers) {
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+		
 		for(int i = 0; i < numOfCustomers; i++) {
 			String fName = faker.name().firstName();
 			String lName = faker.name().lastName();
 			String emContactFName = faker.name().firstName();
 			String emContactLName = faker.name().lastName();
-			
-			ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 			
 			// user created today, with end of program in December 31 two years from now. Waiver dates are added in the addCustomer()
 			Customer customer = new Customer(
@@ -212,6 +212,26 @@ public class DummyDataGenerator {
 					);
 			custDAO.addCustomer(customer);
 		}
+		
+		// one Customer created to be someone with an expired waiver
+		// lastSigned was Jan 1st of last year
+		// expiration date was last Aug 31st last year
+		Customer waiverExpiredCustomer = new Customer(
+				111111110,
+				faker.name().firstName(),
+				faker.name().lastName(),
+				faker.address().streetAddress(),
+				faker.name().lastName() + "@sheridan.ca",
+				faker.name().lastName() + "@gmail.com",
+				Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-().]", ""))),
+				CustomerType.values()[randomBetween(0, CustomerType.values().length - 1)], false, true, "", faker.name().firstName(), faker.name().lastName(),
+				Long.parseLong((faker.phoneNumber().cellPhone().replaceAll("[\\s\\-\\.()]", ""))),
+				LocalDate.of(today.getYear() - 1, 1, 1),
+				LocalDate.of(today.getYear() + 2, 12, 31),
+				LocalDate.of(today.getYear() - 1, 1, 1),
+				LocalDate.of(today.getYear() - 1, 8, 31)
+				);
+		custDAO.addCustomer(waiverExpiredCustomer);
 	}
 	
 	/**

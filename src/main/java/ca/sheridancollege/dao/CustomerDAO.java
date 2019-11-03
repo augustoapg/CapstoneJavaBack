@@ -28,10 +28,20 @@ public class CustomerDAO {
 		
 		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 
-		// before adding user, update dates
-		customer.setCreatedOn(today.toLocalDate());
-		customer.setLastWaiverSignedAt(today.toLocalDate());
-		customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 31));
+		// before adding user, update dates if null in the object
+		if (customer.getCreatedOn() == null) {
+			customer.setCreatedOn(today.toLocalDate());			
+		}
+		
+		if (customer.getLastWaiverSignedAt() == null) {
+			customer.setLastWaiverSignedAt(today.toLocalDate());			
+		}
+		
+		if (customer.getWaiverExpirationDate() == null) {
+			// August 31st of next year
+			customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 31));			
+		}
+		
 		session.save(customer);
 
 		session.getTransaction().commit();
