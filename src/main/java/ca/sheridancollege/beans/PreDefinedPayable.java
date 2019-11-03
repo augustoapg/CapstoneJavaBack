@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@NamedQuery(name="PreDefPayable.byID", query="from PreDefinedPayable where id = :id;")
-@NamedQuery(name="PreDefPayable.byCategory", query="from PreDefinedPayable where category = :category;")
-@NamedQuery(name="PreDefPayable.all", query="from PreDefinedPayable;")
+@NamedQuery(name="PreDefPayable.byID", query="from PreDefinedPayable where id = :id")
+@NamedQuery(name="PreDefPayable.byCategory", query="from PreDefinedPayable where category = :category")
+@NamedQuery(name="PreDefPayable.all", query="from PreDefinedPayable")
 public class PreDefinedPayable {
 
 	@Id

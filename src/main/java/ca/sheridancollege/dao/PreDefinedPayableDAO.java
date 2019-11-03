@@ -18,7 +18,7 @@ public class PreDefinedPayableDAO {
 		try {
 			PreDefinedPayable existingPayable = getPredefinedPayableByCategory(preDefinedPayable.getCategory());
 			
-			if (existingPayable != null) {
+			if (existingPayable == null) {
 				session.save(preDefinedPayable);
 			} else {
 				throw new Exception("Pre Defined Payable already exists if category " + preDefinedPayable.getCategory());
