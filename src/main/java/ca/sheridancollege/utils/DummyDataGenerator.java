@@ -15,6 +15,7 @@ import ca.sheridancollege.beans.Basket;
 import ca.sheridancollege.beans.Bike;
 import ca.sheridancollege.beans.Customer;
 import ca.sheridancollege.beans.LockItem;
+import ca.sheridancollege.beans.PreDefinedPayable;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.beans.SystemUser;
@@ -22,6 +23,7 @@ import ca.sheridancollege.dao.BasketDAO;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
 import ca.sheridancollege.dao.LockDAO;
+import ca.sheridancollege.dao.PreDefinedPayableDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
 import ca.sheridancollege.enums.BasketState;
@@ -38,6 +40,7 @@ public class DummyDataGenerator {
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO keyLockDAO = new LockDAO();
 	BasketDAO basketDAO = new BasketDAO();
+	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
 	
 	public void generateRandomBikes(int numOfBikes) throws Exception {
 		for(int i = 0; i < numOfBikes; i++) {
@@ -232,6 +235,20 @@ public class DummyDataGenerator {
 				LocalDate.of(today.getYear() - 1, 8, 31)
 				);
 		custDAO.addCustomer(waiverExpiredCustomer);
+	}
+	
+	public void generatePreDefinedPayables() {
+		try {
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Bike Lost", 300));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Lock Lost", 60));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Key Lost", 30));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Basket Lost", 50));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Light Lost", 5));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Bike Damage", 5));
+			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Key Damage", 5));			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	/**

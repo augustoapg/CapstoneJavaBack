@@ -23,4 +23,9 @@ public class PreDefinedPayable {
 	private int id;
 	private String category;
 	private double value;
+	
+	public PreDefinedPayable(String category, double value) {
+		this.category = category;
+		this.value = value;
+	}
 }

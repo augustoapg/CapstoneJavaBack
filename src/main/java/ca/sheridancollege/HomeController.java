@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import ca.sheridancollege.utils.ExcelGenerator;
@@ -73,7 +71,8 @@ public class HomeController {
 			dummyData.generateRandomKeyLocks(20, 4);
 			dummyData.generateRandomBaskets(10);
 			dummyData.generateRandomRentals();
-			dummyData.generateRandomSystemUsers();			
+			dummyData.generateRandomSystemUsers();
+			dummyData.generatePreDefinedPayables();
 		} catch (Exception e) {
 			log.info("/addDummyData - " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
