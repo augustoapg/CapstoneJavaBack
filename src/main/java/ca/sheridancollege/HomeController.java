@@ -965,11 +965,13 @@ public class HomeController {
 		
 		List<Payable> payablesInDB = payableDAO.getPayablesByRentalId(rentalId);
 		
+		boolean isPayablesEmpty = (payablesList == null || payablesList.isEmpty());
+		
 		if (payablesInDB != null && !payablesInDB.isEmpty()) {
 			// check if there are any items in the DB that should be deleted
 			for (Payable payableInDB : payablesInDB) {
 				// if the Payable in the DB is not contained in the newly sent payablesList, delete it from DB
-				if (payablesList == null || !payablesList.contains(payableInDB)) {
+				if (isPayablesEmpty || !payablesList.contains(payableInDB)) {
 					try {
 						payableDAO.deletePayable(payableInDB);					
 					} catch (Exception e) {
@@ -981,7 +983,7 @@ public class HomeController {
 		}
 		
 		// add or update each Payable
-		if (payablesList != null) {
+		if (!isPayablesEmpty) {
 			for (Payable payable : payablesList) {
 				try {
 					payableDAO.editPayable(payable);
