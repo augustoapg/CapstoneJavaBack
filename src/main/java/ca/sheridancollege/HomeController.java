@@ -76,8 +76,7 @@ public class HomeController {
 			dummyData.generateRandomSystemUsers();			
 		} catch (Exception e) {
 			log.info("/addDummyData - " + e.getMessage());
-			objNode.put("message", e.getMessage());
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		objNode.put("message", "Dummy data added");
@@ -283,7 +282,7 @@ public class HomeController {
 		
 		if (rental == null) {
 			log.info("/getRental - Rental not found with ID: " + id);
-			return new ResponseEntity<Object>(rental, HttpStatus.NO_CONTENT);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Rental not found: " + id);
 		}
 
 		log.info("/getRental - Getting Rental with ID: " + id);
@@ -518,8 +517,7 @@ public class HomeController {
 		
 		if(custDAO.getCustomer(customer.getSheridanId()) != null) {
 			log.info("/newCustomer - Customer already exists with ID: " + customer.getSheridanId());
-			objNode.put("message", "Customer already exists");
-	    	return new ResponseEntity<Object>(objNode, HttpStatus.CONFLICT);
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Customer already exists");
 		}
 		customer.setWillRecvEmail(true);
 		customer.setBlackListed(false);
@@ -722,8 +720,7 @@ public class HomeController {
 		
 		if (customer == null) {
 			log.info("/editCustomer - Customer was not found with ID: " + newCustomer.getSheridanId());
-			objNode.put("message", "Customer was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Customer was not found with ID: " + newCustomer.getSheridanId());
 		}
 		
 		try {
@@ -748,8 +745,7 @@ public class HomeController {
 
 		if (existingCust == null) {
 			log.info("/customerSignedWaiver - Customer was not found with ID: " + id);
-			objNode.put("message", "Customer was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Customer was not found with ID: " + id);
 		}
 
 		try {
@@ -779,8 +775,7 @@ public class HomeController {
 		
 		if (rental == null) {
 			log.info("/editRental - Rental was not found with ID: " + newRental.getId());
-			objNode.put("message", "Rental was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Rental was not found with ID: " + newRental.getId());
 		}
 		
 		try {
@@ -809,8 +804,7 @@ public class HomeController {
 		
 		if (lock == null) {
 			log.info("/editLock - LockItem was not found with ID: " + newLock.getId());
-			objNode.put("message", "LockItem was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Lock was not found with ID: " + newLock.getId());
 		}
 		
 		try {
@@ -839,8 +833,7 @@ public class HomeController {
 		
 		if (basket == null) {
 			log.info("/editBasket - Basket was not found with ID: " + newBasket.getId());
-			objNode.put("message", "Basket was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Basket was not found with ID: " + basket.getId());
 		}
 		
 		try {
@@ -864,8 +857,7 @@ public class HomeController {
 		
 		if (payable == null) {
 			log.info("/editPayable - Payable was not found with ID: " + newPayable.getPayable_id());
-			objNode.put("message", "Payable was not found");
-			return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Payable was not found with ID: " + newPayable.getPayable_id());
 		}
 		
 		try {
