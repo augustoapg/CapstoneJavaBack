@@ -1,6 +1,8 @@
 package ca.sheridancollege.utils;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -139,12 +141,13 @@ public class DummyDataGenerator {
 
 	private LocalDate setRandomSignedOutDate(String status) {
 		LocalDate signOut;
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 		if(status == "active") {
-			signOut = LocalDate.now().plusDays(-randomBetween(0, 6));
+			signOut = today.toLocalDate().plusDays(-randomBetween(0, 6));
 		} else if(status == "late") {
-			signOut = LocalDate.now().plusDays(-randomBetween(6, 10));
+			signOut = today.toLocalDate().plusDays(-randomBetween(6, 10));
 		} else {
-			signOut = LocalDate.now().plusDays(-randomBetween(20, 30));
+			signOut = today.toLocalDate().plusDays(-randomBetween(20, 30));
 		}
 		
 		return signOut;
@@ -152,15 +155,16 @@ public class DummyDataGenerator {
 
 	private LocalDate setRandomDueDate(String status, LocalDate signedOutDate) {
 		LocalDate dueDate;
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 
 		if(status == "active") {
-			dueDate = LocalDate.now().plusDays(randomBetween(1, 6));
+			dueDate = today.toLocalDate().plusDays(randomBetween(1, 6));
 		} else if(status == "late") {
-			dueDate = LocalDate.now().plusDays(-randomBetween(1, 5));
+			dueDate = today.toLocalDate().plusDays(-randomBetween(1, 5));
 		} else {
 			
 			dueDate = signedOutDate;
-			dueDate = LocalDate.now().plusDays(randomBetween(4, 6));
+			dueDate = today.toLocalDate().plusDays(randomBetween(4, 6));
 		}
 		
 		return dueDate;
@@ -168,13 +172,14 @@ public class DummyDataGenerator {
 	
 	private LocalDate setRandomReturnedDate(String status, LocalDate dueDate) {
 		LocalDate returnedDate;
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 		
 		if(status == "returned") {
 			returnedDate = dueDate;
-			returnedDate = LocalDate.now().plusDays(-randomBetween(1, 2));
+			returnedDate = today.toLocalDate().plusDays(-randomBetween(1, 2));
 		} else  {
 			returnedDate = dueDate;
-			returnedDate = LocalDate.now().plusDays(randomBetween(1, 3));
+			returnedDate = today.toLocalDate().plusDays(randomBetween(1, 3));
 		}
 		
 		return returnedDate;
@@ -187,7 +192,7 @@ public class DummyDataGenerator {
 			String emContactFName = faker.name().firstName();
 			String emContactLName = faker.name().lastName();
 			
-			LocalDate today = LocalDate.now();
+			ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 			
 			// user created today, with end of program in December 31 two years from now. Waiver dates are added in the addCustomer()
 			Customer customer = new Customer(

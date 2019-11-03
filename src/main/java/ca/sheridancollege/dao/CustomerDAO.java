@@ -1,6 +1,8 @@
 package ca.sheridancollege.dao;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import ca.sheridancollege.beans.Customer;
+import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.utils.HibernateUtil;
 import ca.sheridancollege.utils.RegexCheck;
 
@@ -23,14 +26,12 @@ public class CustomerDAO {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
-		LocalDate today = LocalDate.now();
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 
 		// before adding user, update dates
-		customer.setCreatedOn(today);
-		customer.setLastWaiverSignedAt(today);
-		
-		// TODO: Review waiver expiration Date
-		customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 1));
+		customer.setCreatedOn(today.toLocalDate());
+		customer.setLastWaiverSignedAt(today.toLocalDate());
+		customer.setWaiverExpirationDate(LocalDate.of(today.getYear() + 1, 8, 31));
 		session.save(customer);
 
 		session.getTransaction().commit();
@@ -109,11 +110,40 @@ public class CustomerDAO {
 		session.close();
 
 		if (!result.isEmpty()) {
-			
 			return result;
 		}
 		
 		return null;
+	}
+	
+	public List<Customer> getCustomerByCreatedDate(LocalDate startDate, LocalDate endDate) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+
+		Query query = session.getNamedQuery("Customer.byCreatedDate");
+		query.setParameter("stDate", startDate);
+		query.setParameter("edDate", endDate);
+		List<Customer> custs = (List<Customer>) query.getResultList();
+
+		session.getTransaction().commit();
+		session.close();
+
+		return custs;
+	}
+	
+	public long getNumberOfCustomersByType(CustomerType customerType) {
+		long numOfCustomers = 0;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		
+		Query query = session.getNamedQuery("Customer.numberOfCustomersByType");
+		query.setParameter("type", customerType);
+		numOfCustomers = (Long)query.getSingleResult();
+		
+		session.getTransaction().commit();
+		session.close();
+		
+		return numOfCustomers;
 	}
 
 	public List<Customer> getAllCustomer() {
@@ -183,14 +213,18 @@ public class CustomerDAO {
 
 	}
 
+	/**
+	 * signs waiver adding today (in Toronto's timezone) as the lastWaiverSignedAt attribute
+	 * and update waiverExpirationDate to August 31st next year
+	 * @param customer being updated
+	 * @return updated customer
+	 */
 	public Customer signWaiver(Customer customer) {
-		LocalDate today = LocalDate.now();
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 
-		customer.setCreatedOn(today);
-		customer.setLastWaiverSignedAt(today);
-
+		customer.setLastWaiverSignedAt(today.toLocalDate());
 		customer.setWaiverExpirationDate(LocalDate.of(
-				today.getYear() + 1, 8,1));
+				today.getYear() + 1, 8, 31));
 
 		return customer;
 	}

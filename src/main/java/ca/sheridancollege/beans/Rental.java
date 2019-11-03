@@ -2,6 +2,8 @@ package ca.sheridancollege.beans;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -49,6 +51,7 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name="Rental.ActiveBySignOutDate", query="from Rental AS r WHERE (r.signOutDate BETWEEN :stDate AND :edDate) "
 														+ "AND (returnedDate is null)")
 @NamedQuery(name="Rental.allLate", query="from Rental where returnedDate is null AND dueDate < :today")
+@NamedQuery(name="Rental.betweenSignOutDate", query="from Rental where signOutDate BETWEEN :stDate AND :edDate")
 
 public class Rental implements Serializable {
 	
@@ -84,7 +87,8 @@ public class Rental implements Serializable {
 		// all rentals should have signOutDate and dueDate
 		if(this.signOutDate != null && this.dueDate != null) {
 			if(this.returnedDate == null) {
-				return (this.dueDate.isAfter(LocalDate.now())) ? "Active" : "Late";
+				ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+				return (this.dueDate.isAfter(today.toLocalDate())) ? "Active" : "Late";
 			} else {
 				return (this.returnedDate.isBefore(this.dueDate)) ? "Returned" : "Returned Late";
 			}

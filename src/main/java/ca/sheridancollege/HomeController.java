@@ -14,7 +14,13 @@ import java.io.ByteArrayInputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.DateTimeException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import ca.sheridancollege.utils.ExcelGenerator;
 import org.springframework.core.io.InputStreamResource;
@@ -32,6 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.sheridancollege.dao.*;
 import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.DummyDataGenerator;
 import ca.sheridancollege.beans.*;
@@ -351,6 +358,90 @@ public class HomeController {
 		return new ResponseEntity<Object>(rentals, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/getReportGeneralData/from={strFromDate}&to={strToDate}", method =
+			RequestMethod.GET, produces = { "application/json" })
+	public ResponseEntity<?> getReportGeneralData(@PathVariable String strFromDate, @PathVariable String strToDate) {			
+		int numTotalRentals = 0;
+		int numLateRentals = 0;
+		int numNewCustomers = 0;
+		double avgRentDays = 0.0;
+		
+		long numOfStudents = 0;
+		long numOfStaff = 0;
+		double avgHistoricalRentDays = 0.0;
+		
+		// getting information on Customers created by date range
+		try {
+			LocalDate fromDate = LocalDate.parse(strFromDate);
+			LocalDate toDate = LocalDate.parse(strToDate);			
+			List<Customer> newCustomers = custDAO.getCustomerByCreatedDate(fromDate, toDate);
+			numNewCustomers = newCustomers.size();
+		} catch (DateTimeException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Invalid date.");
+		}
+		
+		// getting num of rentals and average rental days for date range
+		List<Rental> rentals = null;
+		
+		try {
+			rentals = rentalDAO.getRentalsByDate("allsignout", strFromDate, strToDate);
+			if (rentals != null) {
+				numTotalRentals = rentals.size();
+				avgRentDays = getAverageRentDays(rentals);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}
+		
+		// getting late rentals
+		List<Rental> lateRentals = rentalDAO.getLateRentals();
+		numLateRentals = lateRentals.size();
+		
+		// getting historical values 
+		numOfStudents = custDAO.getNumberOfCustomersByType(CustomerType.STUDENT);
+		numOfStaff = custDAO.getNumberOfCustomersByType(CustomerType.STAFF);
+		List<Rental> allRentals = rentalDAO.getAllRentals();
+		avgHistoricalRentDays = getAverageRentDays(allRentals);
+		
+		// creating JSON
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		objNode.put("totalRentals", numTotalRentals);
+		objNode.put("numOfLateRentals", numLateRentals);
+		objNode.put("numOfNewCustomers", numNewCustomers);
+		objNode.put("avgRentDays", avgRentDays);
+		objNode.put("numberOfStudents", numOfStudents);
+		objNode.put("numberOfStaff", numOfStaff);
+		objNode.put("historicalRentDays", avgHistoricalRentDays);
+		
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	private double getAverageRentDays(List<Rental> rentals) {
+		long[] rentalDays = new long[rentals.size()];
+		double avg = 0.0;
+		
+		for (int i = 0; i < rentals.size(); i++) {
+			Rental rental = rentals.get(i);
+			if (rental.getReturnedDate() != null) {
+				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), rental.getReturnedDate());
+			} else {
+				rentalDays[i] = ChronoUnit.DAYS.between(rental.getSignOutDate(), ZonedDateTime.now(ZoneId.of("America/Toronto")));
+			}
+		}
+		
+		long sum = 0;
+		
+		for (int i = 0; i < rentalDays.length; i++) {
+			sum += rentalDays[i];
+		}
+		
+		avg = (double)sum/(double)rentalDays.length;
+		
+		return avg;
+	}
+	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editBike(@RequestBody Bike newBike) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -404,7 +495,7 @@ public class HomeController {
 	    }
 	    
 	    log.info("/returnRental - Returned Bike with rental ID: " + newRental.getId());
-		objNode.put("message", "Bike has been returned");
+		objNode.put("message", "Rental has been returned");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
@@ -514,13 +605,15 @@ public class HomeController {
 			}
 		}
 		
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+		
 		rental.setCustomer(customer);
 		rental.setRentalComponents(rentalComponentsUpdated);
-		rental.setSignOutDate(LocalDate.now());
-		rental.setDueDate(LocalDate.now().plusDays(7));
+		rental.setSignOutDate(today.toLocalDate());
+		rental.setDueDate(today.toLocalDate().plusDays(7));
 		
 		try {
-			rentalDAO.addRental(rental);			
+			rentalDAO.addRental(rental);
 		} catch (Exception e) {
 	    	log.info("/newRental - " + e.getMessage());
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
