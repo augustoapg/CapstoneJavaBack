@@ -957,18 +957,12 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/updatePayables", method = RequestMethod.PATCH, produces = {"application/json"})
-	public ResponseEntity<Object> updatePayables(@RequestBody List<Payable> payablesList) {
+	@RequestMapping(value = "/updatePayables/{rentalId}", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<Object> updatePayables(@PathVariable int rentalId, @RequestBody List<Payable> payablesList) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		List<Payable> result = new ArrayList<Payable>();
 		
-		if (payablesList.isEmpty()) {
-			log.info("/updatePayables - No Payables received");
-			return new ResponseEntity<Object>(result, HttpStatus.OK);
-		}
-		
-		int rentalId = payablesList.get(0).getRental().getId();
 		List<Payable> payablesInDB = payableDAO.getPayablesByRentalId(rentalId);
 		
 		if (payablesInDB != null && !payablesInDB.isEmpty()) {
