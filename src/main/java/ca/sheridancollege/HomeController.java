@@ -981,24 +981,26 @@ public class HomeController {
 		}
 		
 		// add or update each Payable
-		for (Payable payable : payablesList) {
+		if (payablesList != null) {
+			for (Payable payable : payablesList) {
+				try {
+					payableDAO.editPayable(payable);
+				} catch (Exception e) {
+					log.info("/updatePayables - " + e.getMessage());
+					return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+				}
+			}
+			
+			// blacklist customer if not yet blacklisted
 			try {
-				payableDAO.editPayable(payable);
+				// rental object that comes with the request body does not contain full rental object, just its id
+				Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
+				Customer customer = rental.getCustomer();
+				blackListCustomer(customer);
 			} catch (Exception e) {
 				log.info("/updatePayables - " + e.getMessage());
-		    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 			}
-		}
-		
-		// blacklist customer if not yet blacklisted
-		try {
-			// rental object that comes with the request body does not contain full rental object, just its id
-			Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
-			Customer customer = rental.getCustomer();
-			blackListCustomer(customer);
-		} catch (Exception e) {
-			log.info("/updatePayables - " + e.getMessage());
-	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/updatePayables - List of Payables updated");
