@@ -7,6 +7,8 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 
 import ca.sheridancollege.beans.Basket;
+import ca.sheridancollege.enums.BasketState;
+import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class BasketDAO {
@@ -23,6 +25,9 @@ public class BasketDAO {
 			
 			// verify if there is a basket with this name already in the DB
 			if (existingBasket == null) {
+				if (basket.getState() == null) {
+					basket.setState(BasketState.AVAILABLE);
+				}
 				session.save(basket);
 			} else {
 				errorMessage = "There is already a basket with name " + basket.getName() + " registered (Basket ID: " + existingBasket.getId() + ")";

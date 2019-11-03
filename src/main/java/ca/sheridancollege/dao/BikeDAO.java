@@ -7,6 +7,8 @@ import javax.persistence.Query;
 import org.hibernate.Session;
 
 import ca.sheridancollege.beans.Bike;
+import ca.sheridancollege.enums.BikeState;
+import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class BikeDAO {
@@ -23,6 +25,9 @@ public class BikeDAO {
 			
 			// verify if there is a bike with this name already in the DB
 			if (existingBike == null) {
+				if (bike.getState() == null) {
+					bike.setState(BikeState.AVAILABLE);
+				}
 				session.save(bike);
 			} else {
 				errorMessage = "There is already a bike with name " + bike.getName() + " registered (Bike ID: " + existingBike.getId() + ")";

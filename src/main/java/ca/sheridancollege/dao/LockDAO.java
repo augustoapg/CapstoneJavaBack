@@ -6,6 +6,7 @@ import javax.persistence.Query;
 
 import org.hibernate.Session;
 import ca.sheridancollege.beans.LockItem;
+import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class LockDAO {
@@ -22,6 +23,9 @@ public class LockDAO {
 			
 			// verify if there is a lock with this name already in the DB
 			if (existingLock == null) {
+				if (lockItem.getState() == null) {
+					lockItem.setState(LockState.AVAILABLE);
+				}
 				session.save(lockItem);
 			} else {
 				errorMessage = "There is already a lock with name " + lockItem.getName() + " registered (Lock ID: " + existingLock.getId() + ")";

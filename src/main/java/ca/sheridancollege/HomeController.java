@@ -653,8 +653,8 @@ public class HomeController {
 	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 	    }
 
-		log.info("/newBike - Added bike with ID: " + newBike.getId());
-		objNode.put("message", "Bike was added with id " + newBikeId);
+		log.info("/newBike - Added bike with ID: " + newBikeId);
+		objNode.put("message", "Bike was added with id " + newBike.getName());
 		objNode.put("id", newBikeId);
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
