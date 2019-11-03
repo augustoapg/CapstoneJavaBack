@@ -91,10 +91,10 @@ public class PreDefinedPayableDAO {
 		try {
 			PreDefinedPayable existingPayable = getPredefinedPayableByCategory(preDefinedPayable.getCategory());
 			
-			if (existingPayable == null) {
+			if (existingPayable == null || existingPayable.getId() == preDefinedPayable.getId()) {
 				session.update(preDefinedPayable);
 			} else {
-				throw new Exception("Pre Defined Payable already exists if category " + preDefinedPayable.getCategory());
+				throw new Exception("Pre Defined Payable already exists with category " + preDefinedPayable.getCategory());
 			}
 		} catch (Exception e) {
 			throw e;
