@@ -49,6 +49,7 @@
 		<mapping class="ca.sheridancollege.beans.Rental" />
 		<mapping class="ca.sheridancollege.beans.Payable" />
 		<mapping class="ca.sheridancollege.beans.SystemUser" />
+		<mapping class="ca.sheridancollege.beans.PreDefinedPayable" />
 
 	</session-factory>
 </hibernate-configuration>

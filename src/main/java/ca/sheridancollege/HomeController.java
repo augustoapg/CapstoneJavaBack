@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 import ca.sheridancollege.utils.ExcelGenerator;
@@ -57,6 +55,7 @@ public class HomeController {
 	LockDAO lockDAO = new LockDAO();
 	BasketDAO basketDAO = new BasketDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
+	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -73,7 +72,8 @@ public class HomeController {
 			dummyData.generateRandomKeyLocks(20, 4);
 			dummyData.generateRandomBaskets(10);
 			dummyData.generateRandomRentals();
-			dummyData.generateRandomSystemUsers();			
+			dummyData.generateRandomSystemUsers();
+			dummyData.generatePreDefinedPayables();
 		} catch (Exception e) {
 			log.info("/addDummyData - " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -452,6 +452,42 @@ public class HomeController {
 		return avg;
 	}
 	
+	@RequestMapping(value = "/getAllPreDefinedPayables", method = RequestMethod.GET, produces = {"application/json"})
+	public ResponseEntity<Object> getAllPreDefinedPayables() {
+		List<PreDefinedPayable> preDefPayables = preDefPayableDAO.getAllPreDefinedPayables();
+
+		if (preDefPayables.isEmpty()) {
+			log.info("/getAllPreDefinedPayables - No Pre Defined Payables were found");
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No pre defined payables were found");
+		}
+		log.info("/getAllPreDefinedPayables - Getting All Pre Defined Payables - " + preDefPayables.size() + " retrieved");
+		return new ResponseEntity<Object>(preDefPayables, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getPreDefinedPayableByID/{id}", method = RequestMethod.GET, produces = {"application/json"})
+	public ResponseEntity<Object> getPreDefinedPayableByID(@PathVariable int id) {
+		PreDefinedPayable preDefPayable = preDefPayableDAO.getPredefinedPayableByID(id);
+
+		if (preDefPayable == null) {
+			log.info("/getPreDefinedPayableByID - No Pre Defined Payable found with ID " + id);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No pre defined payable found with id " + id);
+		}
+		log.info("/getPreDefinedPayableByID - Getting Pre Defined Payable with ID - " + id);
+		return new ResponseEntity<Object>(preDefPayable, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getPreDefinedPayableByCategory/{category}", method = RequestMethod.GET, produces = {"application/json"})
+	public ResponseEntity<Object> getPreDefinedPayableByCategory(@PathVariable String category) {
+		PreDefinedPayable preDefPayable = preDefPayableDAO.getPredefinedPayableByCategory(category);
+
+		if (preDefPayable == null) {
+			log.info("/getPreDefinedPayableByCategory - No Pre Defined Payable found with category " + category);
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No pre defined payable found with category " + category);
+		}
+		log.info("/getPreDefinedPayableByCategory - Getting Pre Defined Payable with category - " + category);
+		return new ResponseEntity<Object>(preDefPayable, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
 	public ResponseEntity<?> editBike(@RequestBody Bike newBike) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -464,19 +500,64 @@ public class HomeController {
 	
 		Bike bike = bikeDAO.getBikeById(newBike.getId());
 	    if (bike == null) {
-	    	log.info("/editBike/{id} - Bike not found with ID: " + newBike.getId());
+	    	log.info("/editBike - Bike not found with ID: " + newBike.getId());
 	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bike not found: " + newBike.getId());
 	    }
 	    
 	    try {
 	    	bikeDAO.editBike(newBike);			
 		} catch (Exception e) {
-			log.info("/editBike/{id} - " + e.getMessage());
+			log.info("/editBike - " + e.getMessage());
 	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
 		}
 	    
-	    log.info("/editBike/{id} - Edited Bike with ID: " + newBike.getId());
+	    log.info("/editBike - Edited Bike with ID: " + newBike.getId());
 		objNode.put("message", "Bike has been updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/editPreDefinedPayable", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<?> editPreDefinedPayable(@RequestBody PreDefinedPayable newPreDefinedPayable) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		if (newPreDefinedPayable.getCategory() == null || newPreDefinedPayable.getCategory().trim().isEmpty()) {
+			log.info("/editPreDefinedPayable - PreDefinedPayable sent without category: " + newPreDefinedPayable.getId());
+	    	return ResponseEntity.status(HttpStatus.CONFLICT).body("PreDefinedPayable requires a category");
+		}
+	
+		PreDefinedPayable preDefinedPayable = preDefPayableDAO.getPredefinedPayableByID(newPreDefinedPayable.getId());
+	    if (preDefinedPayable == null) {
+	    	log.info("/editPreDefinedPayable/{id} - PreDefinedPayable not found with ID: " + newPreDefinedPayable.getId());
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body("PreDefinedPayable not found: " + newPreDefinedPayable.getId());
+	    }
+	    
+	    try {
+	    	preDefPayableDAO.editPreDefinedPayable(newPreDefinedPayable);			
+		} catch (Exception e) {
+			log.info("/editPreDefinedPayable - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+		}
+	    
+	    log.info("/editPreDefinedPayable - Edited PreDefinedPayable with ID: " + newPreDefinedPayable.getId());
+		objNode.put("message", "PreDefinedPayable has been updated");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/deletePreDefinedPayable", method = RequestMethod.DELETE, produces = {"application/json"})
+	public ResponseEntity<?> deletePreDefinedPayable(@RequestBody PreDefinedPayable preDefinedPayable) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+	    
+	    try {
+	    	preDefPayableDAO.deletePreDefinedPayable(preDefinedPayable);			
+		} catch (Exception e) {
+			log.info("/deletePreDefinedPayable - " + e.getMessage());
+	    	return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
+		}
+	    
+	    log.info("/deletePreDefinedPayable - Deleted PreDefinedPayable with ID: " + preDefinedPayable.getId());
+		objNode.put("message", "PreDefinedPayable has been deleted");
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
@@ -876,25 +957,21 @@ public class HomeController {
 		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/updatePayables", method = RequestMethod.PATCH, produces = {"application/json"})
-	public ResponseEntity<Object> updatePayables(@RequestBody List<Payable> payablesList) {
+	@RequestMapping(value = "/updatePayables/{rentalId}", method = RequestMethod.PATCH, produces = {"application/json"})
+	public ResponseEntity<Object> updatePayables(@PathVariable int rentalId, @RequestBody List<Payable> payablesList) {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode objNode = mapper.createObjectNode();
 		List<Payable> result = new ArrayList<Payable>();
 		
-		if (payablesList.isEmpty()) {
-			log.info("/updatePayables - No Payables received");
-			return new ResponseEntity<Object>(result, HttpStatus.OK);
-		}
-		
-		int rentalId = payablesList.get(0).getRental().getId();
 		List<Payable> payablesInDB = payableDAO.getPayablesByRentalId(rentalId);
+		
+		boolean isPayablesEmpty = (payablesList == null || payablesList.isEmpty());
 		
 		if (payablesInDB != null && !payablesInDB.isEmpty()) {
 			// check if there are any items in the DB that should be deleted
 			for (Payable payableInDB : payablesInDB) {
 				// if the Payable in the DB is not contained in the newly sent payablesList, delete it from DB
-				if (!payablesList.contains(payableInDB)) {
+				if (isPayablesEmpty || !payablesList.contains(payableInDB)) {
 					try {
 						payableDAO.deletePayable(payableInDB);					
 					} catch (Exception e) {
@@ -906,24 +983,26 @@ public class HomeController {
 		}
 		
 		// add or update each Payable
-		for (Payable payable : payablesList) {
+		if (!isPayablesEmpty) {
+			for (Payable payable : payablesList) {
+				try {
+					payableDAO.editPayable(payable);
+				} catch (Exception e) {
+					log.info("/updatePayables - " + e.getMessage());
+					return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+				}
+			}
+			
+			// blacklist customer if not yet blacklisted
 			try {
-				payableDAO.editPayable(payable);
+				// rental object that comes with the request body does not contain full rental object, just its id
+				Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
+				Customer customer = rental.getCustomer();
+				blackListCustomer(customer);
 			} catch (Exception e) {
 				log.info("/updatePayables - " + e.getMessage());
-		    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 			}
-		}
-		
-		// blacklist customer if not yet blacklisted
-		try {
-			// rental object that comes with the request body does not contain full rental object, just its id
-			Rental rental = rentalDAO.getRental(payablesList.get(0).getRental().getId());
-			Customer customer = rental.getCustomer();
-			blackListCustomer(customer);
-		} catch (Exception e) {
-			log.info("/updatePayables - " + e.getMessage());
-	    	return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 		
 		log.info("/updatePayables - List of Payables updated");
