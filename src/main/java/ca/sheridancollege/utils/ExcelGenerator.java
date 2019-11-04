@@ -28,7 +28,8 @@ public class ExcelGenerator {
                                                    List<Bike> bikes,
                                                    List<LockItem> locks,
                                                    List<Basket> baskets,
-                                                   List<Customer> customers) throws IOException {
+                                                   List<Customer> customers,
+                                                   List<Payable> payables) throws IOException {
 
         try(
                 Workbook workbook = new XSSFWorkbook();
@@ -39,6 +40,7 @@ public class ExcelGenerator {
             writeRentalsSheet(workbook, rentals);
             writeInventorySheet(workbook, bikes, locks, baskets);
             writeCustomersSheet(workbook, customers);
+            writePayablesSheet(workbook, payables);
 
             workbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
@@ -213,6 +215,43 @@ public class ExcelGenerator {
             row.createCell(15).setCellValue(Objects.toString(customer.getPhone()));
             row.createCell(16).setCellValue(Objects.toString(customer.getType().toString()));
             row.createCell(17).setCellValue(customer.isWillRecvEmail());
+        }
+
+    }
+
+    private static void writePayablesSheet(Workbook workbook,
+                                            List<Payable> payables) {
+        String[] COLUMNs = {"Id", "Category", "Is paid", "Value",
+                "Rental ID"};
+
+        Sheet sheet = workbook.createSheet("Payable");
+
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setColor(IndexedColors.BLUE.getIndex());
+
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+
+        // Row for Header
+        Row headerRow = sheet.createRow(0);
+
+        // Header
+        for (int col = 0; col < COLUMNs.length; col++) {
+            Cell cell = headerRow.createCell(col);
+            cell.setCellValue(COLUMNs[col]);
+            cell.setCellStyle(headerCellStyle);
+        }
+
+        int rowIdx = 1;
+        for (Payable payable : payables) {
+            Row row = sheet.createRow(rowIdx++);
+
+            row.createCell(0).setCellValue(payable.getPayable_id());
+            row.createCell(1).setCellValue(Objects.toString(payable.getCategory()));
+            row.createCell(2).setCellValue(Objects.toString(payable.isPaid()));
+            row.createCell(3).setCellValue(Objects.toString(payable.getValue()));
+            row.createCell(4).setCellValue(Objects.toString(payable.getRental().getId()));
         }
 
     }

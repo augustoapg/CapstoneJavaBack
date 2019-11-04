@@ -961,9 +961,10 @@ public class HomeController {
 		List<LockItem> locks = lockDAO.getAllLockItems();
 		List<Basket> baskets = basketDAO.getAllBaskets();
 		List<Customer> customers = custDAO.getAllCustomer();
+		List<Payable> payables = payableDAO.getAllPayables();
 
 		ByteArrayInputStream in = ExcelGenerator.reportExcel(rentals, bikes,
-				locks, baskets, customers);
+				locks, baskets, customers, payables);
 		// return IOUtils.toByteArray(in);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -971,7 +972,7 @@ public class HomeController {
 		//TODO: CHANGE FILENAME TO DATE
 		LocalDate date = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy" +
-				"-MM-dd H:m");
+				"-MM-dd");
 		String formatedString = date.format(formatter);
 
 		headers.add("Content-Disposition", "attachment; " +
