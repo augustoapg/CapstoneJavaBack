@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,8 +63,17 @@ public class ExcelGenerator {
         CellStyle headerCellStyle = workbook.createCellStyle();
         headerCellStyle.setFont(headerFont);
 
-        // Row for Header
-        Row headerRow = sheet.createRow(0);
+        // Set first row as date of report generation
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formatDateTime = now.format(formatter);
+
+        Row dateRow = sheet.createRow(0);
+        dateRow.createCell(0).setCellValue("Date Report Generated: " + formatDateTime);
+
+
+        // Row for Table Header
+        Row headerRow = sheet.createRow(2);
 
         // Header
         for (int col = 0; col < COLUMNs.length; col++) {
@@ -71,11 +82,8 @@ public class ExcelGenerator {
             cell.setCellStyle(headerCellStyle);
         }
 
-        // CellStyle for Age
-//            CellStyle ageCellStyle = workbook.createCellStyle();
-//            ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
 
-        int rowIdx = 1;
+        int rowIdx = 3;
         for (Rental rental : rentals) {
             Row row = sheet.createRow(rowIdx++);
 
@@ -89,7 +97,11 @@ public class ExcelGenerator {
 
 
             row.createCell(5).setCellValue(Objects.toString(rental.getCustomer().getSheridanId()));
-//
+
+
+            // CellStyle for Age
+//            CellStyle ageCellStyle = workbook.createCellStyle();
+//            ageCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("#"));
 //                Cell ageCell = row.createCell(3);
 //                ageCell.setCellValue(rental.getAge());
 //                ageCell.setCellStyle(ageCellStyle);
@@ -114,8 +126,17 @@ public class ExcelGenerator {
         CellStyle headerCellStyle = workbook.createCellStyle();
         headerCellStyle.setFont(headerFont);
 
+
+        // Set first row as date of report generation
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formatDateTime = now.format(formatter);
+
+        Row dateRow = sheet.createRow(0);
+        dateRow.createCell(0).setCellValue("Date Report Generated: " + formatDateTime);
+
         // Row for Header
-        Row headerRow = sheet.createRow(0);
+        Row headerRow = sheet.createRow(2);
 
         // Header
         for (int col = 0; col < COLUMNs.length; col++) {
@@ -124,7 +145,7 @@ public class ExcelGenerator {
             cell.setCellStyle(headerCellStyle);
         }
 
-        int rowIdx = 1;
+        int rowIdx = 3;
         for (Bike bike : bikes) {
             Row row = sheet.createRow(rowIdx++);
 
@@ -183,8 +204,18 @@ public class ExcelGenerator {
         CellStyle headerCellStyle = workbook.createCellStyle();
         headerCellStyle.setFont(headerFont);
 
+
+        // Set first row as date of report generation
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formatDateTime = now.format(formatter);
+
+        Row dateRow = sheet.createRow(0);
+        dateRow.createCell(0).setCellValue("Date Report Generated: " + formatDateTime);
+
+
         // Row for Header
-        Row headerRow = sheet.createRow(0);
+        Row headerRow = sheet.createRow(2);
 
         // Header
         for (int col = 0; col < COLUMNs.length; col++) {
@@ -193,7 +224,7 @@ public class ExcelGenerator {
             cell.setCellStyle(headerCellStyle);
         }
 
-        int rowIdx = 1;
+        int rowIdx = 3;
         for (Customer customer : customers) {
             Row row = sheet.createRow(rowIdx++);
 
@@ -233,8 +264,18 @@ public class ExcelGenerator {
         CellStyle headerCellStyle = workbook.createCellStyle();
         headerCellStyle.setFont(headerFont);
 
+
+        // Set first row as date of report generation
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formatDateTime = now.format(formatter);
+
+        Row dateRow = sheet.createRow(0);
+        dateRow.createCell(0).setCellValue("Date Report Generated: " + formatDateTime);
+
+
         // Row for Header
-        Row headerRow = sheet.createRow(0);
+        Row headerRow = sheet.createRow(2);
 
         // Header
         for (int col = 0; col < COLUMNs.length; col++) {
@@ -243,7 +284,7 @@ public class ExcelGenerator {
             cell.setCellStyle(headerCellStyle);
         }
 
-        int rowIdx = 1;
+        int rowIdx = 3;
         for (Payable payable : payables) {
             Row row = sheet.createRow(rowIdx++);
 

@@ -11,13 +11,10 @@
 package ca.sheridancollege;
 
 import java.io.ByteArrayInputStream;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import ca.sheridancollege.utils.ExcelGenerator;
@@ -1049,9 +1046,9 @@ public class HomeController {
 		HttpHeaders headers = new HttpHeaders();
 
 		//TODO: CHANGE FILENAME TO DATE
-		LocalDate date = LocalDate.now();
+		LocalDateTime date = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy" +
-				"-MM-dd");
+				"-MM-dd HH:mm");
 		String formatedString = date.format(formatter);
 
 		headers.add("Content-Disposition", "attachment; " +
@@ -1065,7 +1062,6 @@ public class HomeController {
 				.headers(headers)
 				.body(new InputStreamResource(in));
 	}
-
 
 
 }
