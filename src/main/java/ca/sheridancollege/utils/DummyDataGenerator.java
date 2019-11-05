@@ -19,6 +19,7 @@ import ca.sheridancollege.beans.PreDefinedPayable;
 import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.beans.RentalComponent;
 import ca.sheridancollege.beans.SystemUser;
+import ca.sheridancollege.beans.Waiver;
 import ca.sheridancollege.dao.BasketDAO;
 import ca.sheridancollege.dao.BikeDAO;
 import ca.sheridancollege.dao.CustomerDAO;
@@ -26,6 +27,7 @@ import ca.sheridancollege.dao.LockDAO;
 import ca.sheridancollege.dao.PreDefinedPayableDAO;
 import ca.sheridancollege.dao.RentalDAO;
 import ca.sheridancollege.dao.SystemUserDAO;
+import ca.sheridancollege.dao.WaiverDAO;
 import ca.sheridancollege.enums.BasketState;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
@@ -41,6 +43,7 @@ public class DummyDataGenerator {
 	LockDAO keyLockDAO = new LockDAO();
 	BasketDAO basketDAO = new BasketDAO();
 	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
+	WaiverDAO waiverDAO = new WaiverDAO();
 	
 	public void generateRandomBikes(int numOfBikes) throws Exception {
 		for(int i = 0; i < numOfBikes; i++) {
@@ -247,6 +250,62 @@ public class DummyDataGenerator {
 			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Bike Damage", 5));
 			preDefPayableDAO.addPreDefinedPayable(new PreDefinedPayable("Key Damage", 5));			
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+	
+	public void generateWaiver() {
+		String waiverInfo = "SHERIDAN BIKE HUB RENTAL PROGRAM: RELEASE OF LIABILITY, WAIVER OF CLAIMS, ASSUMPTION OF RISKS AND INDEMNITY AGREEMENT \r\n" + 
+				"\r\n" + 
+				"WARNING: BY SIGNING THIS DOCUMENT YOU WILL WAIVE CERTAIN LEGAL RIGHTS, INCLUDING THE RIGHT TO SUE.  	\r\n" + 
+				"I, the undersigned, do hereby acknowledge the following:	\r\n" + 
+				"\r\n" + 
+				"1) I am at least 18 years of age;	\r\n" + 
+				"\r\n" + 
+				"2) I am legally competent to sign this Release of Liability, Waiver of Claims, Assumption of Risks and Indemnity Agreement for participation in The Sheridan College Institute of Technology and Advanced Learning (“Sheridan”) Bike Hub Rental Program;\r\n" + 
+				"\r\n" + 
+				"3) I have the requisite cycling experience to operate the rental bike and I will not misuse or unduly abuse the rental bike;\r\n" + 
+				"\r\n" + 
+				"4) My use and/or participation in the Sheridan Bike Hub Rental Program is entirely voluntary;\r\n" + 
+				"\r\n" + 
+				"5) I have a personal duty and responsibility to learn and to follow road safety standards, guidelines, and procedures, and to operate the rental bike in a manner appropriate to any and all prevailing road and weather conditions. I understand that I need to wear a helmet at all times while operating the rental bike and practice safe cycling while the bike is in my possession. I also acknowledge that it is my responsibility to ensure that the rental bike is in good working condition at all times;\r\n" + 
+				"\r\n" + 
+				"6) I understand that I am responsible for the well being of the bike while it is under my possession, including theft and any physical damage to the bike, and I hereby am responsible for paying the costs of replacing or repairing the bike, and any additional costs associated with the loss of the bike, if such theft or damage occurs. I also acknowledge that I am responsible for maintaining function and ensuring replacement of the rental bike’s accessories including but not limited to lights, bells and baskets;\r\n" + 
+				"\r\n" + 
+				"7) In the event that the bike is not returned as and when due and I cannot be reached for two weeks after the return date, Sheridan Bike Hub will report the bike stolen to the Region of Peel Police; and\r\n" + 
+				"\r\n" + 
+				"8) I accept full responsibility for the rental bike for the duration of the rental and it is my responsibility to check for flaws, defects, and damage prior to accepting the rental bike. I understand that all charges for the rental are applied at the time that the bike is in my possession, whether it is in use or not.\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"ASSUMPTION OF RISK: \r\n" + 
+				"\r\n" + 
+				"I understand and accept that renting this bike and participating in bicycling involves risks not limited to: loss or damage to personal property, all manner of personal injury, injury resulting from falling on uneven or slippery terrain including man made features, impacting against the floor, ground, trees, rocks, cement, course structures or other obstructions; impacting with other users of the road; potential for bone and muscular skeletal injury such as sprains and strains; any illness or injury resulting from exposure to cold, wet or windy weather, or the effects of heat and strong sunlight, or any insect bites/stings; any manner of injury or illness resulting from bicycling; inability to access medical help in an emergency; cuts and abrasions from ground contact and/ or the bike; negligence of other road users; and other unforeseen dangers and risks. I have no medical conditions, nor have I been diagnosed with a condition that prevents me from bicycling. \r\n" + 
+				" \r\n" + 
+				"I freely accept and fully assume all such risks, dangers and hazards and the possibility of personal injury, death, property damage or loss, resulting therefrom. 	\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"\r\n" + 
+				"RELEASE OF LIABILITY, WAIVER OF CLAIMS AND INDEMNITY AGREEMENT \r\n" + 
+				"\r\n" + 
+				"In consideration of The Sheridan College Institute of Technology and Advanced Learning (“Sheridan”) Bike Hub Rental Program renting me this bike, I agree as follows:\r\n" + 
+				"1.	TO WAIVE ANY AND ALL CLAIMS that I have or may have in the future against Sheridan, the Board of Governors of Sheridan and its members, officers, employees, students, agents, volunteers and independent contractors (all of whom are hereinafter collectively referred to as “Releasees”);\r\n" + 
+				"\r\n" + 
+				"2.	TO RELEASE THE RELEASEES from any and all liability for any loss, damage, injury or expense that I may suffer, or that my next of kin may suffer as a result of my participation in the Sheridan Bike Rental Program due to any cause whatsoever INCLUDING NEGLIGENCE, BREACH OF CONTRACT, OR BREACH OF ANY STATUTORY OR OTHER DUTY OF CARE; 	\r\n" + 
+				" \r\n" + 
+				"3.	TO HOLD HARMLESS AND INDEMNIFY THE RELEASEES from any and all liability for any damage to the property of, or personal injury to any third party, resulting from my participation in the Sheridan Bike Rental Program; and \r\n" + 
+				"\r\n" + 
+				"4.	This agreement shall be effective and binding upon my heirs, next of kin, executors, administrators, assigns and representatives in the event of death or incapacity. \r\n" + 
+				"In entering into this Agreement, I am not relying upon any oral or written representations of statements made by the Releasees other than what is set forth in this Agreement. \r\n" + 
+				"I HAVE READ AND UNDERSTOOD THIS AGREEMENT AND I AM AWARE THAT BY SIGNING THIS AGREEMENT I AM WAIVING CERTAIN LEGAL RIGHTS WHICH I OR MY HEIRS, NEXT OF KIN, EXECUTORS, ADMINISTERS AND ASSIGNS MAY HAVE AGAINST THE RELEASEES.  I DECLARE THAT I HAVE SIGNED IT FREELY AND WITHOUT ANY INDUCEMENT OR ASSURANCES OF ANY KIND WHATSOEVER. I AGREE THAT IF ANY PORTION OF THIS AGREEMENT IS HELD TO BE INVALID, THE REMAINDER SHALL CONTINUE IN FULL FORCE AND EFFECT.\r\n" + 
+				"This Agreement must be completed in full, signed, dated, and witnessed prior to participation in the Sheridan Bike Rental Program.";
+		
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
+		Waiver waiver = new Waiver(today.toLocalDate(), waiverInfo);
+		try {
+			waiverDAO.addWaiver(waiver);
+		} catch (Exception e) {
+			System.out.println("Error adding dummy Waiver");
 			System.out.println(e.getMessage());
 		}
 	}

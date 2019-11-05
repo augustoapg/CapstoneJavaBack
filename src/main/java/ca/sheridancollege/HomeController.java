@@ -53,6 +53,7 @@ public class HomeController {
 	BasketDAO basketDAO = new BasketDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
+	WaiverDAO waiverDAO = new WaiverDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -71,6 +72,7 @@ public class HomeController {
 			dummyData.generateRandomRentals();
 			dummyData.generateRandomSystemUsers();
 			dummyData.generatePreDefinedPayables();
+			dummyData.generateWaiver();
 		} catch (Exception e) {
 			log.info("/addDummyData - " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
@@ -483,6 +485,27 @@ public class HomeController {
 		}
 		log.info("/getPreDefinedPayableByCategory - Getting Pre Defined Payable with category - " + category);
 		return new ResponseEntity<Object>(preDefPayable, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/getWaiver", method = RequestMethod.GET, produces = {"application/json"})
+	public ResponseEntity<Object> getWaiver() {
+		Waiver waiver = waiverDAO.getWaiver();
+		return new ResponseEntity<Object>(waiver, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/updateWaiver", method = RequestMethod.POST, produces = {"application/json"})
+	public ResponseEntity<Object> updateWaiver(@RequestBody Waiver waiver) {
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode objNode = mapper.createObjectNode();
+		
+		try {
+			waiverDAO.addWaiver(waiver);			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}
+		
+		objNode.put("message", "Waiver updated successfully");
+		return new ResponseEntity<Object>(objNode, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/editBike", method = RequestMethod.PATCH, produces = {"application/json"})
