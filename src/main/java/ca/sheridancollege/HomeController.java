@@ -56,6 +56,7 @@ public class HomeController {
 	BasketDAO basketDAO = new BasketDAO();
 	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
+	WaiverDAO waiverDAO = new WaiverDAO();
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -74,6 +75,7 @@ public class HomeController {
 			dummyData.generateRandomRentals();
 			dummyData.generateRandomSystemUsers();
 			dummyData.generatePreDefinedPayables();
+			dummyData.generateWaiver();
 		} catch (Exception e) {
 			log.info("/addDummyData - " + e.getMessage());
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
