@@ -2,6 +2,8 @@ package ca.sheridancollege.dao;
 
 
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -14,6 +16,7 @@ import ca.sheridancollege.utils.HibernateUtil;
 public class WaiverDAO {
 	
 	public void addWaiver(Waiver waiver) throws Exception {
+		ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
@@ -23,6 +26,7 @@ public class WaiverDAO {
 			if (existingWaiver != null) {
 				deleteWaiver(existingWaiver);
 			}
+			waiver.setCreatedOn(today.toLocalDate());
 			session.save(waiver);
 		} catch (Exception e) {
 			throw e;
