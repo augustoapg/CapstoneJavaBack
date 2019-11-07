@@ -11,7 +11,6 @@ import ca.sheridancollege.beans.Rental;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class PayableDAO {
-	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 
 	public Payable getPayableById(int id) {
 		Session session = HibernateUtil.getSessionFactory().openSession();

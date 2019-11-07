@@ -51,7 +51,6 @@ public class HomeController {
 	SystemUserDAO sysUserDAO = new SystemUserDAO();
 	LockDAO lockDAO = new LockDAO();
 	BasketDAO basketDAO = new BasketDAO();
-	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	PreDefinedPayableDAO preDefPayableDAO = new PreDefinedPayableDAO();
 	WaiverDAO waiverDAO = new WaiverDAO();
 	

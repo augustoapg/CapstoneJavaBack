@@ -12,7 +12,6 @@ import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class BasketDAO {
-	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	public int addBasket(Basket basket) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();

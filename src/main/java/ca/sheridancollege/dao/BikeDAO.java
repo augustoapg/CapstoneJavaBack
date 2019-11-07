@@ -12,7 +12,6 @@ import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class BikeDAO {
-	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 
 	public int addBike(Bike bike) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();

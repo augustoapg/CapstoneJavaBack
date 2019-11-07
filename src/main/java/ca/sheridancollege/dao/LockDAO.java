@@ -10,7 +10,6 @@ import ca.sheridancollege.enums.LockState;
 import ca.sheridancollege.utils.HibernateUtil;
 
 public class LockDAO {
-	RentalComponentDAO rentalComponentDAO = new RentalComponentDAO();
 	
 	public int addLockItem(LockItem lockItem) throws Exception {
 		Session session = HibernateUtil.getSessionFactory().openSession();
