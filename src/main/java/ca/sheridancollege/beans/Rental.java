@@ -88,7 +88,7 @@ public class Rental implements Serializable {
 		if(this.signOutDate != null && this.dueDate != null) {
 			if(this.returnedDate == null) {
 				ZonedDateTime today = ZonedDateTime.now(ZoneId.of("America/Toronto"));
-				return (this.dueDate.isAfter(today.toLocalDate())) ? "Active" : "Late";
+				return (this.dueDate.isAfter(LocalDate.of(today.getYear(), today.getMonth(), today.getDayOfMonth()))) ? "Active" : "Late";
 			} else {
 				return (this.returnedDate.isBefore(this.dueDate)) ? "Returned" : "Returned Late";
 			}
