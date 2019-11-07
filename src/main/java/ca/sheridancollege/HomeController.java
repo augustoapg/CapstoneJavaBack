@@ -1040,8 +1040,7 @@ public class HomeController {
 		// Check if user exists and password is valid
 		if(sysUser != null && BCrypt.checkpw(loginUser.getPassword(), sysUser.getPassword())) {
 			objNode.put("valid", true);
-			objNode.put("role", "Admin");
-			objNode.put("token", "fakeToken"); // TODO: review this
+			objNode.put("role", sysUser.getRole());
 		} else {
 			objNode.put("valid", false);
 		}
@@ -1050,9 +1049,7 @@ public class HomeController {
 	}
 
 
-	@RequestMapping(value = "/download/report.xlsx",
-			method =
-			RequestMethod.GET)
+	@RequestMapping(value = "/download/report.xlsx", method = RequestMethod.GET)
 	public ResponseEntity<Object> excelReport() throws Exception {
 		List<Rental> rentals = rentalDAO.getAllRentals();
 		List<Bike> bikes = bikeDAO.getAllBikes();
@@ -1084,6 +1081,4 @@ public class HomeController {
 				.headers(headers)
 				.body(new InputStreamResource(in));
 	}
-
-
 }
