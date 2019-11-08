@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.sheridancollege.dao.*;
+import ca.sheridancollege.enums.BasketState;
 import ca.sheridancollege.enums.BikeState;
 import ca.sheridancollege.enums.CustomerType;
 import ca.sheridancollege.enums.LockState;
@@ -702,12 +703,23 @@ public class HomeController {
 				LockItem lockItem = lockDAO.getLockItemById(id);
 				if(lockItem == null) {
 					log.info("/newRental - Lock does not exist with ID: " + id);
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bike does not exist: " + id);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock does not exist: " + id);
 				} else if(lockItem.getState() != LockState.AVAILABLE) {
 					log.info("/newRental - Lock is not available with ID: " + id + ". Current status: " + lockItem.getState());
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lock is not available with ID: " + id + ". Current status: " + lockItem.getState());
 				}
 				rentalComponentsUpdated.add(lockItem);
+				
+			} else if (rc instanceof Basket) {
+				Basket basket = basketDAO.getBasketById(id);
+				if(basket == null) {
+					log.info("/newRental - Basket does not exist with ID: " + id);
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Basket does not exist: " + id);
+				} else if(basket.getState() != BasketState.AVAILABLE) {
+					log.info("/newRental - Basket is not available with ID: " + id + ". Current status: " + basket.getState());
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Basket is not available with ID: " + id + ". Current status: " + basket.getState());
+				}
+				rentalComponentsUpdated.add(basket);
 	
 			} else {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Rental Component " + id + " is not valid");
